@@ -1,0 +1,16 @@
+language: python
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+# command to install dependencies
+install:
+  - pip install python-coveralls
+# # command to run tests
+script: python setup.py test
+after_success:
+  - pip install -r requirements-testing.txt -e .
+  - py.test --cov=pytest_splinter --cov-report=term-missing tests
+  - coveralls
+notifications:
+    email:
+        - opensource-tests@paylogic.com
