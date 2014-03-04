@@ -1,0 +1,5 @@
+mock
+pytest-localserver
+pytest-pep8
+pytest-cov
+pytest-xdist
