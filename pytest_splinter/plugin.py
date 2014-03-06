@@ -6,7 +6,8 @@ import pytest  # pragma: no cover
 import py  # pragma: no cover
 import splinter  # pragma: no cover
 
-from .browser_patches import wait_until  # pragma: no cover
+from selenium.webdriver.support import wait
+
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
 
@@ -28,15 +29,13 @@ class Browser(object):
         self.driver.get(url)
         self.wait_for_condition(self.visit_condition, timeout=self.visit_condition_timeout)
 
-    def wait_for_condition(self, condition=None, timeout=None):
+    def wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, ignored_exceptions=None):
         """Wait for given javascript condition."""
         condition = condition or self.visit_condition
         timeout = timeout or self.visit_condition_timeout
-        return wait_until(
-            self,
-            condition=condition,
-            timeout=timeout,
-        )
+
+        return wait.WebDriverWait(
+            self.driver, timeout, poll_frequency=poll_frequency, ignored_exceptions=ignored_exceptions).until(condition)
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -88,7 +87,6 @@ def splinter_browser_load_condition():
                     return browser.evaluate_script('typeof $ === "undefined" || !$.active')
 
                 return condition
-
     """
     return lambda browser: True
 
@@ -114,7 +112,7 @@ def splinter_file_download_dir(request):
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_download_file_types():
-    """Browser file types to download. Comma-separated"""
+    """Browser file types to download. Comma-separated."""
     return ','.join(mimetypes.types_map.values())
 
 
@@ -213,7 +211,8 @@ def browser(
         request, browser_pool, splinter_webdriver, splinter_session_scoped_browser,
         splinter_close_browser):
     """Splinter browser wrapper instance. To be used for browser interaction.
-    Function scoped (cookies are clean for each test and on blank)."""
+    Function scoped (cookies are clean for each test and on blank).
+    """
     get_browser = lambda: request.getfuncargvalue('browser_instance')
     if not splinter_session_scoped_browser:
         browser_pool = []

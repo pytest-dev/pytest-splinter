@@ -5,9 +5,6 @@ import pytest
 import mock
 import splinter
 
-from pytest_splinter.browser_patches import WaitUntilTimeout
-from pytest_splinter import plugin
-
 
 def setup_module():
     """Mock splinter browser."""
@@ -35,10 +32,11 @@ def test_wait_for_condition(
     splinter_browser_load_timeout,
 ):
     """Test that by default wait_until is successful."""
-    assert browser.wait_for_condition(
+    browser.wait_for_condition(
         splinter_browser_load_condition,
         splinter_browser_load_timeout,
     )
+    assert True
 
 
 def test_wait_for_condition_timeout(
@@ -53,7 +51,7 @@ def test_wait_for_condition_timeout(
 
     monkeypatch.setattr(time, 'time', fake_time)
 
-    pytest.raises(WaitUntilTimeout, browser.wait_for_condition, (lambda browser: False), 10)
+    pytest.raises(Exception, browser.wait_for_condition, (lambda browser: False), 10)
 
 
 def test_wait_for_condititon(browser, monkeypatch):
@@ -78,4 +76,4 @@ def test_wait_for_condititon(browser, monkeypatch):
 
     assert browser.wait_for_condition(condition, 10)
 
-    assert sleeps == [0.1]
+    assert sleeps == [0.5]
