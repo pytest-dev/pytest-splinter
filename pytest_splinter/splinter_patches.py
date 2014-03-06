@@ -10,13 +10,7 @@ def patch_webdriverelement():  # pragma: no cover
 
     def mouse_over(self):
         """Performs a mouse over the element."""
-        el_id = self._element.get_attribute('id')
-        if el_id:
-            # we hope that jquery is there
-            self.parent.execute_script('if ($) $("#{0}").trigger("mouseover")'.format(el_id))
-            return
-
-        ActionChains(self.parent.driver).move_to_element(self._element).perform()
+        ActionChains(self.parent.driver).move_to_element_with_offset(self._element, 1, 1).perform()
 
     # Apply the monkey patch for Firefox WebDriverElement
     firefox.WebDriverElement.mouse_over = mouse_over
