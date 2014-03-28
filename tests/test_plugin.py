@@ -6,6 +6,24 @@ import pytest
 from pytest_splinter import plugin
 
 
+@pytest.fixture
+def simple_page(httpserver, browser):
+    """Simple served html page."""
+    httpserver.serve_content(
+        """
+        <html>
+            <body>
+                <div id="content">
+                    <p>
+                        Some <strong>text</strong>
+                    </p>
+                </div>
+                <textarea id="textarea">area text</textarea>
+            </body>
+        </html>""", code=200, headers={'Content-Type': 'text/html'})
+    browser.visit(httpserver.url)
+
+
 def test_browser(browser):
     """Check the browser fixture."""
     assert isinstance(browser, plugin.Browser)
@@ -40,40 +58,14 @@ def test_clean_cookies(httpserver, browser, cookie_value):
 
 @pytest.mark.skipif('sys.version_info[0] > 2')
 @pytest.mark.parametrize('splinter_webdriver', ['firefox', 'phantomjs'])
-def test_get_text(httpserver, browser, splinter_webdriver):
+def test_get_text(simple_page, browser, splinter_webdriver):
     """Test that webelement correctly gets text."""
-    httpserver.serve_content(
-        """
-        <html>
-            <body>
-                <div id="content">
-                    <p>
-                        Some <strong>text</strong>
-                    </p>
-                </div>
-                <textarea id="textarea">area text</textarea>
-            </body>
-        </html>""", code=200, headers={'Content-Type': 'text/html'})
-    browser.visit(httpserver.url)
     assert browser.find_by_id('content').text == 'Some text'
     assert browser.find_by_id('textarea').text == 'area text'
 
 
 @pytest.mark.parametrize('check', [1, 2])
-def test_restore_browser(browser, httpserver, check):
-    httpserver.serve_content(
-        """
-        <html>
-            <body>
-                <div id="content">
-                    <p>
-                        Some <strong>text</strong>
-                    </p>
-                </div>
-                <textarea id="textarea">area text</textarea>
-            </body>
-        </html>""", code=200, headers={'Content-Type': 'text/html'})
-    browser.visit(httpserver.url)
+def test_restore_browser(browser, simple_page, check):
     browser.quit()
 
 

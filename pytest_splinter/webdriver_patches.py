@@ -21,16 +21,16 @@ class LocalFileDetector(object):  # pragma: no cover
     def is_local_file(cls, *keys):
         file_path = ''
         typing = []
-        for val in keys:
-            if isinstance(val, webelement.Keys):
-                typing.append(val)
-            elif isinstance(val, int):
-                val = str(val)
-                for i in range(len(val)):
-                    typing.append(val[i])
+        for key in keys:
+            if isinstance(key, webelement.Keys):
+                typing.append(key)
+            elif isinstance(key, int):
+                key = str(key)
+                for i in range(len(key)):
+                    typing.append(key[i])
             else:
-                for i in range(len(val)):
-                    typing.append(val[i])
+                for i in range(len(key)):
+                    typing.append(key[i])
         file_path = ''.join(typing)
 
         if file_path is '':

@@ -1,3 +1,6 @@
+"""pytest-splinter Browser proxy class tests.
+Tests related to the modifications made on top of splinter's Browser class.
+"""
 import time
 
 import pytest

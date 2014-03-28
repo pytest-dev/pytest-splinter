@@ -1,4 +1,7 @@
-"""Splinter subplugin for pytest-splinter."""
+"""Splinter plugin for pytest.
+Provides easy interface for the browser from your tests providing the `browser` fixture
+which is an object of splinter Browser class.
+"""
 import copy  # pragma: no cover
 import mimetypes  # pragma: no cover
 
@@ -21,7 +24,7 @@ class Browser(object):
         self.browser = splinter.Browser(*args, **kwargs)
 
     def __getattr__(self, name):
-        """Pass every call to splinter's browser."""
+        """Proxy all splinter's browser attributes, except ones implemented in this class."""
         return getattr(self.browser, name)
 
     def visit(self, url):
