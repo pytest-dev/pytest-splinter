@@ -3,6 +3,7 @@ Provides easy interface for the browser from your tests providing the `browser` 
 which is an object of splinter Browser class.
 """
 import copy  # pragma: no cover
+import functools  # pragma: no cover
 import mimetypes  # pragma: no cover
 
 import pytest  # pragma: no cover
@@ -34,11 +35,13 @@ class Browser(object):
 
     def wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, ignored_exceptions=None):
         """Wait for given javascript condition."""
-        condition = condition or self.visit_condition
+        condition = functools.partial(condition or self.visit_condition, self)
+
         timeout = timeout or self.visit_condition_timeout
 
         return wait.WebDriverWait(
-            self.driver, timeout, poll_frequency=poll_frequency, ignored_exceptions=ignored_exceptions).until(condition)
+            self.driver, timeout, poll_frequency=poll_frequency, ignored_exceptions=ignored_exceptions).until(
+            lambda browser: condition())
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
