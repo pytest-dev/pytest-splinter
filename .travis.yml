@@ -4,7 +4,7 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
 # command to install dependencies
 install:
-  - pip install python-coveralls
+  - pip install python-coveralls virtualenv
 # # command to run tests
 script: python setup.py test
 after_success:
