@@ -1,3 +1,4 @@
+import codecs
 import os
 import sys
 
@@ -7,8 +8,8 @@ from setuptools.command.test import test as TestCommand
 dirname = os.path.dirname(__file__)
 
 long_description = (
-    open(os.path.join(dirname, 'README.rst')).read() + '\n' +
-    open(os.path.join(dirname, 'CHANGES.rst')).read()
+    codecs.open(os.path.join(dirname, 'README.rst'), encoding='utf-8').read() + '\n' +
+    open(os.path.join(dirname, 'CHANGES.rst'), encoding='utf-8').read()
 )
 
 
