@@ -241,6 +241,7 @@ def browser(
             browser = browser_pool[0] = get_browser()
 
     browser.visit_condition = splinter_browser_load_condition
+    browser.visit_condition_timeout = splinter_browser_load_timeout
     browser.driver.get('about:blank')
     return browser
 
