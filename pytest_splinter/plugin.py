@@ -215,7 +215,7 @@ def splinter_session_scoped_browser(request):
 @pytest.fixture  # pragma: no cover
 def browser(
         request, browser_pool, splinter_webdriver, splinter_session_scoped_browser,
-        splinter_close_browser):
+        splinter_close_browser, splinter_browser_load_condition, splinter_browser_load_timeout):
     """Splinter browser wrapper instance. To be used for browser interaction.
     Function scoped (cookies are clean for each test and on blank).
     """
@@ -240,6 +240,8 @@ def browser(
                 pass
             browser = browser_pool[0] = get_browser()
 
+    browser.visit_condition = splinter_browser_load_condition
+    browser.visit_condition_timeout = splinter_browser_load_timeout
     browser.driver.get('about:blank')
     return browser
 
