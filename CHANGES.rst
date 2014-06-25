@@ -4,7 +4,7 @@ Changelog
 1.0.4
 -----
 
-- Fixed browser fixture to support splinter_browser_load_condition and splinter_browser_load_timeout by default.
+- Fixed browser fixture to support splinter_browser_load_condition and splinter_browser_load_timeout by default. (markon)
 
 1.0.3
 -----
