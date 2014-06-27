@@ -176,16 +176,22 @@ def browser_instance(
         }, **splinter_firefox_profile_preferences)
     if splinter_driver_kwargs:
         kwargs.update(splinter_driver_kwargs)
-    browser = Browser(
-        splinter_webdriver, visit_condition=splinter_browser_load_condition,
-        visit_condition_timeout=splinter_browser_load_timeout, **copy.deepcopy(kwargs))
-    # set automatic download directory for firefox
 
-    browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
-    browser.driver.set_speed(splinter_selenium_speed)
-    if splinter_window_size:
-        browser.driver.set_window_size(*splinter_window_size)
-    return browser
+    def get_instance():
+        browser = Browser(
+            splinter_webdriver, visit_condition=splinter_browser_load_condition,
+            visit_condition_timeout=splinter_browser_load_timeout, **copy.deepcopy(kwargs)
+        )
+
+        browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
+        browser.driver.set_speed(splinter_selenium_speed)
+        if splinter_window_size:
+            browser.driver.set_window_size(*splinter_window_size)
+
+        return browser
+        # set automatic download directory for firefox
+
+    return get_instance
 
 
 @pytest.fixture(scope='session')
@@ -215,18 +221,18 @@ def splinter_session_scoped_browser(request):
 @pytest.fixture  # pragma: no cover
 def browser(
         request, browser_pool, splinter_webdriver, splinter_session_scoped_browser,
-        splinter_close_browser, splinter_browser_load_condition, splinter_browser_load_timeout):
+        splinter_close_browser, splinter_browser_load_condition, splinter_browser_load_timeout,
+        browser_instance):
     """Splinter browser wrapper instance. To be used for browser interaction.
     Function scoped (cookies are clean for each test and on blank).
     """
-    get_browser = lambda: request.getfuncargvalue('browser_instance')
     if not splinter_session_scoped_browser:
         browser_pool = []
-        browser = get_browser()
+        browser = browser_instance()
         if splinter_close_browser:
             request.addfinalizer(browser.quit)
     elif not browser_pool:
-        browser = get_browser()
+        browser = browser_instance()
         browser_pool.append(browser)
     else:
         browser = browser_pool[0]
@@ -238,7 +244,7 @@ def browser(
                 browser.quit()
             except Exception:
                 pass
-            browser = browser_pool[0] = get_browser()
+            browser = browser_pool[0] = browser_instance()
 
     browser.visit_condition = splinter_browser_load_condition
     browser.visit_condition_timeout = splinter_browser_load_timeout
