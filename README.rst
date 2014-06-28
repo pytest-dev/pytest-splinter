@@ -125,6 +125,23 @@ As mentioned above, browser is a fixture made by creating splinter's Browser obj
     which is in general performance-wise not a good idea. Also normally when you interact with the browser as a user,
     you don't need the status code of the page.
 
+Several browsers for your test
+==============================
+
+You can have several browsers in one test.
+
+.. code-block:: python
+
+    import pytest
+
+    def admin_browser(browser_instance_getter, browser_pool):
+        browser = browser_instance_getter()
+        browser_pool["admin_browser"] = browser
+        return browser
+
+    def test_with_several_browsers(browser, admin_browser):
+        ...
+
 
 Python3 support
 ===============
