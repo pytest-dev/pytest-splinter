@@ -145,8 +145,8 @@ def splinter_window_size():
     return (1366, 768)
 
 
-@pytest.fixture  # pragma: no cover
-def browser_instance(
+@pytest.fixture(scope="session")  # pragma: no cover
+def browser_instance_getter(
     request,
     splinter_selenium_socket_timeout,
     splinter_selenium_implicit_wait,
@@ -222,17 +222,17 @@ def splinter_session_scoped_browser(request):
 def browser(
         request, browser_pool, splinter_webdriver, splinter_session_scoped_browser,
         splinter_close_browser, splinter_browser_load_condition, splinter_browser_load_timeout,
-        browser_instance):
+        browser_instance_getter):
     """Splinter browser wrapper instance. To be used for browser interaction.
     Function scoped (cookies are clean for each test and on blank).
     """
     if not splinter_session_scoped_browser:
         browser_pool = []
-        browser = browser_instance()
+        browser = browser_instance_getter()
         if splinter_close_browser:
             request.addfinalizer(browser.quit)
     elif not browser_pool:
-        browser = browser_instance()
+        browser = browser_instance_getter()
         browser_pool.append(browser)
     else:
         browser = browser_pool[0]
@@ -244,7 +244,7 @@ def browser(
                 browser.quit()
             except Exception:
                 pass
-            browser = browser_pool[0] = browser_instance()
+            browser = browser_pool[0] = browser_instance_getter()
 
     browser.visit_condition = splinter_browser_load_condition
     browser.visit_condition_timeout = splinter_browser_load_timeout
