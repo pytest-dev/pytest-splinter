@@ -202,11 +202,11 @@ def browser_pool(request, splinter_close_browser):
     pool = {}
 
     def fin():
-        try:
-            for _, browser in pool.items():
+        for _, browser in pool.items():
+            try:
                 browser.quit()
-        except (IOError, OSError):
-            pass
+            except (IOError, OSError):
+                pass
 
     if splinter_close_browser:
         request.addfinalizer(fin)
