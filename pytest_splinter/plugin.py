@@ -205,7 +205,7 @@ def browser_pool(request, splinter_close_browser):
         try:
             for _, browser in pool.items():
                 browser.quit()
-        except (IOError, OSError, KeyError):
+        except (IOError, OSError):
             pass
 
     if splinter_close_browser:
