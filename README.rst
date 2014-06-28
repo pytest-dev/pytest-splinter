@@ -20,7 +20,8 @@ Install pytest-splinter
 Features
 ========
 
-The plugin provides many useful fixtures to be used if you’re using splinter for browser testing
+The plugin provides a set of fixtures to use `splinter <http://splinter.cobrateam.info`_
+for browser testing with `pytest <http://pytest.org>`_
 
 
 Fixtures
