@@ -26,7 +26,7 @@ def teardown_module():
 @pytest.fixture
 def browser_pool():
     """Browser fixture. Overriden to make it test-scoped and mock."""
-    return []
+    return {}
 
 
 def test_wait_for_condition(
