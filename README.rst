@@ -48,6 +48,10 @@ Fixtures
     Splinter's webdriver name to use. Fixture gets the value from the command-line option
     splinter-webdriver (see below)
 
+* splinter_remote_url
+    Splinter's webdriver remote url to use (optional). Fixture gets the value from the command-line option
+    splinter-remote-url (see below). Will be used only if selected webdriver name is 'remote'.
+
 * splinter_session_scoped_browser
     pytest-splinter should use single browser instance per test session.
     Fixture gets the value from the command-line option splinter-session-scoped-browser (see below)
@@ -102,6 +106,11 @@ Command-line options
     *  remote
     *  chrome
     *  phantomjs
+
+    For more details, refer to splinter and selenium documentation.
+
+* `--splinter-remote-url`
+    Webdriver remote url to use. (default: None). Will be used only if selected webdriver name is 'remote'.
 
     For more details, refer to splinter and selenium documentation.
 
