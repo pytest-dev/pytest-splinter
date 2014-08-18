@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unreleased
-----------
+1.0.5
+-----
 
 - added remote webdriver url command line argument (bubenkoff)
 
