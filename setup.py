@@ -40,7 +40,7 @@ setup(
     author='Paylogic developers',
     license='MIT license',
     author_email='developers@paylogic.com',
-    version='1.0.4',
+    version='1.0.5',
     cmdclass={'test': Tox},
     url='https://github.com/paylogic/pytest-splinter',
     install_requires=[

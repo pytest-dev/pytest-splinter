@@ -20,7 +20,8 @@ Install pytest-splinter
 Features
 ========
 
-The plugin provides many useful fixtures to be used if you’re using splinter for browser testing
+The plugin provides a set of fixtures to use `splinter <http://splinter.cobrateam.info>`_
+for browser testing with `pytest <http://pytest.org>`_
 
 
 Fixtures
@@ -46,6 +47,10 @@ Fixtures
 * splinter_webdriver
     Splinter's webdriver name to use. Fixture gets the value from the command-line option
     splinter-webdriver (see below)
+
+* splinter_remote_url
+    Splinter's webdriver remote url to use (optional). Fixture gets the value from the command-line option
+    splinter-remote-url (see below). Will be used only if selected webdriver name is 'remote'.
 
 * splinter_session_scoped_browser
     pytest-splinter should use single browser instance per test session.
@@ -101,6 +106,11 @@ Command-line options
     *  remote
     *  chrome
     *  phantomjs
+
+    For more details, refer to splinter and selenium documentation.
+
+* `--splinter-remote-url`
+    Webdriver remote url to use. (default: None). Will be used only if selected webdriver name is 'remote'.
 
     For more details, refer to splinter and selenium documentation.
 

@@ -1,4 +1,5 @@
 """Splinter plugin for pytest.
+
 Provides easy interface for the browser from your tests providing the `browser` fixture
 which is an object of splinter Browser class.
 """
@@ -17,6 +18,7 @@ from .splinter_patches import patch_webdriverelement  # pragma: no cover
 
 
 class Browser(object):
+
     """Emulate splinter's Browser."""
 
     def __init__(self, *args, **kwargs):
@@ -57,8 +59,18 @@ def splinter_webdriver(request):
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
+def splinter_remote_url(request):
+    """Remote webdriver url.
+
+    :return: URL of remote webdriver.
+    """
+    return request.config.option.splinter_remote_url
+
+
+@pytest.fixture(scope='session')  # pragma: no cover
 def splinter_selenium_socket_timeout(request):
     """Internal Selenium socket timeout (communication between webdriver and the browser).
+
     :return: Seconds.
     """
     return request.config.option.splinter_webdriver_socket_timeout
@@ -67,6 +79,7 @@ def splinter_selenium_socket_timeout(request):
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_selenium_implicit_wait(request):
     """Selenium implicit wait timeout.
+
     :return: Seconds.
     """
     return request.config.option.splinter_webdriver_implicit_wait
@@ -75,6 +88,7 @@ def splinter_selenium_implicit_wait(request):
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_selenium_speed(request):
     """Selenium speed.
+
     :return: Seconds.
     """
     return request.config.option.splinter_webdriver_speed
@@ -84,15 +98,15 @@ def splinter_selenium_speed(request):
 def splinter_browser_load_condition():
     """The condition that has to be `True` to assume that the page is fully loaded.
 
-        One example is to wait for jQuery, then the condition could be::
+    One example is to wait for jQuery, then the condition could be::
 
-            @pytest.fixture
-            def splinter_browser_load_condition():
+        @pytest.fixture
+        def splinter_browser_load_condition():
 
-                def condition(browser):
-                    return browser.evaluate_script('typeof $ === "undefined" || !$.active')
+            def condition(browser):
+                return browser.evaluate_script('typeof $ === "undefined" || !$.active')
 
-                return condition
+            return condition
     """
     return lambda browser: True
 
@@ -152,6 +166,7 @@ def browser_instance_getter(
     splinter_selenium_implicit_wait,
     splinter_selenium_speed,
     splinter_webdriver,
+    splinter_remote_url,
     splinter_browser_load_condition,
     splinter_browser_load_timeout,
     splinter_file_download_dir,
@@ -176,6 +191,8 @@ def browser_instance_getter(
             'browser.helperApps.neverAsk.saveToDisk': splinter_download_file_types,
             'browser.helperApps.alwaysAsk.force': False,
         }, **splinter_firefox_profile_preferences)
+    elif splinter_webdriver == 'remote':
+        kwargs['url'] = splinter_remote_url
     if splinter_driver_kwargs:
         kwargs.update(splinter_driver_kwargs)
 
@@ -226,6 +243,7 @@ def browser(
         splinter_close_browser, splinter_browser_load_condition, splinter_browser_load_timeout,
         browser_instance_getter):
     """Splinter browser wrapper instance. To be used for browser interaction.
+
     Function scoped (cookies are clean for each test and on blank).
     """
     if not splinter_session_scoped_browser:
@@ -257,25 +275,29 @@ def pytest_addoption(parser):  # pragma: no cover
     """Pytest hook to add custom command line option(s)."""
     parser.addoption(
         "--splinter-webdriver",
-        help="pytest-splinter-splinter webdriver", type="choice", choices=list(splinter.browser._DRIVERS.keys()),
+        help="pytest-splinter webdriver", type="choice", choices=list(splinter.browser._DRIVERS.keys()),
         dest='splinter_webdriver', default='firefox')
 
     parser.addoption(
+        "--splinter-remote-url",
+        help="pytest-splinter remote webdriver url ", dest='splinter_remote_url', default=None)
+
+    parser.addoption(
         "--splinter-implicit-wait",
-        help="pytest-splinter-splinter selenium implicit wait, seconds", type="int",
+        help="pytest-splinter selenium implicit wait, seconds", type="int",
         dest='splinter_webdriver_implicit_wait', default=1)
 
     parser.addoption(
         "--splinter-speed",
-        help="pytest-splinter-splinter selenium speed, seconds", type="int",
+        help="pytest-splinter selenium speed, seconds", type="int",
         dest='splinter_webdriver_speed', default=0)
 
     parser.addoption(
         "--splinter-socket-timeout",
-        help="pytest-splinter-splinter socket timeout, seconds", type="int",
+        help="pytest-splinter socket timeout, seconds", type="int",
         dest='splinter_webdriver_socket_timeout', default=120)
 
     parser.addoption(
         "--splinter-session-scoped-browser",
-        help="pytest-splinter-splinter should use single browser instance per test session", action="store_true",
+        help="pytest-splinter should use single browser instance per test session", action="store_true",
         dest='splinter_session_scoped_browser', default=True)
