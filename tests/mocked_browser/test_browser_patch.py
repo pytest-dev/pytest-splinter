@@ -5,29 +5,6 @@ import time
 
 import pytest
 
-import mock
-import splinter
-
-
-def setup_module():
-    """Mock splinter browser."""
-    mocked_browser = mock.MagicMock()
-    mocked_browser.driver = mock.MagicMock()
-    mocked_browser.driver.profile = mock.MagicMock()
-    splinter._Browser = splinter.Browser
-    splinter.Browser = lambda *args, **kwargs: mocked_browser
-
-
-def teardown_module():
-    """Unmock browser back."""
-    splinter.Browser = splinter._Browser
-
-
-@pytest.fixture
-def browser_pool():
-    """Browser fixture. Overriden to make it test-scoped and mock."""
-    return []
-
 
 def test_wait_for_condition(
     browser,

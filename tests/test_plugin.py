@@ -1,5 +1,6 @@
 """Tests for pytest-bdd-splinter subplugin."""
 import os.path
+import time
 
 import pytest
 
@@ -36,6 +37,7 @@ def test_download_file(httpserver, browser, splinter_file_download_dir):
             'Content-Disposition': 'attachment; filename=some.txt',
             'Content-Type': 'text/plain'})
     browser.visit(httpserver.url)
+    time.sleep(0.5)
     assert open(os.path.join(splinter_file_download_dir, 'some.txt')).read() == 'Some text file'
 
 

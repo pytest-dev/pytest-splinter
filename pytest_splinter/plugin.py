@@ -159,9 +159,41 @@ def splinter_window_size():
     return (1366, 768)
 
 
-@pytest.fixture  # pragma: no cover
-def browser_instance(
+@pytest.fixture(scope='session')
+def splinter_session_scoped_browser(request):
+    """Flag to keep single browser per test session."""
+    return request.config.option.splinter_session_scoped_browser
+
+
+@pytest.fixture(scope='session')
+def browser_pool(request, splinter_close_browser):
+    """Browser 'pool' to emulate session scope but with possibility to recreate browser."""
+    pool = {}
+
+    def fin():
+        for browser in pool.values():
+            try:
+                browser.quit()
+            except (IOError, OSError):
+                pass
+
+    if splinter_close_browser:
+        request.addfinalizer(fin)
+
+    return pool
+
+
+@pytest.fixture(scope='session')
+def browser_patches(splinter_selenium_socket_timeout):
+    """Browser monkey patches."""
+    patch_webdriver(splinter_selenium_socket_timeout)
+    patch_webdriverelement()
+
+
+@pytest.fixture
+def browser_instance_getter(
     request,
+    browser_patches,
     splinter_selenium_socket_timeout,
     splinter_selenium_implicit_wait,
     splinter_selenium_speed,
@@ -174,11 +206,11 @@ def browser_instance(
     splinter_firefox_profile_preferences,
     splinter_driver_kwargs,
     splinter_window_size,
+    browser_pool,
 ):
-    """Splinter browser wrapper instance. To be used for browser interaction."""
-    patch_webdriver(splinter_selenium_socket_timeout)
-    patch_webdriverelement()
-
+    """Splinter browser instance getter. To be used for getting of plugin.Browser's instances.
+    :return: function(parent). Each time this function will return new instance of plugin.Browser class.
+    """
     kwargs = {}
 
     if splinter_webdriver == 'firefox':
@@ -193,75 +225,53 @@ def browser_instance(
         kwargs['url'] = splinter_remote_url
     if splinter_driver_kwargs:
         kwargs.update(splinter_driver_kwargs)
-    browser = Browser(
-        splinter_webdriver, visit_condition=splinter_browser_load_condition,
-        visit_condition_timeout=splinter_browser_load_timeout, **copy.deepcopy(kwargs))
-    # set automatic download directory for firefox
 
-    browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
-    browser.driver.set_speed(splinter_selenium_speed)
-    if splinter_window_size:
-        browser.driver.set_window_size(*splinter_window_size)
-    return browser
+    def get_browser():
+        browser = Browser(
+            splinter_webdriver, visit_condition=splinter_browser_load_condition,
+            visit_condition_timeout=splinter_browser_load_timeout, **copy.deepcopy(kwargs)
+        )
 
+        browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
+        browser.driver.set_speed(splinter_selenium_speed)
+        if splinter_window_size:
+            browser.driver.set_window_size(*splinter_window_size)
 
-@pytest.fixture(scope='session')
-def browser_pool(request, splinter_close_browser):
-    """Browser 'pool' to emulate session scope but with possibility to recreate browser."""
-    pool = []
+        return browser
+        # set automatic download directory for firefox
 
-    def fin():
-        for browser in pool:
+    def prepare_browser(parent):
+        browser_key = id(parent)
+        browser = browser_pool.get(browser_key)
+        if not splinter_session_scoped_browser:
+            browser = get_browser()
+            if splinter_close_browser:
+                request.addfinalizer(browser.quit)
+        elif not browser:
+            browser = browser_pool[browser_key] = get_browser()
+        else:
             try:
-                browser.quit()
-            except (IOError, OSError):
-                pass
+                browser.driver.delete_all_cookies()
+            except IOError:
+                # we lost browser, try to restore the justice
+                try:
+                    browser.quit()
+                except Exception:
+                    pass
+                browser = browser_pool[browser_key] = get_browser()
 
-    if splinter_close_browser:
-        request.addfinalizer(fin)
+        browser.visit_condition = splinter_browser_load_condition
+        browser.visit_condition_timeout = splinter_browser_load_timeout
+        browser.driver.get('about:blank')
+        return browser
 
-    return pool
-
-
-@pytest.fixture(scope='session')
-def splinter_session_scoped_browser(request):
-    """Flag to keep single browser per test session."""
-    return request.config.option.splinter_session_scoped_browser
+    return prepare_browser
 
 
-@pytest.fixture  # pragma: no cover
-def browser(
-        request, browser_pool, splinter_webdriver, splinter_session_scoped_browser,
-        splinter_close_browser, splinter_browser_load_condition, splinter_browser_load_timeout):
-    """Splinter browser wrapper instance. To be used for browser interaction.
-
-    Function scoped (cookies are clean for each test and on blank).
-    """
-    get_browser = lambda: request.getfuncargvalue('browser_instance')
-    if not splinter_session_scoped_browser:
-        browser_pool = []
-        browser = get_browser()
-        if splinter_close_browser:
-            request.addfinalizer(browser.quit)
-    elif not browser_pool:
-        browser = get_browser()
-        browser_pool.append(browser)
-    else:
-        browser = browser_pool[0]
-        try:
-            browser.driver.delete_all_cookies()
-        except IOError:
-            # we lost browser, try to restore the justice
-            try:
-                browser.quit()
-            except Exception:
-                pass
-            browser = browser_pool[0] = get_browser()
-
-    browser.visit_condition = splinter_browser_load_condition
-    browser.visit_condition_timeout = splinter_browser_load_timeout
-    browser.driver.get('about:blank')
-    return browser
+@pytest.fixture
+def browser(browser_instance_getter):
+    """Browser fixture."""
+    return browser_instance_getter(browser)
 
 
 def pytest_addoption(parser):  # pragma: no cover

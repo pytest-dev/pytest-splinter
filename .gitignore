@@ -46,3 +46,4 @@ nosetests.xml
 /lib
 /include
 /src
+/.env

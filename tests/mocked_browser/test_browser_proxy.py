@@ -2,26 +2,7 @@ import time
 
 import pytest
 
-import mock
-
 from pytest_splinter import plugin
-
-
-@pytest.fixture(autouse=True, scope='module')
-def mocked_browser(request):
-    """Mock splinter browser."""
-    mocked_browser = mock.MagicMock()
-    mocked_browser.driver = mock.MagicMock()
-    mocked_browser.driver.profile = mock.MagicMock()
-    mock.patch('splinter.Browser', lambda *args, **kwargs: mocked_browser)
-    request.addfinalizer(mock.patch.stopall)
-    return mocked_browser
-
-
-@pytest.fixture
-def browser_pool():
-    """Browser fixture. Overriden to make it test-scoped and mock."""
-    return []
 
 
 def test_wait_for_condition(
