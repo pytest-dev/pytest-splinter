@@ -85,17 +85,3 @@ def test_get_current_window_info(browser):
 def test_current_window_is_main(browser):
     """Test browser's driver current_window_is_main."""
     assert browser.driver.current_window_is_main()
-
-
-def test_browser_instance_getter(browser_instance_getter):
-    """Test that browser_instance_getter fixture return function and if run this function then each time we will get
-    different instance of plugin.Browser class."""
-    assert callable(browser_instance_getter)
-
-    browser1 = browser_instance_getter()
-    browser2 = browser_instance_getter()
-
-    assert isinstance(browser1, plugin.Browser)
-    assert isinstance(browser2, plugin.Browser)
-
-    assert id(browser1) != id(browser2)

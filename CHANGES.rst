@@ -1,10 +1,10 @@
 Changelog
 =========
 
-1.0.5
------
+Unreleased
+----------
 
-- added remote webdriver url command line argument (bubenkoff)
+- added possibility to have multiple browser instances for single test (amakhnach, bubenkoff)
 
 
 1.0.4
