@@ -31,6 +31,24 @@ Fixtures
     Get the splinter's Browser. Fixture is underneath session scoped, so browser process is started
     once per test session.
 
+* browser_instance_getter
+    Function to create an instance of the browser. This fixture is required only if you need to have
+    multiple instances of the Browser in a single test at the same time. Example of usage:
+
+.. code-block:: python
+
+    @pytest.fixture
+    def admin_browser(browser_instance_getter):
+        """Admin browser fixture."""
+        # browser_instance_getter function receives single argument - parent fixture
+        # in our case it's admin_browser
+        return browser_instance_getter(admin_browser)
+
+    def test_2_browsers(browser, admin_browser):
+        """Test using 2 browsers at the same time."""
+        browser.visit('http://google.com')
+        admin_browser.visit('http://admin.example.com')
+
 * splinter_selenium_implicit_wait
     Implicit wait timeout to be passed to Selenium webdriver.
     Fixture gets the value from the command-line option splinter-implicit-wait (see below)

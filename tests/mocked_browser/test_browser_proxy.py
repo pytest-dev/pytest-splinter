@@ -1,32 +1,8 @@
-"""pytest-splinter Browser proxy class tests.
-Tests related to the modifications made on top of splinter's Browser class.
-"""
 import time
 
 import pytest
 
-import mock
-import splinter
-
-
-def setup_module():
-    """Mock splinter browser."""
-    mocked_browser = mock.MagicMock()
-    mocked_browser.driver = mock.MagicMock()
-    mocked_browser.driver.profile = mock.MagicMock()
-    splinter._Browser = splinter.Browser
-    splinter.Browser = lambda *args, **kwargs: mocked_browser
-
-
-def teardown_module():
-    """Unmock browser back."""
-    splinter.Browser = splinter._Browser
-
-
-@pytest.fixture
-def browser_pool():
-    """Browser fixture. Overriden to make it test-scoped and mock."""
-    return {}
+from pytest_splinter import plugin
 
 
 def test_wait_for_condition(
@@ -57,11 +33,12 @@ def test_wait_for_condition_timeout(
     pytest.raises(Exception, browser.wait_for_condition, (lambda browser: False), 10)
 
 
-def test_wait_for_condititon(browser, monkeypatch):
+def test_wait_for_condititon(browser, monkeypatch, mocked_browser):
     """Check conditioning."""
     checks = iter([False, True])
 
     def condition(browser):
+        assert isinstance(browser, plugin.Browser)
         return next(checks)
 
     ticks = iter([1, 2, 3])
