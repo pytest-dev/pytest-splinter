@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unreleased
-----------
+1.1.0
+-----
 
 - added possibility to have multiple browser instances for single test (amakhnach, bubenkoff)
 
