@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.1.1
+-----
+
+- restore browser parameters on each test run instead of once for browser start (bubenkoff)
+
+
 1.1.0
 -----
 

@@ -209,6 +209,7 @@ def browser_instance_getter(
     browser_pool,
 ):
     """Splinter browser instance getter. To be used for getting of plugin.Browser's instances.
+
     :return: function(parent). Each time this function will return new instance of plugin.Browser class.
     """
     kwargs = {}
@@ -227,18 +228,10 @@ def browser_instance_getter(
         kwargs.update(splinter_driver_kwargs)
 
     def get_browser():
-        browser = Browser(
+        return Browser(
             splinter_webdriver, visit_condition=splinter_browser_load_condition,
             visit_condition_timeout=splinter_browser_load_timeout, **copy.deepcopy(kwargs)
         )
-
-        browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
-        browser.driver.set_speed(splinter_selenium_speed)
-        if splinter_window_size:
-            browser.driver.set_window_size(*splinter_window_size)
-
-        return browser
-        # set automatic download directory for firefox
 
     def prepare_browser(parent):
         browser_key = id(parent)
@@ -251,6 +244,10 @@ def browser_instance_getter(
             browser = browser_pool[browser_key] = get_browser()
         else:
             try:
+                browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
+                browser.driver.set_speed(splinter_selenium_speed)
+                if splinter_window_size:
+                    browser.driver.set_window_size(*splinter_window_size)
                 browser.driver.delete_all_cookies()
             except IOError:
                 # we lost browser, try to restore the justice

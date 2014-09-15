@@ -1,3 +1,4 @@
+"""Setuptools entry point."""
 import codecs
 import os
 import sys
@@ -14,6 +15,9 @@ long_description = (
 
 
 class Tox(TestCommand):
+
+    """Integrate tox runner to setuptools."""
+
     user_options = [('tox-args=', 'a', "Arguments to pass to tox")]
 
     def initialize_options(self):
@@ -40,7 +44,7 @@ setup(
     author='Paylogic developers',
     license='MIT license',
     author_email='developers@paylogic.com',
-    version='1.1.0',
+    version='1.1.1',
     cmdclass={'test': Tox},
     url='https://github.com/paylogic/pytest-splinter',
     install_requires=[
