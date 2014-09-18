@@ -162,13 +162,14 @@ You can have several browsers in one test.
 
     import pytest
 
-    def admin_browser(browser_instance_getter, browser_pool):
-        browser = browser_instance_getter()
-        browser_pool["admin_browser"] = browser
-        return browser
-
+    @pytest.fixture 
+    def admin_browser(browser_instance_getter):
+        return browser_instance_getter(admin_browser)
+        
     def test_with_several_browsers(browser, admin_browser):
-        ...
+        browser.visit('http://example.com')
+        admin_browser.visit('about:blank')
+        assert browser.url == 'http://example.com'
 
 
 Python3 support
