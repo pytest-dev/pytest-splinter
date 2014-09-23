@@ -6,6 +6,8 @@ import sys
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
+import pytest_splinter
+
 dirname = os.path.dirname(__file__)
 
 long_description = (
@@ -44,7 +46,7 @@ setup(
     author='Paylogic developers',
     license='MIT license',
     author_email='developers@paylogic.com',
-    version='1.1.1',
+    version=pytest_splinter.__version__,
     cmdclass={'test': Tox},
     url='https://github.com/paylogic/pytest-splinter',
     install_requires=[
