@@ -1,12 +1,12 @@
 Splinter plugin for the py.test runner
 ======================================
 
-.. image:: https://api.travis-ci.org/paylogic/pytest-splinter.png
-    :target: https://travis-ci.org/paylogic/pytest-splinter
+.. image:: https://api.travis-ci.org/pytest-dev/pytest-splinter.png
+    :target: https://travis-ci.org/pytest-dev/pytest-splinter
 .. image:: https://pypip.in/v/pytest-splinter/badge.png
     :target: https://crate.io/packages/pytest-splinter/
-.. image:: https://coveralls.io/repos/paylogic/pytest-splinter/badge.png?branch=master
-    :target: https://coveralls.io/r/paylogic/pytest-splinter
+.. image:: https://coveralls.io/repos/pytest-dev/pytest-splinter/badge.png?branch=master
+    :target: https://coveralls.io/r/pytest-dev/pytest-splinter
 .. image:: https://readthedocs.org/projects/pytest-splinter/badge/?version=latest
     :target: https://readthedocs.org/projects/pytest-splinter/?badge=latest
     :alt: Documentation Status
