@@ -41,14 +41,14 @@ class Tox(TestCommand):
 
 setup(
     name='pytest-splinter',
-    description='Splinter subplugin for Pytest BDD plugin',
+    description='Splinter plugin for pytest testing framework',
     long_description=long_description,
     author='Paylogic developers',
     license='MIT license',
     author_email='developers@paylogic.com',
     version=pytest_splinter.__version__,
     cmdclass={'test': Tox},
-    url='https://github.com/paylogic/pytest-splinter',
+    url='https://github.com/pytest-dev/pytest-splinter',
     install_requires=[
         'setuptools',
         'splinter',
@@ -65,8 +65,10 @@ setup(
         'Topic :: Utilities',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
-    ] + [('Programming Language :: Python :: %s' % x) for x in '2.6 2.7 3.0 3.1 3.2 3.3'.split()],
+    ] + [('Programming Language :: Python :: %s' % x) for x in '2.6 2.7 3.0 3.1 3.2 3.3 3.4'.split()],
     tests_require=['detox'],
-    entry_points={'pytest11': ['pytest-splinter=pytest_splinter.plugin']},
+    entry_points={'pytest11': [
+        'pytest-splinter=pytest_splinter.plugin',
+    ]},
     packages=['pytest_splinter'],
 )

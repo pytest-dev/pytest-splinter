@@ -1,5 +1,5 @@
 Splinter plugin for the py.test runner
-=========================================================
+======================================
 
 .. image:: https://api.travis-ci.org/paylogic/pytest-splinter.png
     :target: https://travis-ci.org/paylogic/pytest-splinter
@@ -13,7 +13,7 @@ Splinter plugin for the py.test runner
 
 
 Install pytest-splinter
-===========================
+-----------------------
 
 ::
 
@@ -21,14 +21,14 @@ Install pytest-splinter
 
 
 Features
-========
+--------
 
 The plugin provides a set of fixtures to use `splinter <http://splinter.cobrateam.info>`_
 for browser testing with `pytest <http://pytest.org>`_
 
 
 Fixtures
-========
+--------
 
 * browser
     Get the splinter's Browser. Fixture is underneath session scoped, so browser process is started
@@ -106,9 +106,17 @@ Fixtures
 * splinter_window_size
     Size of the browser window on browser initialization. Tuple in form (<width>, <height>). Default is (1366, 768)
 
+* splinter_screenshot_dir
+    pytest-splinter browser screenshot directory.
+    Fixture gets the value from the command-line option `splinter-screenshot-dir` (see below)
+
+* splinter_make_screenshot_on_failure
+    Should pytest-splinter make browser screenshot on test failure.
+    Fixture gets the value from the command-line option `splinter-make-screenshot-on-failure` (see below)
+
 
 Command-line options
-====================
+--------------------
 
 * `--splinter-implicit-wait`
     Selenium webdriver implicit wait. Seconds (default: 1).
@@ -136,11 +144,17 @@ Command-line options
     For more details, refer to splinter and selenium documentation.
 
 * `--splinter-session-scoped-browser`
-    pytest-splinter should use single browser instance per test session. (set by default).
+    pytest-splinter should use single browser instance per test session. Choise of 'true' or 'false'. (default: 'true').
+
+* `--splinter-make-screenshot-on-failure`
+    pytest-splinter should make browser screenshot on test failure. Choise of 'true' or 'false'. (default: 'true').
+
+* `--splinter-screenshot-dir`
+    pytest-splinter browser screenshot directory. By default it's current directory.
 
 
 Browser fixture
-===============
+---------------
 
 As mentioned above, browser is a fixture made by creating splinter's Browser object, but with some overrides.
 
@@ -156,8 +170,9 @@ As mentioned above, browser is a fixture made by creating splinter's Browser obj
     which is in general performance-wise not a good idea. Also normally when you interact with the browser as a user,
     you don't need the status code of the page.
 
+
 Several browsers for your test
-==============================
+------------------------------
 
 You can have several browsers in one test.
 
@@ -175,14 +190,19 @@ You can have several browsers in one test.
         assert browser.url == 'http://example.com'
 
 
+Automatic screenshots of on test failure
+----------------------------------------
+
+
+
 Python3 support
-===============
+---------------
 
 Python3 is supported, check if you have recent version of splinter as it was added recently.
 
 
 Example
-=======
+-------
 
 test_your_test.py:
 

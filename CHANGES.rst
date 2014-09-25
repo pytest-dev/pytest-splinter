@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.2.0
+-----
+
+- automatic screenshot capture on test failure (bubenkoff)
+- improvements to the browser preparation procedure (bubenkoff)
+- boolean config options made more clear (bubenkoff)
+
+
 1.1.1
 -----
 

@@ -3,6 +3,7 @@
 Provides easy interface for the browser from your tests providing the `browser` fixture
 which is an object of splinter Browser class.
 """
+import os.path
 import copy  # pragma: no cover
 import functools  # pragma: no cover
 import mimetypes  # pragma: no cover
@@ -10,6 +11,7 @@ import mimetypes  # pragma: no cover
 import pytest  # pragma: no cover
 import py  # pragma: no cover
 import splinter  # pragma: no cover
+from _pytest import junitxml
 
 from selenium.webdriver.support import wait
 
@@ -162,7 +164,19 @@ def splinter_window_size():
 @pytest.fixture(scope='session')
 def splinter_session_scoped_browser(request):
     """Flag to keep single browser per test session."""
-    return request.config.option.splinter_session_scoped_browser
+    return request.config.option.splinter_session_scoped_browser == 'true'
+
+
+@pytest.fixture(scope='session')
+def splinter_make_screenshot_on_failure(request):
+    """Flag to make browser screenshot on test failure."""
+    return request.config.option.splinter_make_screenshot_on_failure == 'true'
+
+
+@pytest.fixture(scope='session')  # pragma: no cover
+def splinter_screenshot_dir(request):
+    """Browser screenshot directory."""
+    return os.path.abspath(request.config.option.splinter_screenshot_dir)
 
 
 @pytest.fixture(scope='session')
@@ -194,18 +208,21 @@ def browser_patches(splinter_selenium_socket_timeout):
 def browser_instance_getter(
     request,
     browser_patches,
-    splinter_selenium_socket_timeout,
-    splinter_selenium_implicit_wait,
-    splinter_selenium_speed,
-    splinter_webdriver,
-    splinter_remote_url,
     splinter_browser_load_condition,
     splinter_browser_load_timeout,
-    splinter_file_download_dir,
     splinter_download_file_types,
-    splinter_firefox_profile_preferences,
     splinter_driver_kwargs,
+    splinter_file_download_dir,
+    splinter_firefox_profile_preferences,
+    splinter_make_screenshot_on_failure,
+    splinter_remote_url,
+    splinter_screenshot_dir,
+    splinter_selenium_implicit_wait,
+    splinter_selenium_socket_timeout,
+    splinter_selenium_speed,
+    splinter_webdriver,
     splinter_window_size,
+    tmpdir,
     browser_pool,
 ):
     """Splinter browser instance getter. To be used for getting of plugin.Browser's instances.
@@ -242,62 +259,122 @@ def browser_instance_getter(
                 request.addfinalizer(browser.quit)
         elif not browser:
             browser = browser_pool[browser_key] = get_browser()
-        else:
+        try:
+            browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
+            browser.driver.set_speed(splinter_selenium_speed)
+            if splinter_window_size:
+                browser.driver.set_window_size(*splinter_window_size)
+            browser.driver.delete_all_cookies()
+            browser.visit_condition = splinter_browser_load_condition
+            browser.visit_condition_timeout = splinter_browser_load_timeout
+            browser.driver.get('about:blank')
+        except IOError:
+            # we lost browser, try to restore the justice
             try:
-                browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
-                browser.driver.set_speed(splinter_selenium_speed)
-                if splinter_window_size:
-                    browser.driver.set_window_size(*splinter_window_size)
-                browser.driver.delete_all_cookies()
-            except IOError:
-                # we lost browser, try to restore the justice
-                try:
-                    browser.quit()
-                except Exception:
-                    pass
-                browser = browser_pool[browser_key] = get_browser()
+                browser.quit()
+            except Exception:
+                pass
+            browser = browser_pool[browser_key] = get_browser()
+            prepare_browser(parent)
 
-        browser.visit_condition = splinter_browser_load_condition
-        browser.visit_condition_timeout = splinter_browser_load_timeout
-        browser.driver.get('about:blank')
+        def make_screenshot_on_failure():
+            if splinter_make_screenshot_on_failure and request.node.splinter_failure:
+                slaveoutput = getattr(request.config, 'slaveoutput', None)
+                names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
+                classname = '.'.join(names[:-1])
+                screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
+                screenshot_file_name = '{0}.png'.format(names[-1])
+                if not slaveoutput:
+                    if not os.path.exists(screenshot_dir):
+                        os.makedirs(screenshot_dir)
+                else:
+                    screenshot_dir = tmpdir.mkdir('screenshots').strpath
+                screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
+                browser.driver.save_screenshot(screenshot_path)
+                with open(screenshot_path) as fd:
+                    if slaveoutput is not None:
+                        slaveoutput.setdefault('screenshots', []).append({
+                            'class_name': classname,
+                            'file_name': screenshot_file_name,
+                            'content': fd.read()
+                        })
+        request.addfinalizer(make_screenshot_on_failure)
+
         return browser
 
     return prepare_browser
 
 
+@pytest.mark.tryfirst
+def pytest_runtest_makereport(item, call, __multicall__):
+    """Assign the report to the item for futher usage."""
+    rep = __multicall__.execute()
+    if rep.outcome != 'passed':
+        item.splinter_failure = rep
+    else:
+        item.splinter_failure = None
+    return rep
+
+
 @pytest.fixture
-def browser(browser_instance_getter):
+def browser(request, browser_instance_getter):
     """Browser fixture."""
     return browser_instance_getter(browser)
 
 
+class SplinterPlugin(object):
+
+    """Plugin class to defer pytest-xdist hook handler."""
+
+    def pytest_testnodedown(self, node, error):
+        """Copy screenshots back from remote nodes to have them on the master."""
+        config_screenshot_dir = splinter_screenshot_dir(node)
+        for screenshot in getattr(node, 'slaveoutput', {}).get('screenshots', []):
+            screenshot_dir = os.path.join(config_screenshot_dir, screenshot['class_name'])
+            if not os.path.exists(screenshot_dir):
+                os.makedirs(screenshot_dir)
+            with open(os.path.join(screenshot_dir, screenshot['file_name']), 'w') as fd:
+                fd.write(screenshot['content'])
+
+
+def pytest_configure(config):
+    """Register pytest-splinter's deferred plugin."""
+    config.pluginmanager.register(SplinterPlugin())
+
+
 def pytest_addoption(parser):  # pragma: no cover
     """Pytest hook to add custom command line option(s)."""
-    parser.addoption(
+    group = parser.getgroup("splinter", "splinter integration for browser testing")
+    group.addoption(
         "--splinter-webdriver",
         help="pytest-splinter webdriver", type="choice", choices=list(splinter.browser._DRIVERS.keys()),
-        dest='splinter_webdriver', default='firefox')
-
-    parser.addoption(
+        dest='splinter_webdriver', metavar="DRIVER", default='firefox')
+    group.addoption(
         "--splinter-remote-url",
-        help="pytest-splinter remote webdriver url ", dest='splinter_remote_url', default=None)
-
-    parser.addoption(
+        help="pytest-splinter remote webdriver url ", metavar="URL", dest='splinter_remote_url', default=None)
+    group.addoption(
         "--splinter-implicit-wait",
         help="pytest-splinter selenium implicit wait, seconds", type="int",
-        dest='splinter_webdriver_implicit_wait', default=1)
-
-    parser.addoption(
+        dest='splinter_webdriver_implicit_wait', metavar="SECONDS", default=1)
+    group.addoption(
         "--splinter-speed",
         help="pytest-splinter selenium speed, seconds", type="int",
-        dest='splinter_webdriver_speed', default=0)
-
-    parser.addoption(
+        dest='splinter_webdriver_speed', metavar="SECONDS", default=0)
+    group.addoption(
         "--splinter-socket-timeout",
         help="pytest-splinter socket timeout, seconds", type="int",
-        dest='splinter_webdriver_socket_timeout', default=120)
-
-    parser.addoption(
+        dest='splinter_webdriver_socket_timeout', metavar="SECONDS", default=120)
+    group.addoption(
         "--splinter-session-scoped-browser",
-        help="pytest-splinter should use single browser instance per test session", action="store_true",
-        dest='splinter_session_scoped_browser', default=True)
+        help="pytest-splinter should use single browser instance per test session. Defaults to true.", action="store",
+        dest='splinter_session_scoped_browser', metavar="false|true", type="choice", choices=['false', 'true'],
+        default='true')
+    group.addoption(
+        "--splinter-make-screenshot-on-failure",
+        help="pytest-splinter should make browser screenshot on test failure. Defaults to true.", action="store",
+        dest='splinter_make_screenshot_on_failure', metavar="false|true", type="choice", choices=['false', 'true'],
+        default='true')
+    group.addoption(
+        "--splinter-screenshot-dir",
+        help="pytest-splinter browser screenshot directory. By default it's current directory.", action="store",
+        dest='splinter_screenshot_dir', metavar="DIR", default='.')
