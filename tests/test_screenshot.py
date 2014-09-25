@@ -11,7 +11,7 @@ def test_browser_screenshot_normal(testdir, mocked_browser):
             assert False
     """, "-vl", "--splinter-session-scoped-browser=false")
 
-    assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot.png').isfile()
+    assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png').isfile()
 
 
 def test_browser_screenshot_xdist(testdir, mocked_browser):
@@ -24,4 +24,4 @@ def test_browser_screenshot_xdist(testdir, mocked_browser):
             assert False
     """, "-vl", "-n1")
 
-    assert testdir.tmpdir.join('test_browser_screenshot_xdist', 'test_screenshot.png').isfile()
+    assert testdir.tmpdir.join('test_browser_screenshot_xdist', 'test_screenshot-browser.png').isfile()

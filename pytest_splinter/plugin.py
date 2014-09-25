@@ -283,7 +283,7 @@ def browser_instance_getter(
                 names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
                 classname = '.'.join(names[:-1])
                 screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
-                screenshot_file_name = '{0}.png'.format(names[-1])
+                screenshot_file_name = '{0}-{1}.png'.format(names[-1], parent.__name__)
                 if not slaveoutput:
                     if not os.path.exists(screenshot_dir):
                         os.makedirs(screenshot_dir)

@@ -190,9 +190,33 @@ You can have several browsers in one test.
         assert browser.url == 'http://example.com'
 
 
-Automatic screenshots of on test failure
-----------------------------------------
+Automatic screenshots on test failure
+-------------------------------------
 
+When your functional test fails, it's important to know the reason.
+This becomes hard when tests are being run on the continuos integration server, where you cannot debug (use --pdb).
+To simplify things, special behaviour of the browser fixture was introduced, so when test failed, it makes a screenshot
+and puts it in the folder with the naming convention, to be compartible with this
+`jenkins plugin <https://wiki.jenkins-ci.org/display/JENKINS/JUnit+Attachments+Plugin>`_.
+
+Making screenshots is fully compartible with `pytest-xdist plugin <https://pypi.python.org/pypi/pytest-xdist>`_ and will
+transfer screenshots from the slave nodes through the communication channels automatically.
+
+So if your test which uses browser fixture will fail, you should get a screenshot file in such path:
+
+::
+
+    <pytest-screenshot-dir>/my.dotted.name.test.package/test_name-browser.png
+
+The `pytest-screenshot-dir` for storing the screenshot is deferred by a fixture and command line argument,
+as  described above at the configuration options section.
+Note that the making screenshots on the test failure is enabled by default. If you want to switch it off permanently,
+override `splinter_make_screenshot_on_failure` fixture to return `False`. For temporary disabling you can use
+command line argument:
+
+::
+
+    py.test tests/functional --splinter-make-screenshot-on-failure=false
 
 
 Python3 support
