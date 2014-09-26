@@ -3,10 +3,11 @@
 Provides easy interface for the browser from your tests providing the `browser` fixture
 which is an object of splinter Browser class.
 """
-import os.path
 import copy  # pragma: no cover
 import functools  # pragma: no cover
+import httplib
 import mimetypes  # pragma: no cover
+import os.path
 
 import pytest  # pragma: no cover
 import py  # pragma: no cover
@@ -268,7 +269,7 @@ def browser_instance_getter(
             browser.visit_condition = splinter_browser_load_condition
             browser.visit_condition_timeout = splinter_browser_load_timeout
             browser.driver.get('about:blank')
-        except IOError:
+        except (IOError, httplib.HTTPException):
             # we lost browser, try to restore the justice
             try:
                 browser.quit()

@@ -52,6 +52,7 @@ setup(
     install_requires=[
         'setuptools',
         'splinter',
+        'pytest',
     ],
     classifiers=[
         'Development Status :: 6 - Mature',

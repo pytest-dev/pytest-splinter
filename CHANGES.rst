@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.2.1
+-----
+
+- improve exception handing when preparing the browser instance (bubenkoff)
+- require pytest (bubenkoff)
+
+
 1.2.0
 -----
 
