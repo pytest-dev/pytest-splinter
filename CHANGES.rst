@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.1
+1.2.2
 -----
 
 - improve exception handing when preparing the browser instance (bubenkoff)

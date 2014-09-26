@@ -5,7 +5,11 @@ which is an object of splinter Browser class.
 """
 import copy  # pragma: no cover
 import functools  # pragma: no cover
-import httplib
+try:
+    from httplib import HTTPException
+except ImportError:
+    from http.client import HTTPException
+
 import mimetypes  # pragma: no cover
 import os.path
 
@@ -269,7 +273,7 @@ def browser_instance_getter(
             browser.visit_condition = splinter_browser_load_condition
             browser.visit_condition_timeout = splinter_browser_load_timeout
             browser.driver.get('about:blank')
-        except (IOError, httplib.HTTPException):
+        except (IOError, HTTPException):
             # we lost browser, try to restore the justice
             try:
                 browser.quit()
