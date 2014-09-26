@@ -12,9 +12,9 @@ except ImportError:
 
 import mimetypes  # pragma: no cover
 import os.path
+import re
 
 import pytest  # pragma: no cover
-import py  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
 
@@ -22,6 +22,9 @@ from selenium.webdriver.support import wait
 
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
+
+
+NAME_RE = re.compile('[\W]')
 
 
 class Browser(object):
@@ -124,17 +127,14 @@ def splinter_browser_load_timeout():
     return 10
 
 
-@pytest.fixture(scope='session')  # pragma: no cover
+@pytest.yield_fixture(scope='session')  # pragma: no cover
 def splinter_file_download_dir(request):
     """Browser file download directory."""
     name = request.node.name
-    name = py.std.re.sub("[\W]", "_", name)
+    name = NAME_RE.sub("_", name)
     x = request.config._tmpdirhandler.mktemp(name, numbered=True)
-
-    def finalize():
-        x.remove()
-    request.addfinalizer(finalize)
-    return x.strpath
+    yield x.strpath
+    x.remove()
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
