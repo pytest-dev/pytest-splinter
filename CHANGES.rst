@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.2.4
+-----
+
+- fix failing the test run if pytest-xdist is not installed, as it's completely optional dependency (bubenkoff, slafs)
+
+
 1.2.3
 -----
 

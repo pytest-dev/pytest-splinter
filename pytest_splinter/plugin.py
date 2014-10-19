@@ -328,7 +328,7 @@ def browser(request, browser_instance_getter):
     return browser_instance_getter(browser)
 
 
-class SplinterPlugin(object):
+class SplinterXdistPlugin(object):
 
     """Plugin class to defer pytest-xdist hook handler."""
 
@@ -345,7 +345,8 @@ class SplinterPlugin(object):
 
 def pytest_configure(config):
     """Register pytest-splinter's deferred plugin."""
-    config.pluginmanager.register(SplinterPlugin())
+    if config.pluginmanager.getplugin('xdist'):
+        config.pluginmanager.register(SplinterXdistPlugin())
 
 
 def pytest_addoption(parser):  # pragma: no cover
