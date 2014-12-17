@@ -30,15 +30,26 @@ def test_browser(browser):
     assert isinstance(browser, plugin.Browser)
 
 
-def test_download_file(httpserver, browser, splinter_file_download_dir):
+@pytest.mark.parametrize(
+    (
+        'file_extension',
+        'mime_type'
+    ),
+    (
+        ['txt', 'text/plain'],
+        ['pdf', 'application/pdf'],
+    )
+)
+def test_download_file(httpserver, browser, splinter_file_download_dir, file_extension, mime_type):
     """Test file downloading and accessing it afterwise."""
+    file_name = 'some.{0}'.format(file_extension)
     httpserver.serve_content(
         'Some text file', code=200, headers={
-            'Content-Disposition': 'attachment; filename=some.txt',
-            'Content-Type': 'text/plain'})
+            'Content-Disposition': 'attachment; filename={0}'.format(file_name),
+            'Content-Type': mime_type})
     browser.visit(httpserver.url)
     time.sleep(0.5)
-    assert open(os.path.join(splinter_file_download_dir, 'some.txt')).read() == 'Some text file'
+    assert open(os.path.join(splinter_file_download_dir, file_name)).read() == 'Some text file'
 
 
 @pytest.mark.parametrize('cookie_value', ['value1', 'value2'])

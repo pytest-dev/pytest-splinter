@@ -99,6 +99,10 @@ Fixtures
     Firefox profile preferences, a dictionary which is passed to selenium
     webdriver's profile_preferences
 
+* splinter_firefox_profile_directory
+    Firefox profile directory to use as template for firefox profile created by selenium.
+    By default, it's an empty directly inside pytest_splinter/profiles/firefox
+
 * splinter_driver_kwargs
     Webdriver keyword arguments, a dictionary which is passed to selenium
     webdriver's constructor (after applying firefox preferences)

@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.2.5
+-----
+
+- Fix automatic download of pdf content type (bubenkoff)
+
+
 1.2.4
 -----
 

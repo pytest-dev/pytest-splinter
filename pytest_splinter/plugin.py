@@ -155,6 +155,12 @@ def splinter_firefox_profile_preferences():
 
 
 @pytest.fixture(scope='session')
+def splinter_firefox_profile_directory():
+    """Firefox profile directory."""
+    return os.path.join(os.path.dirname(__file__), 'profiles', 'firefox')
+
+
+@pytest.fixture(scope='session')
 def splinter_driver_kwargs():
     """Webdriver kwargs."""
     return {}
@@ -219,6 +225,7 @@ def browser_instance_getter(
     splinter_driver_kwargs,
     splinter_file_download_dir,
     splinter_firefox_profile_preferences,
+    splinter_firefox_profile_directory,
     splinter_make_screenshot_on_failure,
     splinter_remote_url,
     splinter_screenshot_dir,
@@ -243,7 +250,9 @@ def browser_instance_getter(
             'browser.download.dir': splinter_file_download_dir,
             'browser.helperApps.neverAsk.saveToDisk': splinter_download_file_types,
             'browser.helperApps.alwaysAsk.force': False,
+            'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
         }, **splinter_firefox_profile_preferences)
+        kwargs['profile'] = splinter_firefox_profile_directory
     elif splinter_webdriver == 'remote':
         kwargs['url'] = splinter_remote_url
     if splinter_driver_kwargs:
