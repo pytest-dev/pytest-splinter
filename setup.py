@@ -48,6 +48,7 @@ setup(
     author_email='developers@paylogic.com',
     version=pytest_splinter.__version__,
     cmdclass={'test': Tox},
+    include_package_data=True,
     url='https://github.com/pytest-dev/pytest-splinter',
     install_requires=[
         'setuptools',
