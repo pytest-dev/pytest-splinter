@@ -18,4 +18,4 @@ branches:
     - /^\d/
 notifications:
     email:
-        - opensource-tests@paylogic.com
+        - bubenkoff@gmail.com

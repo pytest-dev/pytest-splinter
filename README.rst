@@ -264,4 +264,4 @@ This software is licensed under the `MIT license <http://en.wikipedia.org/wiki/M
 See `License <https://github.com/paylogic/pytest-splinter/blob/master/LICENSE.txt>`_
 
 
-© 2014 Paylogic International.
+© 2014 Anatoly Bubenkov, Paylogic International and others.

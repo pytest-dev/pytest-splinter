@@ -49,7 +49,7 @@ Changelog
 1.0.3
 -----
 
-- unicode fixes to setup.py (bubenkoff,valberg)
+- unicode fixes to setup.py (bubenkoff, valberg)
 
 
 1.0.2

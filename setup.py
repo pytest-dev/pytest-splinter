@@ -12,6 +12,7 @@ dirname = os.path.dirname(__file__)
 
 long_description = (
     codecs.open(os.path.join(dirname, 'README.rst'), encoding='utf-8').read() + '\n' +
+    codecs.open(os.path.join(dirname, 'AUTHORS.rst'), encoding='utf-8').read() + '\n' +
     codecs.open(os.path.join(dirname, 'CHANGES.rst'), encoding='utf-8').read()
 )
 
@@ -43,9 +44,9 @@ setup(
     name='pytest-splinter',
     description='Splinter plugin for pytest testing framework',
     long_description=long_description,
-    author='Paylogic developers',
+    author='Anatoly Bubenkov, Paylogic International and others',
     license='MIT license',
-    author_email='developers@paylogic.com',
+    author_email='bubenkoff@gmail.com',
     version=pytest_splinter.__version__,
     cmdclass={'test': Tox},
     include_package_data=True,

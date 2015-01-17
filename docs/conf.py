@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pytest-splinter'
-AUTHOR = 'Paylogic International'
+AUTHOR = 'Anatoly Bubenkov, Paylogic International and others'
 copyright = u'2014, ' + AUTHOR
 
 # The version info for the project you're documenting, acts as replacement for
@@ -189,7 +189,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ('index', 'pytest-bdd.tex', u'pytest-bdd Documentation', AUTHOR, 'manual'),
+    ('index', 'pytest-splinter.tex', u'pytest-splinter Documentation', AUTHOR, 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -218,7 +218,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pytest-bdd', u'pytest-splinter Documentation',
+    ('index', 'pytest-splinter', u'pytest-splinter Documentation',
      [AUTHOR], 1)
 ]
 
@@ -233,7 +233,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'pytest-splinter', u'pytest-splinter Documentation',
-        AUTHOR, 'pytest-splinter', 'One line description of project.',
+        AUTHOR, 'pytest-splinter', 'splinter pytest testing framework integration.',
         'Miscellaneous'),
 ]
 
