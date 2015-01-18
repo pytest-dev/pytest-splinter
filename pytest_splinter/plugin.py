@@ -29,6 +29,7 @@ NAME_RE = re.compile('[\W]')
 
 def _visit(self, url):
     """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
+    self.__dict__.pop('status_code', None)
     self.driver.get(url)
     self.wait_for_condition(self.visit_condition, timeout=self.visit_condition_timeout)
 

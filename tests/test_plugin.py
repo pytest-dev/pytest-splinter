@@ -32,6 +32,7 @@ def test_browser(browser):
 
 def test_status_code(browser):
     """Check the browser fixture."""
+    assert 'status_code' not in browser.__dict__
     assert browser.status_code == 200
 
 
