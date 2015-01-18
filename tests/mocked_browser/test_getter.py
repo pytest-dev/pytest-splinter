@@ -1,4 +1,5 @@
 """Browser instance getter tests."""
+from splinter.driver import DriverAPI
 from pytest_splinter import plugin
 
 
@@ -10,8 +11,8 @@ def test_browser_instance_getter(browser_instance_getter):
     browser1 = browser_instance_getter(test_browser_instance_getter)
     browser2 = browser_instance_getter(lambda: 1)
 
-    assert isinstance(browser1, plugin.Browser)
-    assert isinstance(browser2, plugin.Browser)
+    assert hasattr(browser1, 'visit_condition')
+    assert hasattr(browser2, 'visit_condition')
 
     assert browser1 is not browser2
 

@@ -4,7 +4,7 @@ import time
 
 import pytest
 
-from pytest_splinter import plugin
+from splinter.driver import DriverAPI
 
 
 @pytest.fixture
@@ -27,7 +27,12 @@ def simple_page(httpserver, browser):
 
 def test_browser(browser):
     """Check the browser fixture."""
-    assert isinstance(browser, plugin.Browser)
+    assert isinstance(browser, DriverAPI)
+
+
+def test_status_code(browser):
+    """Check the browser fixture."""
+    assert browser.status_code == 200
 
 
 @pytest.mark.parametrize(

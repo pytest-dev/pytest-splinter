@@ -170,9 +170,11 @@ As mentioned above, browser is a fixture made by creating splinter's Browser obj
     so there you can do whatever you want, and not only execute javascript via browser.evaluate_script.
 
 *  `status_code <http://splinter.cobrateam.info/docs/http-status-code-and-exception.html>`_
-    This functionality is removed, so not available. Splinter implements this using additional request from python side,
+    This functionality is overriden. Splinter implements this using additional request from python side,
     which is in general performance-wise not a good idea. Also normally when you interact with the browser as a user,
-    you don't need the status code of the page.
+    you don't need the status code of the page. But for those who still need that for some reason, `status_code` is made
+    lazy - when you access it, it will make an additional request (one-time, further accesses to it will return cached
+    value, until next call to `visit`).
 
 
 Several browsers for your test
@@ -261,7 +263,7 @@ License
 
 This software is licensed under the `MIT license <http://en.wikipedia.org/wiki/MIT_License>`_
 
-See `License <https://github.com/paylogic/pytest-splinter/blob/master/LICENSE.txt>`_
+See `License file <https://github.com/paylogic/pytest-splinter/blob/master/LICENSE.txt>`_
 
 
 © 2014 Anatoly Bubenkov, Paylogic International and others.

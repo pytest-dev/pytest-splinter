@@ -1,11 +1,11 @@
+"""Browser overrides tests."""
 import time
+import mock
 
 import pytest
 
-from pytest_splinter import plugin
 
-
-def test_wait_for_condition(
+def test_wait_for_condition_default(
     browser,
     splinter_browser_load_condition,
     splinter_browser_load_timeout,
@@ -33,12 +33,12 @@ def test_wait_for_condition_timeout(
     pytest.raises(Exception, browser.wait_for_condition, (lambda browser: False), 10)
 
 
-def test_wait_for_condititon(browser, monkeypatch, mocked_browser):
+def test_wait_for_condition(mocked_browser, browser, monkeypatch):
     """Check conditioning."""
     checks = iter([False, True])
 
     def condition(browser):
-        assert isinstance(browser, plugin.Browser)
+        assert isinstance(browser, mock.Mock)
         return next(checks)
 
     ticks = iter([1, 2, 3])

@@ -27,33 +27,48 @@ from .splinter_patches import patch_webdriverelement  # pragma: no cover
 NAME_RE = re.compile('[\W]')
 
 
-class Browser(object):
+def _visit(self, url):
+    """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
+    self.driver.get(url)
+    self.wait_for_condition(self.visit_condition, timeout=self.visit_condition_timeout)
 
+
+def _wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, ignored_exceptions=None):
+    """Wait for given javascript condition."""
+    condition = functools.partial(condition or self.visit_condition, self)
+
+    timeout = timeout or self.visit_condition_timeout
+
+    return wait.WebDriverWait(
+        self.driver, timeout, poll_frequency=poll_frequency, ignored_exceptions=ignored_exceptions).until(
+        lambda browser: condition())
+
+
+def _get_status_code(self):
+    """Lazy status code get."""
+    inst_status_code = self.__dict__.get('status_code')
+    if inst_status_code:
+        return inst_status_code
+    self.connect(self.url)
+    return self.status_code
+
+
+def _set_status_code(self, value):
+    """Lazy status code set."""
+    self.__dict__['status_code'] = value
+
+
+def Browser(*args, **kwargs):
     """Emulate splinter's Browser."""
-
-    def __init__(self, *args, **kwargs):
-        self.visit_condition = kwargs.pop('visit_condition')
-        self.visit_condition_timeout = kwargs.pop('visit_condition_timeout')
-        self.browser = splinter.Browser(*args, **kwargs)
-
-    def __getattr__(self, name):
-        """Proxy all splinter's browser attributes, except ones implemented in this class."""
-        return getattr(self.browser, name)
-
-    def visit(self, url):
-        """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
-        self.driver.get(url)
-        self.wait_for_condition(self.visit_condition, timeout=self.visit_condition_timeout)
-
-    def wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, ignored_exceptions=None):
-        """Wait for given javascript condition."""
-        condition = functools.partial(condition or self.visit_condition, self)
-
-        timeout = timeout or self.visit_condition_timeout
-
-        return wait.WebDriverWait(
-            self.driver, timeout, poll_frequency=poll_frequency, ignored_exceptions=ignored_exceptions).until(
-            lambda browser: condition())
+    visit_condition = kwargs.pop('visit_condition')
+    visit_condition_timeout = kwargs.pop('visit_condition_timeout')
+    browser = splinter.Browser(*args, **kwargs)
+    browser.visit_condition = visit_condition
+    browser.visit_condition_timeout = visit_condition_timeout
+    browser.wait_for_condition = functools.partial(_wait_for_condition, browser)
+    browser.visit = functools.partial(_visit, browser)
+    browser.__class__.status_code = property(_get_status_code, _set_status_code)
+    return browser
 
 
 @pytest.fixture(scope='session')  # pragma: no cover

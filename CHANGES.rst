@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.2.8
+-----
+
+- status_code is back in a lazy way (bubenkoff)
+
+
 1.2.7
 -----
 
