@@ -10,6 +10,8 @@ pytest_plugins = 'pytester'
 def mocked_browser(browser_pool, request):
     """Mock splinter browser."""
     # to avoid re-using of cached browser from other tests
+    for browser in browser_pool.values():
+        browser.quit()
     browser_pool.clear()
 
     def mocked_browser(*args, **kwargs):
