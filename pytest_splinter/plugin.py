@@ -24,6 +24,9 @@ from selenium.webdriver.support import wait
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
 
+import logging
+LOGGER = logging.getLogger(__name__)
+
 
 NAME_RE = re.compile('[\W]')
 
@@ -323,6 +326,7 @@ def browser_instance_getter(
                     screenshot_dir = tmpdir.mkdir('screenshots').strpath
                 screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
                 try:
+                    LOGGER.info('Saving screenshot to %s' % (screenshot_path,))
                     browser.driver.save_screenshot(screenshot_path)
                     with open(screenshot_path) as fd:
                         if slaveoutput is not None:
@@ -332,6 +336,7 @@ def browser_instance_getter(
                                 'content': fd.read()
                             })
                 except URLError as e:
+                    LOGGER.warn('Could not save screenshot: %s' % (e,))
                     pass
         request.addfinalizer(make_screenshot_on_failure)
 
