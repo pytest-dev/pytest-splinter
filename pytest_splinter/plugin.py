@@ -17,6 +17,7 @@ import re
 import pytest  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
+from six.moves.urllib.error import URLError
 
 from selenium.webdriver.support import wait
 
@@ -321,14 +322,17 @@ def browser_instance_getter(
                 else:
                     screenshot_dir = tmpdir.mkdir('screenshots').strpath
                 screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
-                browser.driver.save_screenshot(screenshot_path)
-                with open(screenshot_path) as fd:
-                    if slaveoutput is not None:
-                        slaveoutput.setdefault('screenshots', []).append({
-                            'class_name': classname,
-                            'file_name': screenshot_file_name,
-                            'content': fd.read()
-                        })
+                try:
+                    browser.driver.save_screenshot(screenshot_path)
+                    with open(screenshot_path) as fd:
+                        if slaveoutput is not None:
+                            slaveoutput.setdefault('screenshots', []).append({
+                                'class_name': classname,
+                                'file_name': screenshot_file_name,
+                                'content': fd.read()
+                            })
+                except URLError as e:
+                    pass
         request.addfinalizer(make_screenshot_on_failure)
 
         return browser
