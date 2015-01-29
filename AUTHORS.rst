@@ -6,5 +6,6 @@ Authors
 
 These people have contributed to `pytest-splinter`, in alphabetical order:
 
-* `Marco Buccini <markon@github.com>`_
 * `Andrey Makhnach <andrey.makhnach@gmail.com>`_
+* `Daniel Hahler <github@thequod.de>`_
+* `Marco Buccini <markon@github.com>`_
