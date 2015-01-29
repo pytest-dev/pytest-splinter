@@ -398,15 +398,15 @@ def pytest_addoption(parser):  # pragma: no cover
         dest='splinter_webdriver_socket_timeout', metavar="SECONDS", default=120)
     group.addoption(
         "--splinter-session-scoped-browser",
-        help="pytest-splinter should use single browser instance per test session. Defaults to true.", action="store",
+        help="pytest-splinter should use a single browser instance per test session. Defaults to true.", action="store",
         dest='splinter_session_scoped_browser', metavar="false|true", type="choice", choices=['false', 'true'],
         default='true')
     group.addoption(
         "--splinter-make-screenshot-on-failure",
-        help="pytest-splinter should make browser screenshot on test failure. Defaults to true.", action="store",
+        help="pytest-splinter should take browser screenshots on test failure. Defaults to true.", action="store",
         dest='splinter_make_screenshot_on_failure', metavar="false|true", type="choice", choices=['false', 'true'],
         default='true')
     group.addoption(
         "--splinter-screenshot-dir",
-        help="pytest-splinter browser screenshot directory. By default it's current directory.", action="store",
+        help="pytest-splinter browser screenshot directory. Defaults to the current directory.", action="store",
         dest='splinter_screenshot_dir', metavar="DIR", default='.')
