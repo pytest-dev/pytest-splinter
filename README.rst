@@ -235,6 +235,9 @@ skips it. You can also disable it via a command line argument:
 
     py.test tests/functional --splinter-make-screenshot-on-failure=false
 
+In case taking a screenshot fails, a pytest warning will be issued, which
+can be viewed using the `-rw` argument for `py.test`.
+
 
 Python3 support
 ---------------

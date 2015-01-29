@@ -23,6 +23,9 @@ from selenium.webdriver.support import wait
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
 
+import logging
+LOGGER = logging.getLogger(__name__)
+
 
 NAME_RE = re.compile('[\W]')
 
@@ -308,7 +311,10 @@ def browser_instance_getter(
             prepare_browser(parent)
 
         def make_screenshot_on_failure():
-            if splinter_make_screenshot_on_failure and request.node.splinter_failure:
+            if not splinter_make_screenshot_on_failure or not request.node.splinter_failure:
+                return
+
+            try:
                 slaveoutput = getattr(request.config, 'slaveoutput', None)
                 names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
                 classname = '.'.join(names[:-1])
@@ -321,6 +327,7 @@ def browser_instance_getter(
                 else:
                     screenshot_dir = tmpdir.mkdir('screenshots').strpath
                 screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
+                LOGGER.info('Saving screenshot to {0}'.format(screenshot_path))
                 browser.driver.save_screenshot(screenshot_path)
                 with open(screenshot_path) as fd:
                     if slaveoutput is not None:
@@ -329,6 +336,9 @@ def browser_instance_getter(
                             'file_name': screenshot_file_name,
                             'content': fd.read()
                         })
+            except Exception as e:
+                request.config.warn('splinter', "Could not save screenshot: {0}".format(e))
+                pass
         request.addfinalizer(make_screenshot_on_failure)
 
         return browser
