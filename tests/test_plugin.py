@@ -1,4 +1,4 @@
-"""Tests for pytest-bdd-splinter subplugin."""
+"""Tests for pytest-splinter plugin."""
 import os.path
 import time
 

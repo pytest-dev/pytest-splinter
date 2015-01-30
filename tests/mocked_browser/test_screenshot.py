@@ -1,11 +1,13 @@
 """Browser screenshot tests."""
 import pytest
 
-from mock import patch
+import mock
+
+from _pytest.config import Config
 
 
-def test_browser_screenshot_normal(testdir, mocked_browser):
-    """Test making screenshots on test failure if the commandline option is passed.
+def test_browser_screenshot_normal(testdir):
+    """Test making screenshots on test failure.
 
     Normal test run.
     """
@@ -17,23 +19,21 @@ def test_browser_screenshot_normal(testdir, mocked_browser):
     assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png').isfile()
 
 
-@patch('_pytest.config.Config.warn')
-def test_browser_screenshot_error(testdir, mocked_browser):
+@mock.patch('pytest_splinter.plugin.splinter.Browser')
+@mock.patch.object(Config, 'warn', autospec=True)
+def test_browser_screenshot_error(mocked_warn, mocked_browser, testdir):
     """Test warning with error during taking screenshots on test failure."""
+    mocked_browser.return_value.driver.save_screenshot.side_effect = Exception('Failed')
     testdir.inline_runsource("""
         def test_screenshot(browser):
-            # Create a file here, so makedirs in make_screenshot_on_failure will fail.
-            open('isafile', 'w').close()
             assert False
-
-        def test_warn_called(request):
-            assert request.config.warn.call_count == 1
-    """, "-vl", "--splinter-session-scoped-browser=false")
+    """, "-vvl", "-r w", "--splinter-session-scoped-browser=false")
+    mocked_warn.assert_called_with(mock.ANY, 'SPL504', 'Could not save screenshot: Failed')
 
 
 @pytest.mark.skipif('not config.pluginmanager.getplugin("xdist")', reason='pytest-xdist is not installed')
-def test_browser_screenshot_xdist(testdir, mocked_browser):
-    """Test making screenshots on test failure if the commandline option is passed.
+def test_browser_screenshot_xdist(testdir):
+    """Test making screenshots on test failure in distributed mode (xdist).
 
     Distributed test run.
     """

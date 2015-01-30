@@ -311,10 +311,7 @@ def browser_instance_getter(
             prepare_browser(parent)
 
         def make_screenshot_on_failure():
-            if not splinter_make_screenshot_on_failure or not request.node.splinter_failure:
-                return
-
-            try:
+            if splinter_make_screenshot_on_failure and request.node.splinter_failure:
                 slaveoutput = getattr(request.config, 'slaveoutput', None)
                 names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
                 classname = '.'.join(names[:-1])
@@ -328,17 +325,17 @@ def browser_instance_getter(
                     screenshot_dir = tmpdir.mkdir('screenshots').strpath
                 screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
                 LOGGER.info('Saving screenshot to {0}'.format(screenshot_path))
-                browser.driver.save_screenshot(screenshot_path)
-                with open(screenshot_path) as fd:
-                    if slaveoutput is not None:
-                        slaveoutput.setdefault('screenshots', []).append({
-                            'class_name': classname,
-                            'file_name': screenshot_file_name,
-                            'content': fd.read()
-                        })
-            except Exception as e:
-                request.config.warn('splinter', "Could not save screenshot: {0}".format(e))
-                pass
+                try:
+                    browser.driver.save_screenshot(screenshot_path)
+                    with open(screenshot_path) as fd:
+                        if slaveoutput is not None:
+                            slaveoutput.setdefault('screenshots', []).append({
+                                'class_name': classname,
+                                'file_name': screenshot_file_name,
+                                'content': fd.read()
+                            })
+                except Exception as e:
+                    request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
         request.addfinalizer(make_screenshot_on_failure)
 
         return browser
