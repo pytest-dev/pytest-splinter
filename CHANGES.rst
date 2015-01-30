@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.2.10
+------
+
+- handle exceptions during screenshot saving (blueyed, bubenkoff)
+- documentation improvements (blueyed)
+
+
 1.2.9
 -----
 
