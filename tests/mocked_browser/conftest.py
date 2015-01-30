@@ -31,6 +31,5 @@ def mocked_browser(browser_pool, request):
         return mocked_browser
 
     patcher = mock.patch('pytest_splinter.plugin.splinter.Browser', mocked_browser)
-    patcher.start()
-    yield mocked_browser
+    yield patcher.start()
     patcher.stop()
