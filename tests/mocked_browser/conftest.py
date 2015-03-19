@@ -18,11 +18,11 @@ def mocked_browser(browser_pool, request):
         browser.quit()
     browser_pool.clear()
 
-    def mocked_browser(*args, **kwargs):
+    def mocked_browser(driver_name, *args, **kwargs):
         mocked_browser = mock.MagicMock()
         mocked_browser.driver = mock.MagicMock()
         mocked_browser.driver.profile = mock.MagicMock()
-
+        mocked_browser.driver_name = driver_name
         def save_screenshot(path):
             with open(path, 'w'):
                 pass
