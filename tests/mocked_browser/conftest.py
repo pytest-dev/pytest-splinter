@@ -23,6 +23,7 @@ def mocked_browser(browser_pool, request):
         mocked_browser.driver = mock.MagicMock()
         mocked_browser.driver.profile = mock.MagicMock()
         mocked_browser.driver_name = driver_name
+
         def save_screenshot(path):
             with open(path, 'w'):
                 pass
