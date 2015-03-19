@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.2.11
+------
+
+- properly handle driver switch during the test run (bubenkoff)
+- respect splinter_session_scoped_browser fixture (bubenkoff)
+
+
 1.2.10
 ------
 

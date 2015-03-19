@@ -238,6 +238,7 @@ def browser_patches(splinter_selenium_socket_timeout):
 def browser_instance_getter(
     request,
     browser_patches,
+    splinter_session_scoped_browser,
     splinter_browser_load_condition,
     splinter_browser_load_timeout,
     splinter_download_file_types,
@@ -293,6 +294,8 @@ def browser_instance_getter(
         elif not browser:
             browser = browser_pool[browser_key] = get_browser()
         try:
+            if browser.driver_name.lower() != splinter_webdriver:
+                raise IOError('webdriver does not match')
             browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
             browser.driver.set_speed(splinter_selenium_speed)
             if splinter_window_size:
