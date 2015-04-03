@@ -53,7 +53,7 @@ setup(
     url='https://github.com/pytest-dev/pytest-splinter',
     install_requires=[
         'setuptools',
-        'splinter',
+        'splinter>=0.7.2',
         'pytest',
     ],
     classifiers=[

@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.3.0
+-----
+
+- remove mouse_over splinter monkeypatch as splinter does it correctly now (bubenkoff)
+
+
 1.2.11
 ------
 
