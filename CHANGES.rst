@@ -1,14 +1,8 @@
 Changelog
 =========
 
-1.3.0
+1.3.1
 -----
-
-- remove mouse_over splinter monkeypatch as splinter does it correctly now (bubenkoff)
-
-
-1.2.11
-------
 
 - properly handle driver switch during the test run (bubenkoff)
 - respect splinter_session_scoped_browser fixture (bubenkoff)
