@@ -11,8 +11,7 @@ def patch_webdriverelement():  # pragma: no cover
         """Perform a mouse over the element which works."""
         (
             ActionChains(self.parent.driver)
-            .move_to_element_with_offset(self._element, 1, 1)
-            .move_to_element(self._element)
+            .move_to_element_with_offset(self._element, 2, 2)
             .perform()
         )
 

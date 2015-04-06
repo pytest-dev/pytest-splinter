@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.2
+1.3.3
 -----
 
 - make ``mouse_over`` comparible with more use-cases (bubenkoff)
