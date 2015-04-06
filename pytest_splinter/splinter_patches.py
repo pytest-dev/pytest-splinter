@@ -1,4 +1,4 @@
-"""Patches for splinter"""
+"""Patches for splinter."""
 
 from splinter.driver.webdriver import firefox
 from splinter.driver.webdriver import phantomjs
@@ -6,11 +6,15 @@ from selenium.webdriver.common.action_chains import ActionChains  # pragma: no c
 
 
 def patch_webdriverelement():  # pragma: no cover
-    """Patches the WebDriverElement to allow firefox to use mouse_over"""
-
+    """Patch the WebDriverElement to allow firefox to use mouse_over."""
     def mouse_over(self):
-        """Performs a mouse over the element."""
-        ActionChains(self.parent.driver).move_to_element_with_offset(self._element, 1, 1).perform()
+        """Perform a mouse over the element which works."""
+        (
+            ActionChains(self.parent.driver)
+            .move_to_element_with_offset(self._element, 1, 1)
+            .move_to_element(self._element)
+            .perform()
+        )
 
     # Apply the monkey patch for Firefox WebDriverElement
     firefox.WebDriverElement.mouse_over = mouse_over
