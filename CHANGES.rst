@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+- make browser_instance_getter session scoped (sureshvv)
+
+
 1.3.3
 -----
 
