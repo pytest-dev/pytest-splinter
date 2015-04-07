@@ -17,6 +17,7 @@ import re
 import pytest  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
+from _pytest.tmpdir import tmpdir
 
 from selenium.webdriver.support import wait
 
@@ -29,6 +30,9 @@ LOGGER = logging.getLogger(__name__)
 
 NAME_RE = re.compile('[\W]')
 
+@pytest.fixture(scope='session')
+def session_tmpdir(request):
+    return tmpdir(request)
 
 def _visit(self, url):
     """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
@@ -234,7 +238,7 @@ def browser_patches(splinter_selenium_socket_timeout):
     patch_webdriverelement()
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def browser_instance_getter(
     request,
     browser_patches,
@@ -254,7 +258,7 @@ def browser_instance_getter(
     splinter_selenium_speed,
     splinter_webdriver,
     splinter_window_size,
-    tmpdir,
+    session_tmpdir,
     browser_pool,
 ):
     """Splinter browser instance getter. To be used for getting of plugin.Browser's instances.
@@ -314,7 +318,7 @@ def browser_instance_getter(
             prepare_browser(parent)
 
         def make_screenshot_on_failure():
-            if splinter_make_screenshot_on_failure and request.node.splinter_failure:
+            if splinter_make_screenshot_on_failure and getattr(request.node, 'splinter_failure', None):
                 slaveoutput = getattr(request.config, 'slaveoutput', None)
                 names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
                 classname = '.'.join(names[:-1])
@@ -325,7 +329,7 @@ def browser_instance_getter(
                     if not os.path.exists(screenshot_dir):
                         os.makedirs(screenshot_dir)
                 else:
-                    screenshot_dir = tmpdir.mkdir('screenshots').strpath
+                    screenshot_dir = session_tmpdir.mkdir('screenshots').strpath
                 screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
                 LOGGER.info('Saving screenshot to {0}'.format(screenshot_path))
                 try:
