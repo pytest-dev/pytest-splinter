@@ -1,1 +1,2 @@
-__version__ = '1.3.3'
+"""pytest-splinter package."""
+__version__ = '1.3.4'

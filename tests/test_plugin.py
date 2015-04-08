@@ -30,6 +30,11 @@ def test_browser(browser):
     assert isinstance(browser, DriverAPI)
 
 
+def test_session_browser(session_browser):
+    """Check the browser fixture."""
+    assert isinstance(session_browser, DriverAPI)
+
+
 def test_status_code(browser):
     """Check the browser fixture."""
     assert 'status_code' not in browser.__dict__
@@ -76,7 +81,7 @@ def test_clean_cookies(httpserver, browser, cookie_value):
 
 
 @pytest.mark.skipif('sys.version_info[0] > 2')
-@pytest.mark.parametrize('splinter_webdriver', ['firefox', 'phantomjs'])
+# @pytest.mark.parametrize('splinter_webdriver', ['firefox', 'phantomjs'])
 def test_get_text(simple_page, browser, splinter_webdriver):
     """Test that webelement correctly gets text."""
     assert browser.find_by_id('content').text == 'Some text'

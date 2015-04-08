@@ -15,10 +15,12 @@ from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver  # 
 
 
 class LocalFileDetector(object):  # pragma: no cover
+
     """Overriden LocalFileDetector to inject correct file_path check."""
 
     @classmethod
     def is_local_file(cls, *keys):
+        """Correctly handle file inputs."""
         file_path = ''
         typing = []
         for key in keys:
@@ -52,7 +54,7 @@ RemoteWebDriver._base_execute = RemoteWebDriver.execute  # pragma: no cover
 
 
 def patch_webdriver(selenium_timeout):
-
+    """Patch selenium webdriver to add functionality/fix issues."""
     def _request(*args, **kwargs):
         """Override _request to set socket timeout to some appropriate value."""
         timeout = socket.getdefaulttimeout()

@@ -3,7 +3,6 @@
 Provides easy interface for the browser from your tests providing the `browser` fixture
 which is an object of splinter Browser class.
 """
-import copy  # pragma: no cover
 import functools  # pragma: no cover
 try:
     from httplib import HTTPException
@@ -76,6 +75,7 @@ def Browser(*args, **kwargs):
     browser.wait_for_condition = functools.partial(_wait_for_condition, browser)
     browser.visit = functools.partial(_visit, browser)
     browser.__class__.status_code = property(_get_status_code, _set_status_code)
+    browser.__splinter_browser__ = True
     return browser
 
 
@@ -239,8 +239,13 @@ def browser_patches(splinter_selenium_socket_timeout):
 
 
 @pytest.fixture(scope='session')
+def session_tmpdir(request):
+    """pytest tmpdir which is session-scoped."""
+    return tmpdir(request)
+
+
+@pytest.fixture(scope='session')
 def browser_instance_getter(
-    request,
     browser_patches,
     splinter_session_scoped_browser,
     splinter_browser_load_condition,
@@ -265,30 +270,30 @@ def browser_instance_getter(
 
     :return: function(parent). Each time this function will return new instance of plugin.Browser class.
     """
-    kwargs = {}
-
-    if splinter_webdriver == 'firefox':
-        kwargs['profile_preferences'] = dict({
-            'browser.download.folderList': 2,
-            'browser.download.manager.showWhenStarting': False,
-            'browser.download.dir': splinter_file_download_dir,
-            'browser.helperApps.neverAsk.saveToDisk': splinter_download_file_types,
-            'browser.helperApps.alwaysAsk.force': False,
-            'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
-        }, **splinter_firefox_profile_preferences)
-        kwargs['profile'] = splinter_firefox_profile_directory
-    elif splinter_webdriver == 'remote':
-        kwargs['url'] = splinter_remote_url
-    if splinter_driver_kwargs:
-        kwargs.update(splinter_driver_kwargs)
-
     def get_browser():
+        kwargs = {}
+
+        if splinter_webdriver == 'firefox':
+            kwargs['profile_preferences'] = dict({
+                'browser.download.folderList': 2,
+                'browser.download.manager.showWhenStarting': False,
+                'browser.download.dir': splinter_file_download_dir,
+                'browser.helperApps.neverAsk.saveToDisk': splinter_download_file_types,
+                'browser.helperApps.alwaysAsk.force': False,
+                'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
+            }, **splinter_firefox_profile_preferences)
+            kwargs['profile'] = splinter_firefox_profile_directory
+        elif splinter_webdriver == 'remote':
+            kwargs['url'] = splinter_remote_url
+        if splinter_driver_kwargs:
+            kwargs.update(splinter_driver_kwargs)
+
         return Browser(
             splinter_webdriver, visit_condition=splinter_browser_load_condition,
-            visit_condition_timeout=splinter_browser_load_timeout, **copy.deepcopy(kwargs)
+            visit_condition_timeout=splinter_browser_load_timeout, **kwargs
         )
 
-    def prepare_browser(parent):
+    def prepare_browser(request, parent):
         browser_key = id(parent)
         browser = browser_pool.get(browser_key)
         if not splinter_session_scoped_browser:
@@ -315,16 +320,26 @@ def browser_instance_getter(
             except Exception:
                 pass
             browser = browser_pool[browser_key] = get_browser()
-            prepare_browser(parent)
+            prepare_browser(request, parent)
 
-        def make_screenshot_on_failure():
-            if splinter_make_screenshot_on_failure and getattr(request.node, 'splinter_failure', None):
+        return browser
+
+    return prepare_browser
+
+@pytest.yield_fixture(autouse=True)
+def browser_screenshot(request, splinter_screenshot_dir):
+    """Make browser screenshot on test failure."""
+    yield
+    for name, value in request._funcargs.items():
+        if hasattr(value, '__splinter_browser__'):
+            browser = value
+            if splinter_make_screenshot_on_failure and request.node.splinter_failure:
                 slaveoutput = getattr(request.config, 'slaveoutput', None)
                 names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
                 classname = '.'.join(names[:-1])
                 screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
                 screenshot_file_name = '{0}-{1}.png'.format(
-                    names[-1][:128 - len(parent.__name__) - 5], parent.__name__)
+                    names[-1][:128 - len(name) - 5], name)
                 if not slaveoutput:
                     if not os.path.exists(screenshot_dir):
                         os.makedirs(screenshot_dir)
@@ -343,11 +358,6 @@ def browser_instance_getter(
                             })
                 except Exception as e:
                     request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
-        request.addfinalizer(make_screenshot_on_failure)
-
-        return browser
-
-    return prepare_browser
 
 
 @pytest.mark.tryfirst
@@ -364,7 +374,13 @@ def pytest_runtest_makereport(item, call, __multicall__):
 @pytest.fixture
 def browser(request, browser_instance_getter):
     """Browser fixture."""
-    return browser_instance_getter(browser)
+    return browser_instance_getter(request, browser)
+
+
+@pytest.fixture(scope='session')
+def session_browser(request, browser_instance_getter):
+    """Session scoped browser fixture."""
+    return browser_instance_getter(request, session_browser)
 
 
 class SplinterXdistPlugin(object):

@@ -1,4 +1,5 @@
 mock
-pytest-localserver
-pytest-pep8
 pytest-cov
+pytest-localserver
+pytest-pep257
+pytest-pep8
