@@ -29,9 +29,12 @@ LOGGER = logging.getLogger(__name__)
 
 NAME_RE = re.compile('[\W]')
 
+
 @pytest.fixture(scope='session')
 def session_tmpdir(request):
+    """ provide a session scoped tmpdir. """
     return tmpdir(request)
+
 
 def _visit(self, url):
     """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
@@ -214,6 +217,12 @@ def splinter_screenshot_dir(request):
 
 
 @pytest.fixture(scope='session')
+def splinter_webdriver_executable(request):
+    """Webdriver executable directory."""
+    return os.path.abspath(request.config.option.splinter_webdriver_executable)
+
+
+@pytest.fixture(scope='session')
 def browser_pool(request, splinter_close_browser):
     """Browser 'pool' to emulate session scope but with possibility to recreate browser."""
     pool = {}
@@ -258,6 +267,7 @@ def browser_instance_getter(
     splinter_make_screenshot_on_failure,
     splinter_remote_url,
     splinter_screenshot_dir,
+    splinter_webdriver_executable,
     splinter_selenium_implicit_wait,
     splinter_selenium_socket_timeout,
     splinter_selenium_speed,
@@ -285,6 +295,9 @@ def browser_instance_getter(
             kwargs['profile'] = splinter_firefox_profile_directory
         elif splinter_webdriver == 'remote':
             kwargs['url'] = splinter_remote_url
+        elif splinter_webdriver in ('phantomjs', 'chrome'):
+            if splinter_webdriver_executable:
+                kwargs['executable_path'] = splinter_webdriver_executable
         if splinter_driver_kwargs:
             kwargs.update(splinter_driver_kwargs)
 
@@ -325,6 +338,7 @@ def browser_instance_getter(
         return browser
 
     return prepare_browser
+
 
 @pytest.yield_fixture(autouse=True)
 def browser_screenshot(request, splinter_screenshot_dir):
@@ -440,3 +454,8 @@ def pytest_addoption(parser):  # pragma: no cover
         "--splinter-screenshot-dir",
         help="pytest-splinter browser screenshot directory. Defaults to the current directory.", action="store",
         dest='splinter_screenshot_dir', metavar="DIR", default='.')
+    group.addoption(
+        "--splinter-webdriver-executable",
+        help="pytest-splinter webdrive executable path. Defaults to unspecified in which case it is taken from PATH",
+        action="store",
+        dest='splinter_webdriver_executable', metavar="DIR", default='')
