@@ -30,12 +30,6 @@ LOGGER = logging.getLogger(__name__)
 NAME_RE = re.compile('[\W]')
 
 
-@pytest.fixture(scope='session')
-def session_tmpdir(request):
-    """ provide a session scoped tmpdir. """
-    return tmpdir(request)
-
-
 def _visit(self, url):
     """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
     self.__dict__.pop('status_code', None)
@@ -294,7 +288,6 @@ def browser_instance_getter(
     splinter_make_screenshot_on_failure,
     splinter_remote_url,
     splinter_screenshot_dir,
-    splinter_webdriver_executable,
     splinter_selenium_implicit_wait,
     splinter_selenium_socket_timeout,
     splinter_selenium_speed,
@@ -311,6 +304,7 @@ def browser_instance_getter(
         kwargs = get_args(splinter_webdriver, splinter_file_download_dir, splinter_download_file_types,
                           splinter_firefox_profile_preferences, splinter_firefox_profile_directory,
                           splinter_remote_url, splinter_webdriver_executable, splinter_driver_kwargs)
+
         return Browser(
             splinter_webdriver, visit_condition=splinter_browser_load_condition,
             visit_condition_timeout=splinter_browser_load_timeout, **kwargs
