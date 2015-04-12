@@ -5,6 +5,7 @@ import time
 import pytest
 
 from splinter.driver import DriverAPI
+from pytest_splinter.plugin import get_args
 
 
 @pytest.fixture
@@ -107,3 +108,11 @@ def test_get_current_window_info(browser):
 def test_current_window_is_main(browser):
     """Test browser's driver current_window_is_main."""
     assert browser.driver.current_window_is_main()
+
+
+def test_executable():
+    """ improve testing coverage """
+    arg1 = get_args('phantomjs', '', '', '', '', '', '/tmp', '')
+    arg2 = get_args('chrome', '', '', '', '', '', '/tmp', '')
+    assert arg1['executable_path'] == '/tmp'
+    assert arg2['executable_path'] == '/tmp'

@@ -1,10 +1,17 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+- add option --splinter-webdriver-executable for phantomjs and chrome (sureshvv)
+
+
 1.3.4
 -----
 
 - make ``browser_instance_getter`` session scoped, add ``session_browser`` fixture (bubenkoff, sureshvv)
+
 
 1.3.3
 -----
