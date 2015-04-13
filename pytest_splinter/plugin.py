@@ -211,6 +211,12 @@ def splinter_screenshot_dir(request):
 
 
 @pytest.fixture(scope='session')
+def splinter_webdriver_executable(request):
+    """Webdriver executable directory."""
+    return os.path.abspath(request.config.option.splinter_webdriver_executable)
+
+
+@pytest.fixture(scope='session')
 def browser_pool(request, splinter_close_browser):
     """Browser 'pool' to emulate session scope but with possibility to recreate browser."""
     pool = {}
@@ -241,6 +247,33 @@ def session_tmpdir(request):
     return tmpdir(request)
 
 
+def get_args(splinter_webdriver, splinter_file_download_dir, splinter_download_file_types,
+             splinter_firefox_profile_preferences, splinter_firefox_profile_directory,
+             splinter_remote_url, splinter_webdriver_executable, splinter_driver_kwargs):
+    """ pulled out for separate testing. """
+    kwargs = {}
+
+    if splinter_webdriver == 'firefox':
+        kwargs['profile_preferences'] = dict({
+            'browser.download.folderList': 2,
+            'browser.download.manager.showWhenStarting': False,
+            'browser.download.dir': splinter_file_download_dir,
+            'browser.helperApps.neverAsk.saveToDisk': splinter_download_file_types,
+            'browser.helperApps.alwaysAsk.force': False,
+            'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
+        }, **splinter_firefox_profile_preferences)
+        kwargs['profile'] = splinter_firefox_profile_directory
+    elif splinter_webdriver == 'remote':
+        kwargs['url'] = splinter_remote_url
+    elif splinter_webdriver in ('phantomjs', 'chrome'):
+        if splinter_webdriver_executable:
+            kwargs['executable_path'] = splinter_webdriver_executable
+    if splinter_driver_kwargs:
+        kwargs.update(splinter_driver_kwargs)
+
+    return kwargs
+
+
 @pytest.fixture(scope='session')
 def browser_instance_getter(
     browser_patches,
@@ -268,22 +301,9 @@ def browser_instance_getter(
     :return: function(parent). Each time this function will return new instance of plugin.Browser class.
     """
     def get_browser():
-        kwargs = {}
-
-        if splinter_webdriver == 'firefox':
-            kwargs['profile_preferences'] = dict({
-                'browser.download.folderList': 2,
-                'browser.download.manager.showWhenStarting': False,
-                'browser.download.dir': splinter_file_download_dir,
-                'browser.helperApps.neverAsk.saveToDisk': splinter_download_file_types,
-                'browser.helperApps.alwaysAsk.force': False,
-                'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
-            }, **splinter_firefox_profile_preferences)
-            kwargs['profile'] = splinter_firefox_profile_directory
-        elif splinter_webdriver == 'remote':
-            kwargs['url'] = splinter_remote_url
-        if splinter_driver_kwargs:
-            kwargs.update(splinter_driver_kwargs)
+        kwargs = get_args(splinter_webdriver, splinter_file_download_dir, splinter_download_file_types,
+                          splinter_firefox_profile_preferences, splinter_firefox_profile_directory,
+                          splinter_remote_url, splinter_webdriver_executable, splinter_driver_kwargs)
 
         return Browser(
             splinter_webdriver, visit_condition=splinter_browser_load_condition,
@@ -438,3 +458,8 @@ def pytest_addoption(parser):  # pragma: no cover
         "--splinter-screenshot-dir",
         help="pytest-splinter browser screenshot directory. Defaults to the current directory.", action="store",
         dest='splinter_screenshot_dir', metavar="DIR", default='.')
+    group.addoption(
+        "--splinter-webdriver-executable",
+        help="pytest-splinter webdrive executable path. Defaults to unspecified in which case it is taken from PATH",
+        action="store",
+        dest='splinter_webdriver_executable', metavar="DIR", default='')
