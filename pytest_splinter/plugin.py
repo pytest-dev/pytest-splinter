@@ -247,29 +247,34 @@ def session_tmpdir(request):
     return tmpdir(request)
 
 
-def get_args(splinter_webdriver, splinter_file_download_dir, splinter_download_file_types,
-             splinter_firefox_profile_preferences, splinter_firefox_profile_directory,
-             splinter_remote_url, splinter_webdriver_executable, splinter_driver_kwargs):
+def get_args(driver=None,
+             download_dir=None,
+             download_ftypes=None,
+             firefox_pref=None,
+             firefox_prof_dir=None,
+             remote_url=None,
+             executable=None,
+             driver_kwargs=None):
     """ pulled out for separate testing. """
     kwargs = {}
 
-    if splinter_webdriver == 'firefox':
+    if driver == 'firefox':
         kwargs['profile_preferences'] = dict({
             'browser.download.folderList': 2,
             'browser.download.manager.showWhenStarting': False,
-            'browser.download.dir': splinter_file_download_dir,
-            'browser.helperApps.neverAsk.saveToDisk': splinter_download_file_types,
+            'browser.download.dir': download_dir,
+            'browser.helperApps.neverAsk.saveToDisk': download_ftypes,
             'browser.helperApps.alwaysAsk.force': False,
             'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
-        }, **splinter_firefox_profile_preferences)
-        kwargs['profile'] = splinter_firefox_profile_directory
-    elif splinter_webdriver == 'remote':
-        kwargs['url'] = splinter_remote_url
-    elif splinter_webdriver in ('phantomjs', 'chrome'):
-        if splinter_webdriver_executable:
-            kwargs['executable_path'] = splinter_webdriver_executable
-    if splinter_driver_kwargs:
-        kwargs.update(splinter_driver_kwargs)
+        }, **firefox_pref)
+        kwargs['profile'] = firefox_prof_dir
+    elif driver == 'remote':
+        kwargs['url'] = remote_url
+    elif driver in ('phantomjs', 'chrome'):
+        if executable:
+            kwargs['executable_path'] = executable
+    if driver_kwargs:
+        kwargs.update(driver_kwargs)
 
     return kwargs
 
@@ -292,6 +297,7 @@ def browser_instance_getter(
     splinter_selenium_socket_timeout,
     splinter_selenium_speed,
     splinter_webdriver,
+    splinter_webdriver_executable,
     splinter_window_size,
     session_tmpdir,
     browser_pool,
@@ -320,7 +326,7 @@ def browser_instance_getter(
         elif not browser:
             browser = browser_pool[browser_key] = get_browser()
         try:
-            if browser.driver_name.lower() != splinter_webdriver:
+            if splinter_webdriver not in browser.driver_name.lower():
                 raise IOError('webdriver does not match')
             browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
             browser.driver.set_speed(splinter_selenium_speed)
