@@ -300,7 +300,7 @@ def browser_instance_getter(
         elif not browser:
             browser = browser_pool[browser_key] = get_browser()
         try:
-            if browser.driver_name.lower() != splinter_webdriver:
+            if splinter_webdriver not in browser.driver_name.lower():
                 raise IOError('webdriver does not match')
             browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
             browser.driver.set_speed(splinter_selenium_speed)
