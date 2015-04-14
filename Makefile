@@ -6,7 +6,7 @@ PATH := .env/bin:$(PATH)
 
 # install all needed for development
 develop: .env
-	pip install -e . -r requirements-testing.txt tox python-coveralls
+	pip install -e . -r requirements-testing.txt tox coveralls
 
 coverage: develop
 	coverage run --source=pytest_splinter .env/bin/py.test tests
