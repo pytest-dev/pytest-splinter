@@ -112,7 +112,7 @@ def test_current_window_is_main(browser):
 
 def test_executable():
     """ improve testing coverage """
-    arg1 = get_args('phantomjs', '', '', '', '', '', '/tmp', '')
-    arg2 = get_args('chrome', '', '', '', '', '', '/tmp', '')
+    arg1 = get_args(driver='phantomjs', executable='/tmp')
+    arg2 = get_args(driver='chrome', executable='/tmp')
     assert arg1['executable_path'] == '/tmp'
     assert arg2['executable_path'] == '/tmp'
