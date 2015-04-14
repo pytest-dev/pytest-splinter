@@ -9,4 +9,4 @@ These people have contributed to `pytest-splinter`, in alphabetical order:
 * `Andrey Makhnach <andrey.makhnach@gmail.com>`_
 * `Daniel Hahler <github@thequod.de>`_
 * `Marco Buccini <markon@github.com>`_
-* `sureshvv <sureshvv@github.com>`_
+* `Suresh V <sureshvv@github.com>`_
