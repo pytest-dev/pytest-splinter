@@ -1,4 +1,5 @@
 sudo: false
+language: python
 addons:
   firefox: "37.0.1"
 before_install:
