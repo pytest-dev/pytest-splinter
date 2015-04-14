@@ -307,9 +307,14 @@ def browser_instance_getter(
     :return: function(parent). Each time this function will return new instance of plugin.Browser class.
     """
     def get_browser():
-        kwargs = get_args(splinter_webdriver, splinter_file_download_dir, splinter_download_file_types,
-                          splinter_firefox_profile_preferences, splinter_firefox_profile_directory,
-                          splinter_remote_url, splinter_webdriver_executable, splinter_driver_kwargs)
+        kwargs = get_args(driver=splinter_webdriver,
+                          download_dir=splinter_file_download_dir,
+                          download_ftypes=splinter_download_file_types,
+                          firefox_pref=splinter_firefox_profile_preferences,
+                          firefox_prof_dir=splinter_firefox_profile_directory,
+                          remote_url=splinter_remote_url,
+                          executable=splinter_webdriver_executable,
+                          driver_kwargs=splinter_driver_kwargs)
 
         return Browser(
             splinter_webdriver, visit_condition=splinter_browser_load_condition,
