@@ -255,7 +255,7 @@ def get_args(driver=None,
              remote_url=None,
              executable=None,
              driver_kwargs=None):
-    """ constructs arguments to be passed to webdriver on initialization. """
+    """ construct arguments to be passed to webdriver on initialization. """
     kwargs = {}
 
     if driver == 'firefox':
