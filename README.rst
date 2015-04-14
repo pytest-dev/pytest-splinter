@@ -124,6 +124,11 @@ Fixtures
     This fixture gets the value from the command-line option
     `splinter-make-screenshot-on-failure` (see below).
 
+* splinter_driver_executable
+    Filesystem path of the webdriver executable.
+    This fixture gets the value from the command-line option
+    `splinter-webdriver-executable` (see below).
+
 
 Command-line options
 --------------------
@@ -164,6 +169,10 @@ Command-line options
 * `--splinter-screenshot-dir`
     pytest-splinter browser screenshot directory. Defaults to the current
     directory.
+
+* `--splinter-webdriver-executable`
+    Filesystem path of the webdriver executable. Used by phantomjs and chrome drivers.
+    Defaults to the None in which case the shell PATH variable setting determines the location of the executable.
 
 
 Browser fixture
