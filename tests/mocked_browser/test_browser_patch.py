@@ -1,4 +1,5 @@
 """pytest-splinter Browser proxy class tests.
+
 Tests related to the modifications made on top of splinter's Browser class.
 """
 import time
@@ -6,11 +7,7 @@ import time
 import pytest
 
 
-def test_wait_for_condition(
-    browser,
-    splinter_browser_load_condition,
-    splinter_browser_load_timeout,
-):
+def test_wait_for_condition(browser, splinter_browser_load_condition, splinter_browser_load_timeout):
     """Test that by default wait_until is successful."""
     browser.wait_for_condition(
         splinter_browser_load_condition,
@@ -19,10 +16,7 @@ def test_wait_for_condition(
     assert True
 
 
-def test_wait_for_condition_timeout(
-    browser,
-    monkeypatch,
-):
+def test_wait_for_condition_timeout(browser, monkeypatch):
     """Check timeouts."""
     ticks = iter([1, 2, 15])
 

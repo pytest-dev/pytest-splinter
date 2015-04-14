@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unreleased
-----------
+1.3.5
+-----
 
 - add option --splinter-webdriver-executable for phantomjs and chrome (sureshvv)
 

@@ -1,5 +1,5 @@
 mock
 pytest-cov
 pytest-localserver
-pytest-pep257
-pytest-pep8
+pylama
+pylama_pylint

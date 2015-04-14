@@ -91,6 +91,7 @@ def test_get_text(simple_page, browser, splinter_webdriver):
 
 @pytest.mark.parametrize('check', [1, 2])
 def test_restore_browser(browser, simple_page, check):
+    """Test that browser is restored after failure automatically."""
     browser.quit()
 
 
@@ -111,7 +112,7 @@ def test_current_window_is_main(browser):
 
 
 def test_executable():
-    """ Test argument construction for webdrivers """
+    """Test argument construction for webdrivers."""
     arg1 = get_args(driver='phantomjs', executable='/tmp')
     arg2 = get_args(driver='chrome', executable='/tmp')
     assert arg1['executable_path'] == '/tmp'

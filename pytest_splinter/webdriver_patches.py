@@ -6,45 +6,11 @@ http://code.google.com/p/selenium/issues/detail?id=5176.
 """
 
 import time  # pragma: no cover
-import os  # pragma: no cover
 import socket  # pragma: no cover
 
-from selenium.webdriver.remote import webelement, remote_connection  # pragma: no cover
+from selenium.webdriver.remote import remote_connection  # pragma: no cover
 from selenium.webdriver.firefox import webdriver  # pragma: no cover
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver  # pragma: no cover
-
-
-class LocalFileDetector(object):  # pragma: no cover
-
-    """Overriden LocalFileDetector to inject correct file_path check."""
-
-    @classmethod
-    def is_local_file(cls, *keys):
-        """Correctly handle file inputs."""
-        file_path = ''
-        typing = []
-        for key in keys:
-            if isinstance(key, webelement.Keys):
-                typing.append(key)
-            elif isinstance(key, int):
-                key = str(key)
-                for i in range(len(key)):
-                    typing.append(key[i])
-            else:
-                for i in range(len(key)):
-                    typing.append(key[i])
-        file_path = ''.join(typing)
-
-        if file_path is '':
-            return None
-
-        try:
-            # we added os.path.isabs(file_path) to ensure it's path and not just string
-            if os.path.isabs(file_path) and os.path.exists(file_path):
-                return file_path
-        except:
-            pass
-        return None
 
 
 # Get the original _request and store for future use in the monkey patched version as 'super'
@@ -66,8 +32,6 @@ def patch_webdriver(selenium_timeout):
 
     # Apply the monkey patche for RemoteConnection
     remote_connection.RemoteConnection._request = _request
-    # Apply the monkey patch for LocalFileDetector
-    webelement.LocalFileDetector = LocalFileDetector
 
     # Apply the monkey patch to Firefox webdriver to disable native events
     # to avoid click on wrong elements, totally unpredictable

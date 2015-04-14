@@ -27,7 +27,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-NAME_RE = re.compile('[\W]')
+NAME_RE = re.compile(r'[\W]')
 
 
 def _visit(self, url):
@@ -44,8 +44,10 @@ def _wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, 
     timeout = timeout or self.visit_condition_timeout
 
     return wait.WebDriverWait(
-        self.driver, timeout, poll_frequency=poll_frequency, ignored_exceptions=ignored_exceptions).until(
-        lambda browser: condition())
+        self.driver, timeout, poll_frequency=poll_frequency, ignored_exceptions=ignored_exceptions
+    ).until(
+        lambda browser: condition()
+    )
 
 
 def _get_status_code(self):
@@ -255,7 +257,7 @@ def get_args(driver=None,
              remote_url=None,
              executable=None,
              driver_kwargs=None):
-    """ construct arguments to be passed to webdriver on initialization. """
+    """Construct arguments to be passed to webdriver on initialization."""
     kwargs = {}
 
     if driver == 'firefox':
@@ -281,26 +283,26 @@ def get_args(driver=None,
 
 @pytest.fixture(scope='session')
 def browser_instance_getter(
-    browser_patches,
-    splinter_session_scoped_browser,
-    splinter_browser_load_condition,
-    splinter_browser_load_timeout,
-    splinter_download_file_types,
-    splinter_driver_kwargs,
-    splinter_file_download_dir,
-    splinter_firefox_profile_preferences,
-    splinter_firefox_profile_directory,
-    splinter_make_screenshot_on_failure,
-    splinter_remote_url,
-    splinter_screenshot_dir,
-    splinter_selenium_implicit_wait,
-    splinter_selenium_socket_timeout,
-    splinter_selenium_speed,
-    splinter_webdriver,
-    splinter_webdriver_executable,
-    splinter_window_size,
-    session_tmpdir,
-    browser_pool,
+        browser_patches,
+        splinter_session_scoped_browser,
+        splinter_browser_load_condition,
+        splinter_browser_load_timeout,
+        splinter_download_file_types,
+        splinter_driver_kwargs,
+        splinter_file_download_dir,
+        splinter_firefox_profile_preferences,
+        splinter_firefox_profile_directory,
+        splinter_make_screenshot_on_failure,
+        splinter_remote_url,
+        splinter_screenshot_dir,
+        splinter_selenium_implicit_wait,
+        splinter_selenium_socket_timeout,
+        splinter_selenium_speed,
+        splinter_webdriver,
+        splinter_webdriver_executable,
+        splinter_window_size,
+        session_tmpdir,
+        browser_pool,
 ):
     """Splinter browser instance getter. To be used for getting of plugin.Browser's instances.
 
@@ -345,7 +347,7 @@ def browser_instance_getter(
             # we lost browser, try to restore the justice
             try:
                 browser.quit()
-            except Exception:
+            except Exception:  # NOQA
                 pass
             browser = browser_pool[browser_key] = get_browser()
             prepare_browser(request, parent)
@@ -375,7 +377,7 @@ def browser_screenshot(request, splinter_screenshot_dir):
                 else:
                     screenshot_dir = session_tmpdir.mkdir('screenshots').strpath
                 screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
-                LOGGER.info('Saving screenshot to {0}'.format(screenshot_path))
+                LOGGER.info('Saving screenshot to %s', screenshot_path)
                 try:
                     browser.driver.save_screenshot(screenshot_path)
                     with open(screenshot_path) as fd:
@@ -385,7 +387,7 @@ def browser_screenshot(request, splinter_screenshot_dir):
                                 'file_name': screenshot_file_name,
                                 'content': fd.read()
                             })
-                except Exception as e:
+                except Exception as e:  # NOQA
                     request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
 
 
