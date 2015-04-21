@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.3.6
+-----
+
+- properly respect webdriver executable command line option (bubenkoff, bh)
+
+
 1.3.5
 -----
 

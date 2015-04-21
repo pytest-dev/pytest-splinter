@@ -215,7 +215,8 @@ def splinter_screenshot_dir(request):
 @pytest.fixture(scope='session')
 def splinter_webdriver_executable(request):
     """Webdriver executable directory."""
-    return os.path.abspath(request.config.option.splinter_webdriver_executable)
+    executable = request.config.option.splinter_webdriver_executable
+    return os.path.abspath(executable) if executable else None
 
 
 @pytest.fixture(scope='session')
