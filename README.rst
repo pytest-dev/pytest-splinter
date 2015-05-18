@@ -45,11 +45,10 @@ Fixtures
 .. code-block:: python
 
     @pytest.fixture
-    def admin_browser(browser_instance_getter):
+    def admin_browser(request, browser_instance_getter):
         """Admin browser fixture."""
-        # browser_instance_getter function receives single argument - parent fixture
-        # in our case it's admin_browser
-        return browser_instance_getter(admin_browser)
+        # browser_instance_getter function receives parent fixture -- our admin_browser
+        return browser_instance_getter(request, admin_browser)
 
     def test_2_browsers(browser, admin_browser):
         """Test using 2 browsers at the same time."""
