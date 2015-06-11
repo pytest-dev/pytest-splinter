@@ -70,7 +70,17 @@ Fixtures
 
 * splinter_webdriver
     Splinter's webdriver name to use. Fixture gets the value from the command-line option
-    splinter-webdriver (see below)
+    splinter-webdriver (see below). To make pytest-splinter always use certain webdriver, override a fixture
+    in your `conftest.py` file:
+
+.. code-block:: python
+
+    import pytest
+
+    @pytest.fixture(scope='session')
+    def splinter_webdriver():
+        """Override splinter webdriver name."""
+        return 'phantomjs'
 
 * splinter_remote_url
     Splinter's webdriver remote url to use (optional). Fixture gets the value from the command-line option
