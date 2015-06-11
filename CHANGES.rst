@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.3.7
+-----
+
+- pass `splinter_selenium_implicit_wait` as `wait_time` to splinter Browser (lrowe)
+
+
 1.3.6
 -----
 
