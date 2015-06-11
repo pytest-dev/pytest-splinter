@@ -321,7 +321,8 @@ def browser_instance_getter(
 
         return Browser(
             splinter_webdriver, visit_condition=splinter_browser_load_condition,
-            visit_condition_timeout=splinter_browser_load_timeout, **kwargs
+            visit_condition_timeout=splinter_browser_load_timeout,
+            wait_time=splinter_selenium_implicit_wait, **kwargs
         )
 
     def prepare_browser(request, parent):
