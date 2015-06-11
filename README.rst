@@ -23,7 +23,7 @@ Install pytest-splinter
 Features
 --------
 
-The plugin provides a set of fixtures to use `splinter <http://splinter.cobrateam.info>`_
+The plugin provides a set of fixtures to use `splinter <http://splinter.readthedocs.org/en/latest/index.html>`_
 for browser testing with `pytest <http://pytest.org>`_
 
 
@@ -302,4 +302,4 @@ This software is licensed under the `MIT license <http://en.wikipedia.org/wiki/M
 See `License file <https://github.com/paylogic/pytest-splinter/blob/master/LICENSE.txt>`_
 
 
-© 2014 Anatoly Bubenkov, Paylogic International and others.
+© 2015 Anatoly Bubenkov, Paylogic International and others.
