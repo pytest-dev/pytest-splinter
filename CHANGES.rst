@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.3.8
+-----
+
+- correctly handle zope.testbrowser splinter driver (bubenkoff)
+
+
 1.3.7
 -----
 

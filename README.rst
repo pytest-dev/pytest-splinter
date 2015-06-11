@@ -133,7 +133,7 @@ Command-line options
 --------------------
 
 * `--splinter-implicit-wait`
-    Selenium webdriver implicit wait. Seconds (default: 1).
+    Selenium webdriver implicit wait. Seconds (default: 5).
 
 * `--splinter-speed`
     selenium webdriver speed (from command to command). Seconds (default: 0).

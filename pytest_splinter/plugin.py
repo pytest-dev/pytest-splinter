@@ -69,11 +69,12 @@ def Browser(*args, **kwargs):
     visit_condition = kwargs.pop('visit_condition')
     visit_condition_timeout = kwargs.pop('visit_condition_timeout')
     browser = splinter.Browser(*args, **kwargs)
-    browser.visit_condition = visit_condition
-    browser.visit_condition_timeout = visit_condition_timeout
     browser.wait_for_condition = functools.partial(_wait_for_condition, browser)
-    browser.visit = functools.partial(_visit, browser)
-    browser.__class__.status_code = property(_get_status_code, _set_status_code)
+    if hasattr(browser, 'driver'):
+        browser.visit_condition = visit_condition
+        browser.visit_condition_timeout = visit_condition_timeout
+        browser.visit = functools.partial(_visit, browser)
+        browser.__class__.status_code = property(_get_status_code, _set_status_code)
     browser.__splinter_browser__ = True
     return browser
 
@@ -318,7 +319,6 @@ def browser_instance_getter(
                           remote_url=splinter_remote_url,
                           executable=splinter_webdriver_executable,
                           driver_kwargs=splinter_driver_kwargs)
-
         return Browser(
             splinter_webdriver, visit_condition=splinter_browser_load_condition,
             visit_condition_timeout=splinter_browser_load_timeout,
@@ -337,14 +337,16 @@ def browser_instance_getter(
         try:
             if splinter_webdriver not in browser.driver_name.lower():
                 raise IOError('webdriver does not match')
-            browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
-            browser.driver.set_speed(splinter_selenium_speed)
-            if splinter_window_size:
-                browser.driver.set_window_size(*splinter_window_size)
-            browser.driver.delete_all_cookies()
-            browser.visit_condition = splinter_browser_load_condition
-            browser.visit_condition_timeout = splinter_browser_load_timeout
-            browser.driver.get('about:blank')
+            if hasattr(browser, 'driver'):
+                browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
+                browser.driver.set_speed(splinter_selenium_speed)
+                if splinter_window_size:
+                    browser.driver.set_window_size(*splinter_window_size)
+            browser.cookies.delete()
+            if hasattr(browser, 'driver'):
+                browser.visit_condition = splinter_browser_load_condition
+                browser.visit_condition_timeout = splinter_browser_load_timeout
+                browser.visit('about:blank')
         except (IOError, HTTPException):
             # we lost browser, try to restore the justice
             try:
@@ -450,7 +452,7 @@ def pytest_addoption(parser):  # pragma: no cover
     group.addoption(
         "--splinter-implicit-wait",
         help="pytest-splinter selenium implicit wait, seconds", type="int",
-        dest='splinter_webdriver_implicit_wait', metavar="SECONDS", default=1)
+        dest='splinter_webdriver_implicit_wait', metavar="SECONDS", default=5)
     group.addoption(
         "--splinter-speed",
         help="pytest-splinter selenium speed, seconds", type="int",

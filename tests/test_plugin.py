@@ -36,8 +36,10 @@ def test_session_browser(session_browser):
     assert isinstance(session_browser, DriverAPI)
 
 
-def test_status_code(browser):
+def test_status_code(browser, splinter_webdriver):
     """Check the browser fixture."""
+    if splinter_webdriver == "zope.testbrowser":
+        pytest.skip("zope testbrowser doesn't support status code")
     assert 'status_code' not in browser.__dict__
     assert browser.status_code == 200
 
@@ -52,8 +54,10 @@ def test_status_code(browser):
         ['pdf', 'application/pdf'],
     )
 )
-def test_download_file(httpserver, browser, splinter_file_download_dir, file_extension, mime_type):
+def test_download_file(httpserver, browser, splinter_file_download_dir, file_extension, mime_type, splinter_webdriver):
     """Test file downloading and accessing it afterwise."""
+    if splinter_webdriver in ["zope.testbrowser", "phantomjs"]:
+        pytest.skip("{0} doesn't support file downloading".format(splinter_webdriver))
     file_name = 'some.{0}'.format(file_extension)
     httpserver.serve_content(
         'Some text file', code=200, headers={
@@ -65,9 +69,11 @@ def test_download_file(httpserver, browser, splinter_file_download_dir, file_ext
 
 
 @pytest.mark.parametrize('cookie_value', ['value1', 'value2'])
-def test_clean_cookies(httpserver, browser, cookie_value):
+def test_clean_cookies(httpserver, browser, cookie_value, splinter_webdriver):
     """Test that browser has always clean state (no cookies set)."""
-    assert browser.driver.get_cookie('test') is None
+    if splinter_webdriver == "zope.testbrowser":
+        pytest.skip("zope testbrowser doesn't execute js")
+    assert 'test' not in browser.cookies.all()
     httpserver.serve_content(
         """
         <html>
@@ -78,13 +84,15 @@ def test_clean_cookies(httpserver, browser, cookie_value):
             </body>
         </html>""", code=200, headers={'Content-Type': 'text/html'})
     browser.visit(httpserver.url)
-    assert browser.driver.get_cookie('test')
+    assert browser.cookies['test']
 
 
 @pytest.mark.skipif('sys.version_info[0] > 2')
 # @pytest.mark.parametrize('splinter_webdriver', ['firefox', 'phantomjs'])
 def test_get_text(simple_page, browser, splinter_webdriver):
     """Test that webelement correctly gets text."""
+    if splinter_webdriver == "zope.testbrowser":
+        pytest.skip("zope testbrowser doesn't need special text element processing")
     assert browser.find_by_id('content').text == 'Some text'
     assert browser.find_by_id('textarea').text == 'area text'
 
@@ -95,19 +103,25 @@ def test_restore_browser(browser, simple_page, check):
     browser.quit()
 
 
-def test_speed(browser):
+def test_speed(browser, splinter_webdriver):
     """Test browser's driver set_speed and get_speed."""
+    if splinter_webdriver == "zope.testbrowser":
+        pytest.skip("zope testbrowser doesn't need the speed")
     browser.driver.set_speed(2)
     assert browser.driver.get_speed() == 2
 
 
-def test_get_current_window_info(browser):
+def test_get_current_window_info(browser, splinter_webdriver):
     """Test browser's driver get_current_window_info."""
+    if splinter_webdriver == "zope.testbrowser":
+        pytest.skip("zope testbrowser doesn't have windows")
     assert len(browser.driver.get_current_window_info()) == 5
 
 
-def test_current_window_is_main(browser):
+def test_current_window_is_main(browser, splinter_webdriver):
     """Test browser's driver current_window_is_main."""
+    if splinter_webdriver == "zope.testbrowser":
+        pytest.skip("zope testbrowser doesn't have windows")
     assert browser.driver.current_window_is_main()
 
 
