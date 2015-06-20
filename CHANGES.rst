@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.4.0
+-----
+
+- introduce splinter_browser_class fixture (bubenkoff, ecesena)
+
+
 1.3.8
 -----
 

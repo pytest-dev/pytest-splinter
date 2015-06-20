@@ -251,6 +251,12 @@ def session_tmpdir(request):
     return tmpdir(request)
 
 
+@pytest.fixture(scope='session')
+def splinter_browser_class(request):
+    """Browser class to use for browser instance creation."""
+    return Browser
+
+
 def get_args(driver=None,
              download_dir=None,
              download_ftypes=None,
@@ -303,6 +309,7 @@ def browser_instance_getter(
         splinter_webdriver,
         splinter_webdriver_executable,
         splinter_window_size,
+        splinter_browser_class,
         session_tmpdir,
         browser_pool,
 ):
@@ -319,7 +326,7 @@ def browser_instance_getter(
                           remote_url=splinter_remote_url,
                           executable=splinter_webdriver_executable,
                           driver_kwargs=splinter_driver_kwargs)
-        return Browser(
+        return splinter_browser_class(
             splinter_webdriver, visit_condition=splinter_browser_load_condition,
             visit_condition_timeout=splinter_browser_load_timeout,
             wait_time=splinter_selenium_implicit_wait, **kwargs
