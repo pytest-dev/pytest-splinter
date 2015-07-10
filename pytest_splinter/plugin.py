@@ -8,11 +8,11 @@ try:
     from httplib import HTTPException
 except ImportError:
     from http.client import HTTPException
-
 import mimetypes  # pragma: no cover
 import os.path
 import re
 
+import py.path
 import pytest  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
@@ -153,15 +153,9 @@ def splinter_browser_load_timeout():
 @pytest.yield_fixture(scope='session')  # pragma: no cover
 def splinter_file_download_dir(request):
     """Browser file download directory."""
-    name = request.node.name
-    name = NAME_RE.sub("_", name)
-    handler = request.config._tmpdirhandler
-    basetemp = request.config.option.basetemp
-    if basetemp and not os.path.exists(basetemp):
-        os.makedirs(basetemp)
-    x = handler.mktemp(name, numbered=True)
-    yield x.strpath
-    x.remove()
+    path = py.path.local.mkdtemp()
+    yield path.strpath
+    path.remove()
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
