@@ -155,7 +155,11 @@ def splinter_file_download_dir(request):
     """Browser file download directory."""
     name = request.node.name
     name = NAME_RE.sub("_", name)
-    x = request.config._tmpdirhandler.mktemp(name, numbered=True)
+    handler = request.config._tmpdirhandler
+    basetemp = request.config.option.basetemp
+    if basetemp and not os.path.exists(basetemp):
+        os.makedirs(basetemp)
+    x = handler.mktemp(name, numbered=True)
     yield x.strpath
     x.remove()
 
