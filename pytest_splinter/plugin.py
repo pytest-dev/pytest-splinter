@@ -151,11 +151,9 @@ def splinter_browser_load_timeout():
 
 
 @pytest.yield_fixture(scope='session')  # pragma: no cover
-def splinter_file_download_dir(request):
+def splinter_file_download_dir(session_tmpdir):
     """Browser file download directory."""
-    path = py.path.local.mkdtemp()
-    yield path.strpath
-    path.remove()
+    yield session_tmpdir.ensure('splinter', 'download', dir=True).strpath
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -243,10 +241,12 @@ def browser_patches(splinter_selenium_socket_timeout):
     patch_webdriverelement()
 
 
-@pytest.fixture(scope='session')
+@pytest.yield_fixture(scope='session')
 def session_tmpdir(request):
     """pytest tmpdir which is session-scoped."""
-    return tmpdir(request)
+    path = py.path.local.mkdtemp()
+    yield path
+    path.remove()
 
 
 @pytest.fixture(scope='session')
