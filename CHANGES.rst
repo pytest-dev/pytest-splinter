@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.4.3
+1.4.4
 -----
 
 - ensure base tempdir exists (bubenkoff)

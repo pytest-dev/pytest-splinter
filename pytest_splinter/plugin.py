@@ -16,7 +16,6 @@ import py.path
 import pytest  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
-from _pytest.tmpdir import tmpdir
 
 from selenium.webdriver.support import wait
 
@@ -367,7 +366,7 @@ def browser_instance_getter(
 
 
 @pytest.yield_fixture(autouse=True)
-def browser_screenshot(request, splinter_screenshot_dir):
+def browser_screenshot(request, splinter_screenshot_dir, session_tmpdir):
     """Make browser screenshot on test failure."""
     yield
     for name, value in request._funcargs.items():
