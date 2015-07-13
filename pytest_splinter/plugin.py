@@ -12,10 +12,10 @@ import mimetypes  # pragma: no cover
 import os.path
 import re
 
-import py.path
 import pytest  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
+from _pytest.tmpdir import tmpdir
 
 from selenium.webdriver.support import wait
 
@@ -240,12 +240,10 @@ def browser_patches(splinter_selenium_socket_timeout):
     patch_webdriverelement()
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def session_tmpdir(request):
     """pytest tmpdir which is session-scoped."""
-    path = py.path.local.mkdtemp()
-    yield path
-    path.remove()
+    return tmpdir(request)
 
 
 @pytest.fixture(scope='session')
