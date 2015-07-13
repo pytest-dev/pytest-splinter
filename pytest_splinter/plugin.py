@@ -149,10 +149,10 @@ def splinter_browser_load_timeout():
     return 10
 
 
-@pytest.yield_fixture(scope='session')  # pragma: no cover
+@pytest.fixture(scope='session')  # pragma: no cover
 def splinter_file_download_dir(session_tmpdir):
     """Browser file download directory."""
-    yield session_tmpdir.ensure('splinter', 'download', dir=True).strpath
+    return session_tmpdir.ensure('splinter', 'download', dir=True).strpath
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -381,7 +381,7 @@ def browser_screenshot(request, splinter_screenshot_dir, session_tmpdir):
                     if not os.path.exists(screenshot_dir):
                         os.makedirs(screenshot_dir)
                 else:
-                    screenshot_dir = session_tmpdir.mkdir('screenshots').strpath
+                    screenshot_dir = session_tmpdir.ensure('screenshots', dir=True).strpath
                 screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
                 LOGGER.info('Saving screenshot to %s', screenshot_path)
                 try:
