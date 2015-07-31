@@ -3,3 +3,4 @@ pytest-cov
 pytest-localserver
 pylama
 pylama_pylint
+astroid==1.3.6
