@@ -1,4 +1,4 @@
-mock==
+mock
 pytest-cov
 pytest-localserver
 pylama
