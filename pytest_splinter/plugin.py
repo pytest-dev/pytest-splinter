@@ -31,7 +31,6 @@ NAME_RE = re.compile(r'[\W]')
 
 def _visit(self, url):
     """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
-    self.__dict__.pop('status_code', None)
     self.driver.get(url)
     self.wait_for_condition(self.visit_condition, timeout=self.visit_condition_timeout)
 
@@ -49,19 +48,6 @@ def _wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, 
     )
 
 
-def _get_status_code(self):
-    """Lazy status code get."""
-    inst_status_code = self.__dict__.get('status_code')
-    if inst_status_code:
-        return inst_status_code
-    self.connect(self.url)
-    return self.status_code
-
-
-def _set_status_code(self, value):
-    """Lazy status code set."""
-    self.__dict__['status_code'] = value
-
 
 def Browser(*args, **kwargs):
     """Emulate splinter's Browser."""
@@ -73,7 +59,6 @@ def Browser(*args, **kwargs):
         browser.visit_condition = visit_condition
         browser.visit_condition_timeout = visit_condition_timeout
         browser.visit = functools.partial(_visit, browser)
-        browser.__class__.status_code = property(_get_status_code, _set_status_code)
     browser.__splinter_browser__ = True
     return browser
 
