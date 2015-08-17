@@ -48,7 +48,6 @@ def _wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, 
     )
 
 
-
 def Browser(*args, **kwargs):
     """Emulate splinter's Browser."""
     visit_condition = kwargs.pop('visit_condition')
