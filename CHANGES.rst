@@ -1,6 +1,11 @@
 Changelog
 =========
 
+NEXT
+----
+- add option --splinter-wait-time to specify splinter explicit wait timeout
+  (#42) (pelme)
+
 1.4.6
 -----
 
