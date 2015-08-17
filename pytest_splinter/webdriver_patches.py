@@ -19,20 +19,8 @@ old_request = remote_connection.RemoteConnection._request  # pragma: no cover
 RemoteWebDriver._base_execute = RemoteWebDriver.execute  # pragma: no cover
 
 
-def patch_webdriver(selenium_timeout):
+def patch_webdriver():
     """Patch selenium webdriver to add functionality/fix issues."""
-    def _request(*args, **kwargs):
-        """Override _request to set socket timeout to some appropriate value."""
-        timeout = socket.getdefaulttimeout()
-        try:
-            socket.setdefaulttimeout(selenium_timeout)
-            return old_request(*args, **kwargs)
-        finally:
-            socket.setdefaulttimeout(timeout)
-
-    # Apply the monkey patche for RemoteConnection
-    remote_connection.RemoteConnection._request = _request
-
     # Apply the monkey patch to Firefox webdriver to disable native events
     # to avoid click on wrong elements, totally unpredictable
     # more info http://code.google.com/p/selenium/issues/detail?id=633

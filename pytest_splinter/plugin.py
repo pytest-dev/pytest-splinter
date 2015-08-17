@@ -234,9 +234,9 @@ def browser_pool(request, splinter_close_browser):
 
 
 @pytest.fixture(scope='session')
-def browser_patches(splinter_selenium_socket_timeout):
+def browser_patches():
     """Browser monkey patches."""
-    patch_webdriver(splinter_selenium_socket_timeout)
+    patch_webdriver()
     patch_webdriverelement()
 
 
@@ -342,6 +342,10 @@ def browser_instance_getter(
             if hasattr(browser, 'driver'):
                 browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
                 browser.driver.set_speed(splinter_selenium_speed)
+
+                if splinter_webdriver == 'remote':
+                    browser.driver.command_executor.set_timeout(splinter_selenium_socket_timeout)
+
                 if splinter_window_size:
                     browser.driver.set_window_size(*splinter_window_size)
             browser.cookies.delete()
