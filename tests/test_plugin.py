@@ -1,6 +1,7 @@
 """Tests for pytest-splinter plugin."""
 import os.path
 import time
+import socket
 
 import pytest
 
@@ -98,9 +99,23 @@ def test_get_text(simple_page, browser, splinter_webdriver):
 
 
 @pytest.mark.parametrize('check', [1, 2])
-def test_restore_browser(browser, simple_page, check):
+def test_restore_browser(browser, simple_page, check, splinter_webdriver):
     """Test that browser is restored after failure automatically."""
+    if splinter_webdriver == "zope.testbrowser":
+        pytest.skip("zope testbrowser doesn't need restore")
     browser.quit()
+
+
+def test_restore_browser_connection(browser, httpserver, simple_page, splinter_webdriver):
+    """Test that browser connection is restored after failure automatically."""
+    if splinter_webdriver == "zope.testbrowser":
+        pytest.skip("zope testbrowser doesn't need restore")
+
+    def raises(*args, **kwargs):
+        raise socket.error()
+
+    browser.driver.command_executor._conn.request = raises
+    browser.reload()
 
 
 def test_speed(browser, splinter_webdriver):

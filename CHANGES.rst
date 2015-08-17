@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.4.7
+-----
+
+- browser failure tolerance (bubenkoff)
+
 1.4.6
 -----
 

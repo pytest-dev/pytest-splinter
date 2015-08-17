@@ -7,6 +7,7 @@ http://code.google.com/p/selenium/issues/detail?id=5176.
 
 import time  # pragma: no cover
 import socket  # pragma: no cover
+import httplib
 
 from selenium.webdriver.remote import remote_connection  # pragma: no cover
 from selenium.webdriver.firefox import webdriver  # pragma: no cover
@@ -21,12 +22,17 @@ RemoteWebDriver._base_execute = RemoteWebDriver.execute  # pragma: no cover
 
 def patch_webdriver(selenium_timeout):
     """Patch selenium webdriver to add functionality/fix issues."""
-    def _request(*args, **kwargs):
+    def _request(self, *args, **kwargs):
         """Override _request to set socket timeout to some appropriate value."""
         timeout = socket.getdefaulttimeout()
         try:
             socket.setdefaulttimeout(selenium_timeout)
-            return old_request(*args, **kwargs)
+            for _ in xrange(3):
+                try:
+                    return old_request(self, *args, **kwargs)
+                except socket.error:
+                    self._conn = httplib.HTTPConnection(self._conn.host, self._conn.port)
+            raise
         finally:
             socket.setdefaulttimeout(timeout)
 

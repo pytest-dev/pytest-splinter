@@ -312,7 +312,7 @@ def browser_instance_getter(
 
     :return: function(parent). Each time this function will return new instance of plugin.Browser class.
     """
-    def get_browser():
+    def get_browser(retry_count=3):
         kwargs = get_args(driver=splinter_webdriver,
                           download_dir=splinter_file_download_dir,
                           download_ftypes=splinter_download_file_types,
@@ -321,11 +321,17 @@ def browser_instance_getter(
                           remote_url=splinter_remote_url,
                           executable=splinter_webdriver_executable,
                           driver_kwargs=splinter_driver_kwargs)
-        return splinter_browser_class(
-            splinter_webdriver, visit_condition=splinter_browser_load_condition,
-            visit_condition_timeout=splinter_browser_load_timeout,
-            wait_time=splinter_selenium_implicit_wait, **kwargs
-        )
+        try:
+            return splinter_browser_class(
+                splinter_webdriver, visit_condition=splinter_browser_load_condition,
+                visit_condition_timeout=splinter_browser_load_timeout,
+                wait_time=splinter_selenium_implicit_wait, **kwargs
+            )
+        except Exception:  # NOQA
+            if retry_count > 1:
+                return get_browser(retry_count - 1)
+            else:
+                raise
 
     def prepare_browser(request, parent):
         browser_key = id(parent)
