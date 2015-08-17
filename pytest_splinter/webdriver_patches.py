@@ -7,7 +7,10 @@ http://code.google.com/p/selenium/issues/detail?id=5176.
 
 import time  # pragma: no cover
 import socket  # pragma: no cover
-import httplib
+try:
+    from httplib import HTTPConnection, HTTPException
+except ImportError:
+    from http.client import HTTPConnection, HTTPException
 
 from selenium.webdriver.remote import remote_connection  # pragma: no cover
 from selenium.webdriver.firefox import webdriver  # pragma: no cover
@@ -27,12 +30,14 @@ def patch_webdriver(selenium_timeout):
         timeout = socket.getdefaulttimeout()
         try:
             socket.setdefaulttimeout(selenium_timeout)
-            for _ in xrange(3):
+            exception = HTTPException('Unable to get response')
+            for _ in range(3):
                 try:
                     return old_request(self, *args, **kwargs)
-                except socket.error:
-                    self._conn = httplib.HTTPConnection(self._conn.host, self._conn.port)
-            raise
+                except (socket.error, HTTPException, IOError, OSError) as exc:
+                    exception = exc
+                    self._conn = HTTPConnection(self._conn.host, self._conn.port)
+            raise exception
         finally:
             socket.setdefaulttimeout(timeout)
 
