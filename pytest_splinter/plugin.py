@@ -367,7 +367,7 @@ def browser_instance_getter(
 
 
 @pytest.yield_fixture(autouse=True)
-def browser_screenshot(request, splinter_screenshot_dir, session_tmpdir):
+def browser_screenshot(request, splinter_screenshot_dir, session_tmpdir, splinter_make_screenshot_on_failure):
     """Make browser screenshot on test failure."""
     yield
     for name, value in request._funcargs.items():

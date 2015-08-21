@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.5.2
+-----
+
+- respect splinter_make_screenshot_on_failure (bubenkoff)
+
 1.5.1
 -----
 
