@@ -59,6 +59,10 @@ Fixtures
     Implicit wait timeout to be passed to Selenium webdriver.
     Fixture gets the value from the command-line option splinter-implicit-wait (see below)
 
+* splinter_wait_time
+    Explicit wait timeout (for waiting for expicit condition via `wait_for_condition`).
+    Fixture gets the value from the command-line option splinter-wait-time (see below)
+
 * splinter_selenium_speed
     Speed for Selenium, if not 0 then it will sleep between each selenium command.
     Useful for debugging/demonstration.
@@ -106,6 +110,10 @@ Fixtures
 
 * splinter_browser_load_timeout
     Browser load condition timeout in seconds, after this timeout the exception
+    WaitUntilTimeout will be raised.
+
+* splinter_wait_time
+    Browser explicit wait timeout in seconds, after this timeout the exception
     WaitUntilTimeout will be raised.
 
 * splinter_firefox_profile_preferences

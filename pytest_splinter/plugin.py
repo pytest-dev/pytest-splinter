@@ -40,7 +40,7 @@ def _wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, 
     """Wait for given javascript condition."""
     condition = functools.partial(condition or self.visit_condition, self)
 
-    timeout = timeout or self.visit_condition_timeout
+    timeout = timeout or self.wait_time
 
     return wait.WebDriverWait(
         self.driver, timeout, poll_frequency=poll_frequency, ignored_exceptions=ignored_exceptions
@@ -100,6 +100,15 @@ def splinter_selenium_implicit_wait(request):
     :return: Seconds.
     """
     return request.config.option.splinter_webdriver_implicit_wait
+
+
+@pytest.fixture(scope='session')  # pragma: no cover
+def splinter_wait_time(request):
+    """Splinter explicit wait timeout.
+
+    :return: Seconds.
+    """
+    return request.config.option.splinter_wait_time
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -284,6 +293,7 @@ def browser_instance_getter(
         splinter_remote_url,
         splinter_screenshot_dir,
         splinter_selenium_implicit_wait,
+        splinter_wait_time,
         splinter_selenium_socket_timeout,
         splinter_selenium_speed,
         splinter_webdriver,
@@ -310,7 +320,7 @@ def browser_instance_getter(
             return splinter_browser_class(
                 splinter_webdriver, visit_condition=splinter_browser_load_condition,
                 visit_condition_timeout=splinter_browser_load_timeout,
-                wait_time=splinter_selenium_implicit_wait, **kwargs
+                wait_time=splinter_wait_time, **kwargs
             )
         except Exception:  # NOQA
             if retry_count > 1:
@@ -442,6 +452,10 @@ def pytest_addoption(parser):  # pragma: no cover
     group.addoption(
         "--splinter-remote-url",
         help="pytest-splinter remote webdriver url ", metavar="URL", dest='splinter_remote_url', default=None)
+    group.addoption(
+        "--splinter-wait-time",
+        help="splinter explicit wait, seconds", type="int",
+        dest='splinter_wait_time', metavar="SECONDS", default=5)
     group.addoption(
         "--splinter-implicit-wait",
         help="pytest-splinter selenium implicit wait, seconds", type="int",
