@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.5.1
+-----
+
+- use native selenium socket timeout feature (pelme)
+
 1.5.0
 -----
 

@@ -27,6 +27,7 @@ setup(
     install_requires=[
         'setuptools',
         'splinter>=0.7.3',
+        'selenium>=2.47.1',
         'pytest',
     ],
     classifiers=[

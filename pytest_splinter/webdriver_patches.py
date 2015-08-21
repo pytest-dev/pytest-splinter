@@ -23,23 +23,18 @@ old_request = remote_connection.RemoteConnection._request  # pragma: no cover
 RemoteWebDriver._base_execute = RemoteWebDriver.execute  # pragma: no cover
 
 
-def patch_webdriver(selenium_timeout):
+def patch_webdriver():
     """Patch selenium webdriver to add functionality/fix issues."""
     def _request(self, *args, **kwargs):
         """Override _request to set socket timeout to some appropriate value."""
-        timeout = socket.getdefaulttimeout()
-        try:
-            socket.setdefaulttimeout(selenium_timeout)
-            exception = HTTPException('Unable to get response')
-            for _ in range(3):
-                try:
-                    return old_request(self, *args, **kwargs)
-                except (socket.error, HTTPException, IOError, OSError) as exc:
-                    exception = exc
-                    self._conn = HTTPConnection(self._conn.host, self._conn.port)
-            raise exception
-        finally:
-            socket.setdefaulttimeout(timeout)
+        exception = HTTPException('Unable to get response')
+        for _ in range(3):
+            try:
+                return old_request(self, *args, **kwargs)
+            except (socket.error, HTTPException, IOError, OSError) as exc:
+                exception = exc
+                self._conn = HTTPConnection(self._conn.host, self._conn.port)
+        raise exception
 
     # Apply the monkey patche for RemoteConnection
     remote_connection.RemoteConnection._request = _request
