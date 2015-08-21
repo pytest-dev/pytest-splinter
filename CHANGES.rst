@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.4.10
+------
+
+- pytest tmpdir_factory support (bubenkoff)
+
 1.4.9
 -----
 

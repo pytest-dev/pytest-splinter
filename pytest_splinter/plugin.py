@@ -21,6 +21,7 @@ from selenium.webdriver.support import wait
 
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
+from .decorators import with_fixtures
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -243,7 +244,7 @@ def browser_patches(splinter_selenium_socket_timeout):
 @pytest.fixture(scope='session')
 def session_tmpdir(request):
     """pytest tmpdir which is session-scoped."""
-    return tmpdir(request)
+    return with_fixtures(tmpdir)(request)
 
 
 @pytest.fixture(scope='session')
