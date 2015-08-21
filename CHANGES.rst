@@ -1,25 +1,17 @@
 Changelog
 =========
 
-1.4.10
-------
+1.5.0
+-----
 
 - pytest tmpdir_factory support (bubenkoff)
-
-1.4.9
------
-
-- fixed status_code issue that can lead to recursion (bubenkoff)
-
-1.4.8
------
-
-- browser failure tolerance (bubenkoff)
+- depend on splinter 0.7.3, remove the previous status_code monkey patch (pelme)
 
 1.4.6
 -----
 
 - ensure base tempdir exists (bubenkoff)
+
 
 1.4.0
 -----

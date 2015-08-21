@@ -6,6 +6,7 @@ Authors
 
 These people have contributed to `pytest-splinter`, in alphabetical order:
 
+* `Andreas Pelme <andreas@pelme.se>`_
 * `Andrey Makhnach <andrey.makhnach@gmail.com>`_
 * `Daniel Hahler <github@thequod.de>`_
 * `Laurence Rowe <l@lrowe.co.uk>`_
