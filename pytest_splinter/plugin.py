@@ -18,6 +18,7 @@ from _pytest import junitxml
 from _pytest.tmpdir import tmpdir
 
 from selenium.webdriver.support import wait
+from selenium.common.exceptions import WebDriverException
 
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
@@ -218,7 +219,7 @@ def browser_pool(request, splinter_close_browser):
         for browser in pool.values():
             try:
                 browser.quit()
-            except (IOError, OSError):
+            except Exception:  # NOQA
                 pass
 
     if splinter_close_browser:
@@ -268,7 +269,9 @@ def get_args(driver=None,
         }, **firefox_pref)
         kwargs['profile'] = firefox_prof_dir
     elif driver == 'remote':
-        kwargs['url'] = remote_url
+        if remote_url:
+            kwargs['url'] = remote_url
+        kwargs['keep_alive'] = True
     elif driver in ('phantomjs', 'chrome'):
         if executable:
             kwargs['executable_path'] = executable
@@ -296,7 +299,6 @@ def browser_instance_getter(
         splinter_wait_time,
         splinter_selenium_socket_timeout,
         splinter_selenium_speed,
-        splinter_webdriver,
         splinter_webdriver_executable,
         splinter_window_size,
         splinter_browser_class,
@@ -307,7 +309,7 @@ def browser_instance_getter(
 
     :return: function(parent). Each time this function will return new instance of plugin.Browser class.
     """
-    def get_browser(retry_count=3):
+    def get_browser(splinter_webdriver, retry_count=3):
         kwargs = get_args(driver=splinter_webdriver,
                           download_dir=splinter_file_download_dir,
                           download_ftypes=splinter_download_file_types,
@@ -324,19 +326,20 @@ def browser_instance_getter(
             )
         except Exception:  # NOQA
             if retry_count > 1:
-                return get_browser(retry_count - 1)
+                return get_browser(splinter_webdriver, retry_count - 1)
             else:
                 raise
 
     def prepare_browser(request, parent):
+        splinter_webdriver = request.getfuncargvalue('splinter_webdriver')
         browser_key = id(parent)
         browser = browser_pool.get(browser_key)
         if not splinter_session_scoped_browser:
-            browser = get_browser()
+            browser = get_browser(splinter_webdriver)
             if splinter_close_browser:
                 request.addfinalizer(browser.quit)
         elif not browser:
-            browser = browser_pool[browser_key] = get_browser()
+            browser = browser_pool[browser_key] = get_browser(splinter_webdriver)
         try:
             if splinter_webdriver not in browser.driver_name.lower():
                 raise IOError('webdriver does not match')
@@ -352,13 +355,13 @@ def browser_instance_getter(
                 browser.visit_condition = splinter_browser_load_condition
                 browser.visit_condition_timeout = splinter_browser_load_timeout
                 browser.visit('about:blank')
-        except (IOError, HTTPException):
+        except (IOError, HTTPException, WebDriverException):
             # we lost browser, try to restore the justice
             try:
                 browser.quit()
             except Exception:  # NOQA
                 pass
-            browser = browser_pool[browser_key] = get_browser()
+            browser = browser_pool[browser_key] = get_browser(splinter_webdriver)
             prepare_browser(request, parent)
 
         return browser

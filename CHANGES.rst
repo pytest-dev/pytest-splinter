@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.5.3
+-----
+
+- remote webdriver fixes (bubenkoff)
+
 1.5.2
 -----
 

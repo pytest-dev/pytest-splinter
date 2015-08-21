@@ -21,6 +21,7 @@ lib64
 .cache
 MANIFEST
 *.tar.gz
+/node_modules
 
 # Installer logs
 pip-log.txt
