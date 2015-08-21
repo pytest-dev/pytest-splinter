@@ -37,7 +37,7 @@ def test_session_browser(session_browser):
     assert isinstance(session_browser, DriverAPI)
 
 
-def test_status_code(browser, splinter_webdriver):
+def test_status_code(browser, simple_page, splinter_webdriver):
     """Check the browser fixture."""
     if splinter_webdriver == "zope.testbrowser":
         pytest.skip("zope testbrowser doesn't support status code")

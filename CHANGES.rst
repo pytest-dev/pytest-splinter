@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.4.9
+-----
+
+- fixed status_code issue that can lead to recursion (bubenkoff)
+
 1.4.8
 -----
 

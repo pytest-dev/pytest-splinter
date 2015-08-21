@@ -54,8 +54,8 @@ def _get_status_code(self):
     inst_status_code = self.__dict__.get('status_code')
     if inst_status_code:
         return inst_status_code
-    self.connect(self.url)
-    return self.status_code
+    inst_status_code = self.__dict__['status_code'] = self.connect(self.url)
+    return inst_status_code
 
 
 def _set_status_code(self, value):
