@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.6.3
+-----
+
+- screenshot encoding made flexible (bubenkoff)
+
 1.6.2
 -----
 

@@ -3,6 +3,7 @@
 Provides easy interface for the browser from your tests providing the `browser` fixture
 which is an object of splinter Browser class.
 """
+import codecs
 import functools  # pragma: no cover
 try:
     from httplib import HTTPException
@@ -203,6 +204,12 @@ def splinter_screenshot_dir(request):
     return os.path.abspath(request.config.option.splinter_screenshot_dir)
 
 
+@pytest.fixture(scope='session')  # pragma: no cover
+def splinter_screenshot_encoding(request):
+    """Browser screenshot html encoding."""
+    return 'utf-8'
+
+
 @pytest.fixture(scope='session')
 def splinter_webdriver_executable(request):
     """Webdriver executable directory."""
@@ -370,7 +377,9 @@ def browser_instance_getter(
 
 
 @pytest.yield_fixture(autouse=True)
-def browser_screenshot(request, splinter_screenshot_dir, session_tmpdir, splinter_make_screenshot_on_failure):
+def browser_screenshot(
+        request, splinter_screenshot_dir, session_tmpdir, splinter_make_screenshot_on_failure,
+        splinter_screenshot_encoding):
     """Make browser screenshot on test failure."""
     yield
     for name, value in request._funcargs.items():
@@ -396,10 +405,10 @@ def browser_screenshot(request, splinter_screenshot_dir, session_tmpdir, splinte
                 try:
                     html = browser.html
                     browser.driver.save_screenshot(screenshot_path)
-                    with open(screenshot_html_path, 'w') as fd:
+                    with codecs.open(screenshot_html_path, 'w', encoding=splinter_screenshot_encoding) as fd:
                         fd.write(html)
-                    with open(screenshot_path) as fd:
-                        if slaveoutput is not None:
+                    if slaveoutput is not None:
+                        with open(screenshot_path) as fd:
                             slaveoutput.setdefault('screenshots', []).append({
                                 'class_name': classname,
                                 'files': [
@@ -409,7 +418,8 @@ def browser_screenshot(request, splinter_screenshot_dir, session_tmpdir, splinte
                                     },
                                     {
                                         'file_name': screenshot_html_file_name,
-                                        'content': html
+                                        'content': html,
+                                        'encoding': splinter_screenshot_encoding
                                     }]
                             })
                 except Exception as e:  # NOQA
@@ -451,7 +461,9 @@ class SplinterXdistPlugin(object):
             if not os.path.exists(screenshot_dir):
                 os.makedirs(screenshot_dir)
             for fil in screenshot['files']:
-                with open(os.path.join(screenshot_dir, fil['file_name']), 'w') as fd:
+                encoding = fil['encoding']
+                with codecs.open(os.path.join(screenshot_dir, fil['file_name']),
+                                 **dict(encoding=encoding) if encoding else {}) as fd:
                     fd.write(fil['content'])
 
 

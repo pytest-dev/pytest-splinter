@@ -141,6 +141,9 @@ Fixtures
     This fixture gets the value from the command-line option
     `splinter-make-screenshot-on-failure` (see below).
 
+* splinter_screenshot_encoding
+    Encoding of the `html` `screenshot` on test failure. UTF-8 by default.
+
 * splinter_driver_executable
     Filesystem path of the webdriver executable.
     This fixture gets the value from the command-line option

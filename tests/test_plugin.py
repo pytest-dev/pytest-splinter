@@ -170,7 +170,7 @@ def test_browser_screenshot_normal(testdir, simple_page_content):
 
         def test_screenshot(simple_page, browser):
             assert False
-    """.format(simple_page_content), "-vl")
+    """.format(simple_page_content), "-vl", "-r w")
 
     content = testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.html').read()
     assert content.replace('\n', '') == simple_page_content.replace('\n', '')
