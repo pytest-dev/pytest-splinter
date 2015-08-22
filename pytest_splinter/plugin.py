@@ -461,7 +461,7 @@ class SplinterXdistPlugin(object):
             if not os.path.exists(screenshot_dir):
                 os.makedirs(screenshot_dir)
             for fil in screenshot['files']:
-                encoding = fil['encoding']
+                encoding = fil.get('encoding')
                 with codecs.open(os.path.join(screenshot_dir, fil['file_name']),
                                  **dict(encoding=encoding) if encoding else {}) as fd:
                     fd.write(fil['content'])
