@@ -33,7 +33,7 @@ def patch_webdriver():
                 return old_request(self, *args, **kwargs)
             except (socket.error, HTTPException, IOError, OSError) as exc:
                 exception = exc
-                self._conn = HTTPConnection(self._conn.host, self._conn.port)
+                self._conn = HTTPConnection(self._conn.host, self._conn.port, timeout=self._timeout)
         raise exception
 
     # Apply the monkey patche for RemoteConnection

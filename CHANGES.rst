@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.6.1
+-----
+
+- pass timeout to restored connection (bubenkoff)
+
 1.6.0
 -----
 
