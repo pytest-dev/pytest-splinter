@@ -289,6 +289,23 @@ def get_args(driver=None,
 
 
 @pytest.fixture(scope='session')
+def splinter_screenshot_getter_png():
+    """Screenshot getter function: png."""
+    def getter(browser, path):
+        browser.driver.save_screenshot(path)
+    return getter
+
+
+@pytest.fixture(scope='session')
+def splinter_screenshot_getter_html(splinter_screenshot_encoding):
+    """Screenshot getter function: html."""
+    def getter(browser, path):
+        with codecs.open(path, 'w', encoding=splinter_screenshot_encoding) as fd:
+            fd.write(browser.html)
+    return getter
+
+
+@pytest.fixture(scope='session')
 def browser_instance_getter(
         browser_patches,
         splinter_session_scoped_browser,
@@ -379,7 +396,7 @@ def browser_instance_getter(
 @pytest.yield_fixture(autouse=True)
 def browser_screenshot(
         request, splinter_screenshot_dir, session_tmpdir, splinter_make_screenshot_on_failure,
-        splinter_screenshot_encoding):
+        splinter_screenshot_encoding, splinter_screenshot_getter_png, splinter_screenshot_getter_html):
     """Make browser screenshot on test failure."""
     yield
     for name, value in request._funcargs.items():
@@ -399,29 +416,28 @@ def browser_screenshot(
                         os.makedirs(screenshot_dir)
                 else:
                     screenshot_dir = session_tmpdir.ensure('screenshots', dir=True).strpath
-                screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
+                screenshot_png_path = os.path.join(screenshot_dir, screenshot_file_name)
                 screenshot_html_path = os.path.join(screenshot_dir, screenshot_html_file_name)
-                LOGGER.info('Saving screenshot to %s', screenshot_path)
+                LOGGER.info('Saving screenshot to %s', screenshot_dir)
                 try:
-                    html = browser.html
-                    browser.driver.save_screenshot(screenshot_path)
-                    with codecs.open(screenshot_html_path, 'w', encoding=splinter_screenshot_encoding) as fd:
-                        fd.write(html)
+                    splinter_screenshot_getter_html(browser, screenshot_html_path)
+                    splinter_screenshot_getter_png(browser, screenshot_png_path)
                     if slaveoutput is not None:
-                        with open(screenshot_path) as fd:
-                            slaveoutput.setdefault('screenshots', []).append({
-                                'class_name': classname,
-                                'files': [
-                                    {
-                                        'file_name': screenshot_file_name,
-                                        'content': fd.read(),
-                                    },
-                                    {
-                                        'file_name': screenshot_html_file_name,
-                                        'content': html,
-                                        'encoding': splinter_screenshot_encoding
-                                    }]
-                            })
+                        with codecs.open(screenshot_html_path, encoding=splinter_screenshot_encoding) as html_fd:
+                            with open(screenshot_png_path) as fd:
+                                slaveoutput.setdefault('screenshots', []).append({
+                                    'class_name': classname,
+                                    'files': [
+                                        {
+                                            'file_name': screenshot_file_name,
+                                            'content': fd.read(),
+                                        },
+                                        {
+                                            'file_name': screenshot_html_file_name,
+                                            'content': html_fd.read(),
+                                            'encoding': splinter_screenshot_encoding
+                                        }]
+                                })
                 except Exception as e:  # NOQA
                     request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
 

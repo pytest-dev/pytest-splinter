@@ -144,6 +144,14 @@ Fixtures
 * splinter_screenshot_encoding
     Encoding of the `html` `screenshot` on test failure. UTF-8 by default.
 
+* splinter_screenshot_getter_html
+    Function to get browser html screenshot. By default, it saves `browser.html` with given path and
+    `splinter_screenshot_encoding` encoding.
+
+* splinter_screenshot_getter_png
+    Function to get browser image (png) screenshot. By default, it calls `browser.save_sceenshot`
+    with given path.
+
 * splinter_driver_executable
     Filesystem path of the webdriver executable.
     This fixture gets the value from the command-line option

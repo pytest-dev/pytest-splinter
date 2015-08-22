@@ -174,3 +174,4 @@ def test_browser_screenshot_normal(testdir, simple_page_content):
 
     content = testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.html').read()
     assert content.replace('\n', '') == simple_page_content.replace('\n', '')
+    assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')

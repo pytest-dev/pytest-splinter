@@ -6,7 +6,7 @@ import mock
 from _pytest.config import Config
 
 
-def test_browser_screenshot_normal(testdir):
+def test_browser_screenshot_normal(mocked_browser, testdir):
     """Test making screenshots on test failure.
 
     Normal test run.
@@ -14,7 +14,7 @@ def test_browser_screenshot_normal(testdir):
     testdir.inline_runsource("""
         def test_screenshot(browser):
             assert False
-    """, "-vl", "--splinter-session-scoped-browser=false")
+    """, "-vls", "--splinter-session-scoped-browser=false")
 
     assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png').isfile()
 
@@ -25,10 +25,11 @@ def test_browser_screenshot_error(mocked_warn, mocked_browser, testdir):
     """Test warning with error during taking screenshots on test failure."""
     mocked_browser.return_value.driver.save_screenshot.side_effect = Exception('Failed')
     mocked_browser.return_value.driver_name = 'firefox'
+    mocked_browser.return_value.html = u'<html>'
     testdir.inline_runsource("""
         def test_screenshot(browser):
             assert False
-    """, "-vvl", "-r w", "--splinter-session-scoped-browser=false")
+    """, "-v", "-r w", "--splinter-session-scoped-browser=false")
     mocked_warn.assert_called_with(mock.ANY, 'SPL504', 'Could not save screenshot: Failed')
 
 
