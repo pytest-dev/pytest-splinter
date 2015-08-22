@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.6.0
+-----
+
+- added html screenshot (bubenkoff, blueyed)
+
 1.5.3
 -----
 

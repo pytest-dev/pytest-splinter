@@ -381,23 +381,36 @@ def browser_screenshot(request, splinter_screenshot_dir, session_tmpdir, splinte
                 names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
                 classname = '.'.join(names[:-1])
                 screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
-                screenshot_file_name = '{0}-{1}.png'.format(
+                screenshot_file_name_format = '{0}-{1}.{{format}}'.format(
                     names[-1][:128 - len(name) - 5], name)
+                screenshot_file_name = screenshot_file_name_format.format(format='png')
+                screenshot_html_file_name = screenshot_file_name_format.format(format='html')
                 if not slaveoutput:
                     if not os.path.exists(screenshot_dir):
                         os.makedirs(screenshot_dir)
                 else:
                     screenshot_dir = session_tmpdir.ensure('screenshots', dir=True).strpath
                 screenshot_path = os.path.join(screenshot_dir, screenshot_file_name)
+                screenshot_html_path = os.path.join(screenshot_dir, screenshot_html_file_name)
                 LOGGER.info('Saving screenshot to %s', screenshot_path)
                 try:
+                    html = browser.html
                     browser.driver.save_screenshot(screenshot_path)
+                    with open(screenshot_html_path, 'w') as fd:
+                        fd.write(html)
                     with open(screenshot_path) as fd:
                         if slaveoutput is not None:
                             slaveoutput.setdefault('screenshots', []).append({
                                 'class_name': classname,
-                                'file_name': screenshot_file_name,
-                                'content': fd.read()
+                                'files': [
+                                    {
+                                        'file_name': screenshot_file_name,
+                                        'content': fd.read(),
+                                    },
+                                    {
+                                        'file_name': screenshot_html_file_name,
+                                        'content': html
+                                    }]
                             })
                 except Exception as e:  # NOQA
                     request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
@@ -437,8 +450,9 @@ class SplinterXdistPlugin(object):
             screenshot_dir = os.path.join(config_screenshot_dir, screenshot['class_name'])
             if not os.path.exists(screenshot_dir):
                 os.makedirs(screenshot_dir)
-            with open(os.path.join(screenshot_dir, screenshot['file_name']), 'w') as fd:
-                fd.write(screenshot['content'])
+            for fil in screenshot['files']:
+                with open(os.path.join(screenshot_dir, fil['file_name']), 'w') as fd:
+                    fd.write(fil['content'])
 
 
 def pytest_configure(config):

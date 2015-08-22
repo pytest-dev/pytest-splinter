@@ -10,20 +10,25 @@ from pytest_splinter.plugin import get_args
 
 
 @pytest.fixture
-def simple_page(httpserver, browser):
+def simple_page_content():
+    """Simple page content."""
+    return """<html xmlns="http://www.w3.org/1999/xhtml"><head></head>
+    <body>
+        <div id="content">
+            <p>
+                Some <strong>text</strong>
+            </p>
+        </div>
+        <textarea id="textarea">area text</textarea>
+    </body>
+</html>"""
+
+
+@pytest.fixture
+def simple_page(httpserver, browser, simple_page_content):
     """Simple served html page."""
     httpserver.serve_content(
-        """
-        <html>
-            <body>
-                <div id="content">
-                    <p>
-                        Some <strong>text</strong>
-                    </p>
-                </div>
-                <textarea id="textarea">area text</textarea>
-            </body>
-        </html>""", code=200, headers={'Content-Type': 'text/html'})
+        simple_page_content, code=200, headers={'Content-Type': 'text/html'})
     browser.visit(httpserver.url)
 
 
@@ -147,3 +152,25 @@ def test_executable():
     arg2 = get_args(driver='chrome', executable='/tmp')
     assert arg1['executable_path'] == '/tmp'
     assert arg2['executable_path'] == '/tmp'
+
+
+def test_browser_screenshot_normal(testdir, simple_page_content):
+    """Test making screenshots on test failure.
+
+    Normal test run.
+    """
+    testdir.inline_runsource("""
+        import pytest
+
+        @pytest.fixture
+        def simple_page(httpserver, browser):
+            httpserver.serve_content(
+                '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
+            browser.visit(httpserver.url)
+
+        def test_screenshot(simple_page, browser):
+            assert False
+    """.format(simple_page_content), "-vl")
+
+    content = testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.html').read()
+    assert content.replace('\n', '') == simple_page_content.replace('\n', '')

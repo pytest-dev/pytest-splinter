@@ -44,3 +44,4 @@ def test_browser_screenshot_xdist(testdir):
     """, "-vl", "-n1")
 
     assert testdir.tmpdir.join('test_browser_screenshot_xdist', 'test_screenshot-browser.png').isfile()
+    assert testdir.tmpdir.join('test_browser_screenshot_xdist', 'test_screenshot-browser.html').isfile()
