@@ -70,27 +70,28 @@ def test_download_file(httpserver, browser, splinter_file_download_dir, file_ext
             'Content-Disposition': 'attachment; filename={0}'.format(file_name),
             'Content-Type': mime_type})
     browser.visit(httpserver.url)
-    time.sleep(0.5)
+    time.sleep(1)
     assert open(os.path.join(splinter_file_download_dir, file_name)).read() == 'Some text file'
 
 
-@pytest.mark.parametrize('cookie_value', ['value1', 'value2'])
-def test_clean_cookies(httpserver, browser, cookie_value, splinter_webdriver):
+@pytest.mark.parametrize('cookie_name', ['name1', 'name2'])
+@pytest.mark.parametrize('splinter_webdriver', ['firefox', 'phantomjs'])
+def test_clean_cookies(httpserver, browser, cookie_name, splinter_webdriver, splinter_session_scoped_browser):
     """Test that browser has always clean state (no cookies set)."""
     if splinter_webdriver == "zope.testbrowser":
         pytest.skip("zope testbrowser doesn't execute js")
-    assert 'test' not in browser.cookies.all()
+    assert not browser.cookies.all()
     httpserver.serve_content(
         """
         <html>
             <body>
                 <script>
-                    document.cookie = 'test=value'
+                    document.cookie = '{name}=value'
                 </script>
             </body>
-        </html>""", code=200, headers={'Content-Type': 'text/html'})
+        </html>""".format(name=cookie_name), code=200, headers={'Content-Type': 'text/html'})
     browser.visit(httpserver.url)
-    assert browser.cookies['test']
+    assert browser.cookies.all() == {cookie_name: 'value'}
 
 
 @pytest.mark.skipif('sys.version_info[0] > 2')

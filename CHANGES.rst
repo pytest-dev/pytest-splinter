@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.7.0
+-----
+
+- add possibility to clean cookies on given domains during the browser cleanup, document cookies cleanup (bubenkoff)
+
 1.6.6
 -----
 

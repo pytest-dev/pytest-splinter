@@ -161,6 +161,13 @@ Fixtures
     Class to use for browser instance.
     Defaults to `pytest_splinter.plugin.Browser`.
 
+* splinter_clean_cookies_urls
+    List of additional urls to clean cookies on. By default, during the preparation of the browser for the test,
+    pytest-splinter only cleans cookies for the last visited url from previous test, as it's not possible to clean
+    all cookies from all domains at once via webdriver protocol, by design. This limitation can be worked around if
+    you know the list of urls, the domains for which you need to clean cookies (for example https://facebook.com).
+    If so, you can override this fixture and put those urls there, and pytest-splinter will visit each of them and will
+    clean the cookies for each domain.
 
 Command-line options
 --------------------

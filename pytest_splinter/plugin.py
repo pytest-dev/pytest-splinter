@@ -306,6 +306,12 @@ def splinter_screenshot_getter_html(splinter_screenshot_encoding):
 
 
 @pytest.fixture(scope='session')
+def splinter_clean_cookies_urls():
+    """List of urls to clean cookies on their domains."""
+    return []
+
+
+@pytest.fixture(scope='session')
 def browser_instance_getter(
         browser_patches,
         splinter_session_scoped_browser,
@@ -326,6 +332,7 @@ def browser_instance_getter(
         splinter_webdriver_executable,
         splinter_window_size,
         splinter_browser_class,
+        splinter_clean_cookies_urls,
         session_tmpdir,
         browser_pool,
 ):
@@ -375,6 +382,9 @@ def browser_instance_getter(
                 if splinter_window_size:
                     browser.driver.set_window_size(*splinter_window_size)
             browser.cookies.delete()
+            for url in splinter_clean_cookies_urls:
+                browser.visit(url)
+                browser.cookies.delete()
             if hasattr(browser, 'driver'):
                 browser.visit_condition = splinter_browser_load_condition
                 browser.visit_condition_timeout = splinter_browser_load_timeout

@@ -22,6 +22,14 @@ old_request = remote_connection.RemoteConnection._request  # pragma: no cover
 # save the original execute
 RemoteWebDriver._base_execute = RemoteWebDriver.execute  # pragma: no cover
 
+old_init = RemoteWebDriver.__init__  # pragma: no cover
+
+
+def __init__(self, *args, **kwargs):
+    """Set keep_alive to True."""
+    kwargs['keep_alive'] = True
+    return old_init(self, *args, **kwargs)
+
 
 def patch_webdriver():
     """Patch selenium webdriver to add functionality/fix issues."""
@@ -74,3 +82,4 @@ def patch_webdriver():
     RemoteWebDriver.execute = execute
     RemoteWebDriver.get_current_window_info = get_current_window_info
     RemoteWebDriver.current_window_is_main = current_window_is_main
+    RemoteWebDriver.__init__ = __init__

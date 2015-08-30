@@ -8,6 +8,7 @@ PATH := .env/bin:$(PATH)
 develop: .env
 	pip install -e . -r requirements-testing.txt tox coveralls
 	npm install selenium-standalone
+	node_modules/.bin/selenium-standalone install
 
 coverage: develop
 	coverage run --source=pytest_splinter .env/bin/py.test tests
