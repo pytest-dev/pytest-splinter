@@ -51,6 +51,16 @@ def _wait_for_condition(self, condition=None, timeout=None, poll_frequency=0.5, 
     )
 
 
+def _screenshot_extraline(screenshot_png_file_name, screenshot_html_file_name):
+    return """
+===========================
+pytest-splinter screenshots
+===========================
+png:  %s
+html: %s
+""" % (screenshot_png_file_name, screenshot_html_file_name)
+
+
 def Browser(*args, **kwargs):
     """Emulate splinter's Browser."""
     visit_condition = kwargs.pop('visit_condition')
@@ -432,6 +442,9 @@ def browser_screenshot(
                 try:
                     splinter_screenshot_getter_html(browser, screenshot_html_path)
                     splinter_screenshot_getter_png(browser, screenshot_png_path)
+                    if request.node.splinter_failure.longrepr:
+                        reprtraceback = request.node.splinter_failure.longrepr.reprtraceback
+                        reprtraceback.extraline = _screenshot_extraline(screenshot_png_path, screenshot_html_path)
                     if slaveoutput is not None:
                         with codecs.open(screenshot_html_path, encoding=splinter_screenshot_encoding) as html_fd:
                             with open(screenshot_png_path) as fd:
