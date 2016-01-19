@@ -164,7 +164,8 @@ def splinter_firefox_profile_preferences():
         'browser.cache.memory.enable': False,
         'browser.sessionhistory.max_total_viewers': 0,
         'network.http.pipelining': True,
-        'network.http.pipelining.maxrequests': 8
+        'network.http.pipelining.maxrequests': 8,
+        'startup.homepage_welcome_url.additional': '',
     }
 
 
