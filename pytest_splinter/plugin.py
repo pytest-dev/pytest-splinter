@@ -19,6 +19,7 @@ from _pytest import junitxml
 from _pytest.tmpdir import tmpdir
 
 from selenium.webdriver.support import wait
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.common.exceptions import WebDriverException
 
 from .webdriver_patches import patch_webdriver  # pragma: no cover
@@ -175,7 +176,14 @@ def splinter_firefox_profile_preferences():
         'browser.sessionhistory.max_total_viewers': 0,
         'network.http.pipelining': True,
         'network.http.pipelining.maxrequests': 8,
-        'startup.homepage_welcome_url.additional': '',
+        'browser.startup.page': 0,
+        'browser.startup.homepage': 'about:blank',
+        'startup.homepage_welcome_url': 'about:blank',
+        'startup.homepage_welcome_url.additional': 'about:blank',
+        'browser.startup.homepage_override.mstone': 'ignore',
+        'toolkit.telemetry.reportingpolicy.firstRun': False,
+        'datareporting.healthreport.service.firstRun': False,
+        'browser.cache.disk.smart_size.first_run': False,
     }
 
 
@@ -276,26 +284,31 @@ def get_args(driver=None,
     """Construct arguments to be passed to webdriver on initialization."""
     kwargs = {}
 
+    firefox_profile_preferences = dict({
+        'browser.download.folderList': 2,
+        'browser.download.manager.showWhenStarting': False,
+        'browser.download.dir': download_dir,
+        'browser.helperApps.neverAsk.saveToDisk': download_ftypes,
+        'browser.helperApps.alwaysAsk.force': False,
+        'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
+    }, **firefox_pref or {})
+
     if driver == 'firefox':
-        kwargs['profile_preferences'] = dict({
-            'browser.download.folderList': 2,
-            'browser.download.manager.showWhenStarting': False,
-            'browser.download.dir': download_dir,
-            'browser.helperApps.neverAsk.saveToDisk': download_ftypes,
-            'browser.helperApps.alwaysAsk.force': False,
-            'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
-        }, **firefox_pref)
+        kwargs['profile_preferences'] = firefox_profile_preferences
         kwargs['profile'] = firefox_prof_dir
     elif driver == 'remote':
         if remote_url:
             kwargs['url'] = remote_url
         kwargs['keep_alive'] = True
+        profile = FirefoxProfile(firefox_prof_dir)
+        for key, value in firefox_profile_preferences.items():
+            profile.set_preference(key, value)
+        kwargs['firefox_profile'] = profile.encoded
     elif driver in ('phantomjs', 'chrome'):
         if executable:
             kwargs['executable_path'] = executable
     if driver_kwargs:
         kwargs.update(driver_kwargs)
-
     return kwargs
 
 
