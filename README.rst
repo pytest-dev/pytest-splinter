@@ -1,6 +1,10 @@
 Splinter plugin for the py.test runner
 ======================================
 
+.. image:: https://badges.gitter.im/pytest-dev/pytest-splinter.svg
+   :alt: Join the chat at https://gitter.im/pytest-dev/pytest-splinter
+   :target: https://gitter.im/pytest-dev/pytest-splinter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 .. image:: https://api.travis-ci.org/pytest-dev/pytest-splinter.png
     :target: https://travis-ci.org/pytest-dev/pytest-splinter
 .. image:: https://pypip.in/v/pytest-splinter/badge.png
