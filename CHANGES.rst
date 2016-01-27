@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.7.1
+-----
+
+- pytest warnings fixed (firebirdberlin)
+- remove firefox firstrun script (aaugustin, bubenkoff)
+
 1.7.0
 -----
 
