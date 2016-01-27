@@ -452,15 +452,15 @@ def browser_screenshot(
                     request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
 
 
-@pytest.mark.tryfirst
-def pytest_runtest_makereport(item, call, __multicall__):
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
     """Assign the report to the item for futher usage."""
-    rep = __multicall__.execute()
+    outcome = yield
+    rep = outcome.get_result()
     if rep.outcome != 'passed':
         item.splinter_failure = rep
     else:
         item.splinter_failure = None
-    return rep
 
 
 @pytest.fixture
