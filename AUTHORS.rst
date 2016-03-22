@@ -12,6 +12,7 @@ These people have contributed to `pytest-splinter`, in alphabetical order:
 * `Daniel Hahler <github@thequod.de>`_
 * `Laurence Rowe <l@lrowe.co.uk>`_
 * `Marco Buccini <markon@github.com>`_
+* `Oleg Pidsadnyi <oleg.pidsadnyi@gmail.com>`_
 * `Peter Lauri <peterlauri@gmail.com>`_
 * `Suresh V <sureshvv@github.com>`_
 * `Tomáš Ehrlich <tomas.ehrlich@gmail.com>`_

@@ -9,6 +9,7 @@ try:
     from httplib import HTTPException
 except ImportError:
     from http.client import HTTPException
+import logging
 import mimetypes  # pragma: no cover
 import os.path
 import re
@@ -26,7 +27,7 @@ from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
 from .decorators import with_fixtures
 
-import logging
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -387,6 +388,8 @@ def browser_instance_getter(
 
     def prepare_browser(request, parent):
         splinter_webdriver = request.getfuncargvalue('splinter_webdriver')
+        splinter_session_scoped_browser = request.getfuncargvalue('splinter_session_scoped_browser')
+        splinter_close_browser = request.getfuncargvalue('splinter_close_browser')
         browser_key = id(parent)
         browser = browser_pool.get(browser_key)
         if not splinter_session_scoped_browser:
@@ -438,7 +441,12 @@ def browser_screenshot(
             browser = value
             if splinter_make_screenshot_on_failure and request.node.splinter_failure:
                 slaveoutput = getattr(request.config, 'slaveoutput', None)
-                names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
+                try:
+                    names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
+                except AttributeError:
+                    # pytest>=2.9.0
+                    names = junitxml.mangle_test_address(request.node.nodeid)
+
                 classname = '.'.join(names[:-1])
                 screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
                 screenshot_file_name_format = '{0}-{1}.{{format}}'.format(
