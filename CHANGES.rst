@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.7.2
+-----
+
+- fixed taking a screenshot with pytest>=2.9.0 (olegpidsadnyi)
+
+
 1.7.1
 -----
 
