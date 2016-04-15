@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.7.3
+-----
+
+- fixed Firefox freezing when opening a missing codec extension (olegpidsadnyi)
+
+
 1.7.2
 -----
 
