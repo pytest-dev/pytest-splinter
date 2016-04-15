@@ -185,6 +185,7 @@ def splinter_firefox_profile_preferences():
         'toolkit.telemetry.reportingpolicy.firstRun': False,
         'datareporting.healthreport.service.firstRun': False,
         'browser.cache.disk.smart_size.first_run': False,
+        'media.gmp-gmpopenh264.enabled': False,  # Firefox hangs when the file is not found
     }
 
 
