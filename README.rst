@@ -27,7 +27,7 @@ Install pytest-splinter
 Features
 --------
 
-The plugin provides a set of fixtures to use `splinter <http://splinter.readthedocs.org>`_
+The plugin provides a set of fixtures to use `splinter <https://splinter.readthedocs.io>`_
 for browser testing with `pytest <http://pytest.org>`_
 
 
