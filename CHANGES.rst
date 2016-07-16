@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.7.5
+-----
+
+- escape screenshot paths for path separators (bubenkoff)
+
+
 1.7.4
 -----
 
