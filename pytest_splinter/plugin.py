@@ -449,8 +449,9 @@ def browser_screenshot(
 
                 classname = '.'.join(names[:-1])
                 screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
-                screenshot_file_name_format = '{0}-{1}.{{format}}'.format(
-                    names[-1][:128 - len(name) - 5], name)
+                screenshot_file_name_format = '{0}.{{format}}'.format(
+                    '{0}-{1}'.format(names[-1][:128 - len(name) - 5], name).replace(os.path.sep, '-')
+                )
                 screenshot_file_name = screenshot_file_name_format.format(format='png')
                 screenshot_html_file_name = screenshot_file_name_format.format(format='html')
                 if not slaveoutput:
