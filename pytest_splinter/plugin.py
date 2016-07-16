@@ -17,7 +17,6 @@ import re
 import pytest  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
-from _pytest.tmpdir import tmpdir
 
 from selenium.webdriver.support import wait
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -25,7 +24,6 @@ from selenium.common.exceptions import WebDriverException
 
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
-from .decorators import with_fixtures
 
 
 LOGGER = logging.getLogger(__name__)
@@ -264,9 +262,10 @@ def browser_patches():
 
 
 @pytest.fixture(scope='session')
-def session_tmpdir(request):
+def session_tmpdir(request, tmpdir_factory):
     """pytest tmpdir which is session-scoped."""
-    return with_fixtures(tmpdir)(request)
+    from _pytest.tmpdir import tmpdir
+    return tmpdir(request, tmpdir_factory)
 
 
 @pytest.fixture(scope='session')

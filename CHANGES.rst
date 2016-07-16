@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.7.4
+-----
+
+- use tmpdir_factory to get session scoped tmpdir (RonnyPfannschmidt, bubenkoff)
+
+
 1.7.3
 -----
 
