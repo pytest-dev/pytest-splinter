@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.7.6
+-----
+
+- Support pytest 3 (bubenkoff)
+- Less opionated override of splinter's visit (bubenkoff)
+
 1.7.5
 -----
 

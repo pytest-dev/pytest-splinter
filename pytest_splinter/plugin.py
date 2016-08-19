@@ -32,9 +32,9 @@ LOGGER = logging.getLogger(__name__)
 NAME_RE = re.compile(r'[\W]')
 
 
-def _visit(self, url):
+def _visit(self, old_visit, url):
     """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
-    self.driver.get(url)
+    old_visit(url)
     self.wait_for_condition(self.visit_condition, timeout=self.visit_condition_timeout)
 
 
@@ -70,7 +70,7 @@ def Browser(*args, **kwargs):
     if hasattr(browser, 'driver'):
         browser.visit_condition = visit_condition
         browser.visit_condition_timeout = visit_condition_timeout
-        browser.visit = functools.partial(_visit, browser)
+        browser.visit = functools.partial(_visit, browser, browser.visit)
     browser.__splinter_browser__ = True
     return browser
 
@@ -436,7 +436,11 @@ def browser_screenshot(
         splinter_screenshot_encoding, splinter_screenshot_getter_png, splinter_screenshot_getter_html):
     """Make browser screenshot on test failure."""
     yield
-    for name, value in request._funcargs.items():
+    for name, value in (
+            # pytest 3
+            getattr(request, '_fixture_values', {}) or
+            # pytest 2
+            getattr(request, '_funcargs', {})).items():
         if hasattr(value, '__splinter_browser__'):
             browser = value
             if splinter_make_screenshot_on_failure and request.node.splinter_failure:
