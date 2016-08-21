@@ -46,7 +46,6 @@ def test_status_code(browser, simple_page, splinter_webdriver):
     """Check the browser fixture."""
     if splinter_webdriver == "zope.testbrowser":
         pytest.skip("zope testbrowser doesn't support status code")
-    assert 'status_code' not in browser.__dict__
     assert browser.status_code == 200
 
 
