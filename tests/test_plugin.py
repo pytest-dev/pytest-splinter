@@ -177,6 +177,29 @@ def test_browser_screenshot_normal(testdir, simple_page_content):
     assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')
 
 
+def test_browser_screenshot_function_scoped_browser(testdir, simple_page_content):
+    """Test making screenshots on test failure.
+
+    Normal test run.
+    """
+    testdir.inline_runsource("""
+        import pytest
+
+        @pytest.fixture
+        def simple_page(httpserver, browser):
+            httpserver.serve_content(
+                '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
+            browser.visit(httpserver.url)
+
+        def test_screenshot(simple_page, browser):
+            assert False
+    """.format(simple_page_content), "-vl", "-r w", '--splinter-session-scoped-browser=false')
+
+    content = testdir.tmpdir.join('test_browser_screenshot_function_scoped_browser', 'test_screenshot-browser.html').read()
+    assert content.replace('\n', '') == simple_page_content.replace('\n', '')
+    assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')
+
+
 def test_browser_screenshot_escaped(testdir, simple_page_content):
     """Test making screenshots on test failure with escaped test names.
 
