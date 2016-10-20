@@ -4,3 +4,4 @@ pytest-localserver
 pylama
 pylama_pylint
 astroid>=1.4.5
+selenium<3

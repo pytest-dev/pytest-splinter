@@ -2,12 +2,11 @@ sudo: false
 language: python
 python: "3.4"
 addons:
-  firefox: "latest"
+  firefox: "37.0.1"
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-#  - "npm install -g selenium-standalone@4.5.3"
-  - "npm install -g selenium-standalone"
+  - "npm install -g selenium-standalone@4.5.3"
   - "selenium-standalone install"
   - "selenium-standalone start &"
 env:
