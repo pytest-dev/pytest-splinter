@@ -84,7 +84,7 @@ def splinter_close_browser():
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_webdriver(request):
     """Webdriver fixture."""
-    return request.config.option.splinter_webdriver
+    return request.config.option.splinter_webdriver or 'firefox'
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -545,7 +545,7 @@ def pytest_addoption(parser):  # pragma: no cover
     group.addoption(
         "--splinter-webdriver",
         help="pytest-splinter webdriver", type="choice", choices=list(splinter.browser._DRIVERS.keys()),
-        dest='splinter_webdriver', metavar="DRIVER", default='firefox')
+        dest='splinter_webdriver', metavar="DRIVER", default=None)
     group.addoption(
         "--splinter-remote-url",
         help="pytest-splinter remote webdriver url ", metavar="URL", dest='splinter_remote_url', default=None)
