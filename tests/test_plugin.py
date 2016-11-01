@@ -195,7 +195,10 @@ def test_browser_screenshot_function_scoped_browser(testdir, simple_page_content
             assert False
     """.format(simple_page_content), "-vl", "-r w", '--splinter-session-scoped-browser=false')
 
-    content = testdir.tmpdir.join('test_browser_screenshot_function_scoped_browser', 'test_screenshot-browser.html').read()
+    content = testdir.tmpdir.join(
+        'test_browser_screenshot_function_scoped_browser',
+        'test_screenshot-browser.html'
+    ).read()
     assert content.replace('\n', '') == simple_page_content.replace('\n', '')
     assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')
 
