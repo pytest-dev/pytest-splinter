@@ -392,7 +392,7 @@ def browser_instance_getter(
     def take_screenshot(request, parent, browser_instance):
         name = parent.__name__
 
-        if splinter_make_screenshot_on_failure and request.node.splinter_failure:
+        if splinter_make_screenshot_on_failure and getattr(request.node, 'splinter_failure', False):
             slaveoutput = getattr(request.config, 'slaveoutput', None)
             try:
                 names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
