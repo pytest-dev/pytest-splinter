@@ -154,6 +154,14 @@ def test_executable():
     assert arg2['executable_path'] == '/tmp'
 
 
+def assert_valid_html_screenshot_content(content):
+    """Make sure content fetched from html screenshoting looks correct."""
+    assert content.startswith('<html xmlns="http://www.w3.org/1999/xhtml">')
+    assert '<div id="content">' in content
+    assert '<strong>text</strong>' in content
+    assert content.endswith('</html>')
+
+
 def test_browser_screenshot_normal(testdir, simple_page_content):
     """Test making screenshots on test failure.
 
@@ -172,8 +180,35 @@ def test_browser_screenshot_normal(testdir, simple_page_content):
             assert False
     """.format(simple_page_content), "-vl", "-r w")
 
+    assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')
     content = testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.html').read()
-    assert content.replace('\n', '') == simple_page_content.replace('\n', '')
+    assert_valid_html_screenshot_content(content)
+
+
+def test_browser_screenshot_function_scoped_browser(testdir, simple_page_content):
+    """Test making screenshots on test failure.
+
+    Normal test run.
+    """
+    testdir.inline_runsource("""
+        import pytest
+
+        @pytest.fixture
+        def simple_page(httpserver, browser):
+            httpserver.serve_content(
+                '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
+            browser.visit(httpserver.url)
+
+        def test_screenshot(simple_page, browser):
+            assert False
+    """.format(simple_page_content), "-vl", "-r w", '--splinter-session-scoped-browser=false')
+
+    content = testdir.tmpdir.join(
+        'test_browser_screenshot_function_scoped_browser',
+        'test_screenshot-browser.html'
+    ).read()
+
+    assert_valid_html_screenshot_content(content)
     assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')
 
 
@@ -198,5 +233,5 @@ def test_browser_screenshot_escaped(testdir, simple_page_content):
 
     content = testdir.tmpdir.join(
         'test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.html').read()
-    assert content.replace('\n', '') == simple_page_content.replace('\n', '')
+    assert_valid_html_screenshot_content(content)
     assert testdir.tmpdir.join('test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.png')
