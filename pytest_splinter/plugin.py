@@ -348,7 +348,6 @@ def _take_screenshot(
 
     Invoked from session and function browser fixtures.
     """
-
     slaveoutput = getattr(request.config, 'slaveoutput', None)
     try:
         names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
