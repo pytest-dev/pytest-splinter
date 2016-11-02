@@ -336,6 +336,101 @@ def splinter_clean_cookies_urls():
     return []
 
 
+def _take_screenshot(
+        request,
+        browser_instance,
+        fixture_name,
+        splinter_make_screenshot_on_failure,
+        splinter_screenshot_dir,
+        splinter_screenshot_getter_html,
+        splinter_screenshot_getter_png
+):
+
+    if splinter_make_screenshot_on_failure and request.node.splinter_failure:
+        slaveoutput = getattr(request.config, 'slaveoutput', None)
+        try:
+            names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
+        except AttributeError:
+            # pytest>=2.9.0
+            names = junitxml.mangle_test_address(request.node.nodeid)
+
+        classname = '.'.join(names[:-1])
+        screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
+        screenshot_file_name_format = '{0}.{{format}}'.format(
+            '{0}-{1}'.format(names[-1][:128 - len(fixture_name) - 5], fixture_name).replace(os.path.sep, '-')
+        )
+        screenshot_file_name = screenshot_file_name_format.format(format='png')
+        screenshot_html_file_name = screenshot_file_name_format.format(format='html')
+        if not slaveoutput:
+            if not os.path.exists(screenshot_dir):
+                os.makedirs(screenshot_dir)
+        else:
+            screenshot_dir = session_tmpdir.ensure('screenshots', dir=True).strpath
+        screenshot_png_path = os.path.join(screenshot_dir, screenshot_file_name)
+        screenshot_html_path = os.path.join(screenshot_dir, screenshot_html_file_name)
+        LOGGER.info('Saving screenshot to %s', screenshot_dir)
+        try:
+            splinter_screenshot_getter_html(browser_instance, screenshot_html_path)
+            splinter_screenshot_getter_png(browser_instance, screenshot_png_path)
+            if request.node.splinter_failure.longrepr:
+                reprtraceback = request.node.splinter_failure.longrepr.reprtraceback
+                reprtraceback.extraline = _screenshot_extraline(screenshot_png_path, screenshot_html_path)
+            if slaveoutput is not None:
+                with codecs.open(screenshot_html_path, encoding=splinter_screenshot_encoding) as html_fd:
+                    with open(screenshot_png_path) as fd:
+                        slaveoutput.setdefault('screenshots', []).append({
+                            'class_name': classname,
+                            'files': [
+                                {
+                                    'file_name': screenshot_file_name,
+                                    'content': fd.read(),
+                                },
+                                {
+                                    'file_name': screenshot_html_file_name,
+                                    'content': html_fd.read(),
+                                    'encoding': splinter_screenshot_encoding
+                                }]
+                        })
+        except Exception as e:  # NOQA
+            request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
+
+
+@pytest.yield_fixture(autouse=True)
+def _browser_screenshot_session(
+        request,
+        splinter_session_scoped_browser,
+        splinter_screenshot_dir,
+        splinter_make_screenshot_on_failure,
+        splinter_screenshot_getter_html,
+        splinter_screenshot_getter_png
+):
+    """Make browser screenshot on test failure."""
+    yield
+
+    # Screenshot for function scoped browsers is handled in browser_instance_getter
+    if not splinter_session_scoped_browser:
+        return
+
+    fixture_values = (
+        # pytest 3
+        getattr(request, '_fixture_values', {}) or
+        # pytest 2
+        getattr(request, '_funcargs', {})
+    )
+
+    for name, value in fixture_values.items():
+        if hasattr(value, '__splinter_browser__'):
+            _take_screenshot(
+                request=request,
+                fixture_name=name,
+                browser_instance=value,
+                splinter_make_screenshot_on_failure=splinter_make_screenshot_on_failure,
+                splinter_screenshot_dir=splinter_screenshot_dir,
+                splinter_screenshot_getter_html=splinter_screenshot_getter_html,
+                splinter_screenshot_getter_png=splinter_screenshot_getter_png,
+            )
+
+
 @pytest.fixture(scope='session')
 def browser_instance_getter(
         browser_patches,
@@ -389,57 +484,6 @@ def browser_instance_getter(
             else:
                 raise
 
-    def take_screenshot(request, parent, browser_instance):
-        name = parent.__name__
-
-        if splinter_make_screenshot_on_failure and getattr(request.node, 'splinter_failure', False):
-            slaveoutput = getattr(request.config, 'slaveoutput', None)
-            try:
-                names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
-            except AttributeError:
-                # pytest>=2.9.0
-                names = junitxml.mangle_test_address(request.node.nodeid)
-
-            classname = '.'.join(names[:-1])
-            screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
-            screenshot_file_name_format = '{0}.{{format}}'.format(
-                '{0}-{1}'.format(names[-1][:128 - len(name) - 5], name).replace(os.path.sep, '-')
-            )
-            screenshot_file_name = screenshot_file_name_format.format(format='png')
-            screenshot_html_file_name = screenshot_file_name_format.format(format='html')
-            if not slaveoutput:
-                if not os.path.exists(screenshot_dir):
-                    os.makedirs(screenshot_dir)
-            else:
-                screenshot_dir = session_tmpdir.ensure('screenshots', dir=True).strpath
-            screenshot_png_path = os.path.join(screenshot_dir, screenshot_file_name)
-            screenshot_html_path = os.path.join(screenshot_dir, screenshot_html_file_name)
-            LOGGER.info('Saving screenshot to %s', screenshot_dir)
-            try:
-                splinter_screenshot_getter_html(browser_instance, screenshot_html_path)
-                splinter_screenshot_getter_png(browser_instance, screenshot_png_path)
-                if request.node.splinter_failure.longrepr:
-                    reprtraceback = request.node.splinter_failure.longrepr.reprtraceback
-                    reprtraceback.extraline = _screenshot_extraline(screenshot_png_path, screenshot_html_path)
-                if slaveoutput is not None:
-                    with codecs.open(screenshot_html_path, encoding=splinter_screenshot_encoding) as html_fd:
-                        with open(screenshot_png_path) as fd:
-                            slaveoutput.setdefault('screenshots', []).append({
-                                'class_name': classname,
-                                'files': [
-                                    {
-                                        'file_name': screenshot_file_name,
-                                        'content': fd.read(),
-                                    },
-                                    {
-                                        'file_name': screenshot_html_file_name,
-                                        'content': html_fd.read(),
-                                        'encoding': splinter_screenshot_encoding
-                                    }]
-                            })
-            except Exception as e:  # NOQA
-                request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
-
     def prepare_browser(request, parent):
         splinter_webdriver = request.getfuncargvalue('splinter_webdriver')
         splinter_session_scoped_browser = request.getfuncargvalue('splinter_session_scoped_browser')
@@ -452,12 +496,19 @@ def browser_instance_getter(
                 request.addfinalizer(browser.quit)
         elif not browser:
             browser = browser_pool[browser_key] = get_browser(splinter_webdriver)
-        request.addfinalizer(functools.partial(
-            take_screenshot,
-            request=request,
-            parent=parent,
-            browser_instance=browser,
-        ))
+
+        if request.scope == 'function':
+            request.addfinalizer(functools.partial(
+                _take_screenshot,
+                request=request,
+                fixture_name=parent.__name__,
+                browser_instance=browser,
+                splinter_make_screenshot_on_failure=splinter_make_screenshot_on_failure,
+                splinter_screenshot_dir=splinter_screenshot_dir,
+                splinter_screenshot_getter_html=splinter_screenshot_getter_html,
+                splinter_screenshot_getter_png=splinter_screenshot_getter_png,
+
+            ))
         try:
             if splinter_webdriver not in browser.driver_name.lower():
                 raise IOError('webdriver does not match')
