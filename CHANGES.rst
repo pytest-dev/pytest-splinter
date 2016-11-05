@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.8.0
+-----
+
+- Limit retry behavior for `prepare_browser` (bubenkoff)
+- Workaround for cleaning cookies (Edge browser) (bubenkoff)
+
 1.7.7
 -----
 

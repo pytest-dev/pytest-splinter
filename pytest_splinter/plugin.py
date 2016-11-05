@@ -490,7 +490,7 @@ def browser_instance_getter(
             else:
                 raise
 
-    def prepare_browser(request, parent):
+    def prepare_browser(request, parent, retry_count=3):
         splinter_webdriver = request.getfuncargvalue('splinter_webdriver')
         splinter_session_scoped_browser = request.getfuncargvalue('splinter_session_scoped_browser')
         splinter_close_browser = request.getfuncargvalue('splinter_close_browser')
@@ -526,7 +526,10 @@ def browser_instance_getter(
                 browser.driver.command_executor._conn.timeout = splinter_selenium_socket_timeout
                 if splinter_window_size:
                     browser.driver.set_window_size(*splinter_window_size)
-            browser.cookies.delete()
+            try:
+                browser.cookies.delete()
+            except (IOError, HTTPException, WebDriverException):
+                LOGGER.warning('Error cleaning browser cookies', exc_info=True)
             for url in splinter_clean_cookies_urls:
                 browser.visit(url)
                 browser.cookies.delete()
@@ -540,9 +543,12 @@ def browser_instance_getter(
                 browser.quit()
             except Exception:  # NOQA
                 pass
-            browser = browser_pool[browser_key] = get_browser(splinter_webdriver)
-            prepare_browser(request, parent)
-
+            LOGGER.warning('Error preparing the browser', exc_info=True)
+            if retry_count < 1:
+                raise
+            else:
+                browser = browser_pool[browser_key] = get_browser(splinter_webdriver)
+                prepare_browser(request, parent, retry_count - 1)
         return browser
 
     return prepare_browser
