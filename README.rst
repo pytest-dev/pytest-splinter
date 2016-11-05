@@ -5,12 +5,14 @@ Splinter plugin for the py.test runner
    :alt: Join the chat at https://gitter.im/pytest-dev/pytest-splinter
    :target: https://gitter.im/pytest-dev/pytest-splinter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. image:: https://api.travis-ci.org/pytest-dev/pytest-splinter.png
+.. image:: https://img.shields.io/pypi/v/pytest-splinter.svg
+   :target: https://pypi.python.org/pypi/pytest-splinter
+.. image:: https://img.shields.io/pypi/pyversions/pytest-splinter.svg
+  :target: https://pypi.python.org/pypi/pytest-splinter
+.. image:: https://img.shields.io/coveralls/pytest-dev/pytest-splinter/master.svg
+   :target: https://coveralls.io/r/pytest-dev/pytest-splinter
+.. image:: https://travis-ci.org/pytest-dev/pytest-splinter.svg?branch=master
     :target: https://travis-ci.org/pytest-dev/pytest-splinter
-.. image:: https://pypip.in/v/pytest-splinter/badge.png
-    :target: https://crate.io/packages/pytest-splinter/
-.. image:: https://coveralls.io/repos/pytest-dev/pytest-splinter/badge.png?branch=master
-    :target: https://coveralls.io/r/pytest-dev/pytest-splinter
 .. image:: https://readthedocs.org/projects/pytest-splinter/badge/?version=latest
     :target: https://readthedocs.org/projects/pytest-splinter/?badge=latest
     :alt: Documentation Status
