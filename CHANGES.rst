@@ -3,7 +3,8 @@ Changelog
 
 1.7.7
 -----
-- Make it possible to override the default --splinter-webdriver (pelme)
+
+- Make it possible to override the default `--splinter-webdriver` (pelme)
 - Fix screenshots for function scoped fixtues (pelme)
 
 1.7.6
