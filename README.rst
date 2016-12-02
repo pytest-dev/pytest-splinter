@@ -1,4 +1,4 @@
-Splinter plugin for the py.test runner
+Splinter plugin for the pytest runner
 ======================================
 
 .. image:: https://badges.gitter.im/pytest-dev/pytest-splinter.svg
@@ -286,10 +286,10 @@ skips it. You can also disable it via a command line argument:
 
 ::
 
-    py.test tests/functional --splinter-make-screenshot-on-failure=false
+    pytest tests/functional --splinter-make-screenshot-on-failure=false
 
 In case taking a screenshot fails, a pytest warning will be issued, which
-can be viewed using the `-rw` argument for `py.test`.
+can be viewed using the `-rw` argument for `pytest`.
 
 
 Python3 support
