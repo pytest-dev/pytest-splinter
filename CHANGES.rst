@@ -1,5 +1,9 @@
 Changelog
 =========
+1.7.8
+-----
+
+- Make it possible to override the default value for --splinter-wait-time (magnus-staberg)
 
 1.7.7
 -----
