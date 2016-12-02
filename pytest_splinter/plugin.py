@@ -120,7 +120,7 @@ def splinter_wait_time(request):
 
     :return: Seconds.
     """
-    return request.config.option.splinter_wait_time
+    return request.config.option.splinter_wait_time or 5
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -608,7 +608,7 @@ def pytest_addoption(parser):  # pragma: no cover
     group.addoption(
         "--splinter-wait-time",
         help="splinter explicit wait, seconds", type="int",
-        dest='splinter_wait_time', metavar="SECONDS", default=5)
+        dest='splinter_wait_time', metavar="SECONDS", default=None)
     group.addoption(
         "--splinter-implicit-wait",
         help="pytest-splinter selenium implicit wait, seconds", type="int",
