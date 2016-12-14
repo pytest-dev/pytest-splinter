@@ -1,15 +1,18 @@
 Changelog
 =========
-1.7.8
------
-
-- Make it possible to override the default value for --splinter-wait-time (magnus-staberg)
 
 1.8.0
 -----
 
 - Limit retry behavior for `prepare_browser` (bubenkoff)
 - Workaround for cleaning cookies (Edge browser) (bubenkoff)
+
+
+1.7.8
+-----
+
+- Make it possible to override the default value for --splinter-wait-time (magnus-staberg)
+
 
 1.7.7
 -----
