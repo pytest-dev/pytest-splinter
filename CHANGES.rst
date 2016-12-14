@@ -1,6 +1,14 @@
 Changelog
 =========
 
+
+1.8.1
+-----
+
+- Ensure node's `splinter_failure` always exists (bubenkoff, pelme)
+- Correctly handle skipped tests (bubenkoff, schtibe)
+
+
 1.8.0
 -----
 

@@ -423,7 +423,7 @@ def _browser_screenshot_session(
         should_take_screenshot = (
             hasattr(value, '__splinter_browser__') and
             splinter_make_screenshot_on_failure and
-            request.node.splinter_failure
+            getattr(request.node, 'splinter_failure', True)
         )
 
         if should_take_screenshot:
@@ -505,7 +505,7 @@ def browser_instance_getter(
 
         if request.scope == 'function':
             def _take_screenshot_on_failure():
-                if splinter_make_screenshot_on_failure and request.node.splinter_failure:
+                if splinter_make_screenshot_on_failure and getattr(request.node, 'splinter_failure', True):
                     _take_screenshot(
                         request=request,
                         fixture_name=parent.__name__,
@@ -559,7 +559,7 @@ def pytest_runtest_makereport(item, call):
     """Assign the report to the item for futher usage."""
     outcome = yield
     rep = outcome.get_result()
-    if rep.outcome != 'passed':
+    if rep.outcome == 'failed':
         item.splinter_failure = rep
     else:
         item.splinter_failure = None
