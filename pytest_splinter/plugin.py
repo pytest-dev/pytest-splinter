@@ -310,7 +310,7 @@ def get_args(driver=None,
         # remote geckodriver does not support the firefox_profile desired
         # capatibility. Instead `moz:firefoxOptions` should be used:
         # https://github.com/mozilla/geckodriver#firefox-capabilities
-        kwargs['moz:firefoxOptions'] = {}
+        kwargs['moz:firefoxOptions'] = driver_kwargs.get('moz:firefoxOptions', {})
         kwargs['moz:firefoxOptions']['profile'] = profile.encoded
     elif driver in ('phantomjs', 'chrome'):
         if executable:

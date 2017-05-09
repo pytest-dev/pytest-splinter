@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.8.3
+-----
+
+- Profile does not work with geckodriver+remote webdriver
+  `#90 <https://github.com/pytest-dev/pytest-splinter/issues/90>`_) (pelme)
+
 1.8.2
 -----
 
