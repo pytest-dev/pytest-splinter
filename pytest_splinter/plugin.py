@@ -306,6 +306,12 @@ def get_args(driver=None,
         for key, value in firefox_profile_preferences.items():
             profile.set_preference(key, value)
         kwargs['firefox_profile'] = profile.encoded
+
+        # remote geckodriver does not support the firefox_profile desired
+        # capatibility. Instead `moz:firefoxOptions` should be used:
+        # https://github.com/mozilla/geckodriver#firefox-capabilities
+        kwargs['moz:firefoxOptions'] = {}
+        kwargs['moz:firefoxOptions']['profile'] = profile.encoded
     elif driver in ('phantomjs', 'chrome'):
         if executable:
             kwargs['executable_path'] = executable
