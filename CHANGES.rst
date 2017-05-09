@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.8.2
+-----
+
+- Fixed missing `switch_to` method (some selenium `expected_conditions` are broken without 
+  it, see `#93 <https://github.com/pytest-dev/pytest-splinter/pull/93>`_)
 
 1.8.1
 -----

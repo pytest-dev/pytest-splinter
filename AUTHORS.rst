@@ -10,6 +10,7 @@ These people have contributed to `pytest-splinter`, in alphabetical order:
 * `Andrey Makhnach <andrey.makhnach@gmail.com>`_
 * `Aymeric Augustin <https://myks.org/>`_
 * `Daniel Hahler <github@thequod.de>`_
+* `Ionel Cristian Mărieș <contact@ionelmc.ro>`_
 * `Laurence Rowe <l@lrowe.co.uk>`_
 * `Marco Buccini <markon@github.com>`_
 * `Oleg Pidsadnyi <oleg.pidsadnyi@gmail.com>`_
