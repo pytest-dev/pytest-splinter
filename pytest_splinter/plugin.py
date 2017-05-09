@@ -66,6 +66,7 @@ def Browser(*args, **kwargs):
     visit_condition = kwargs.pop('visit_condition')
     visit_condition_timeout = kwargs.pop('visit_condition_timeout')
     browser = splinter.Browser(*args, **kwargs)
+    browser.switch_to = browser.driver.switch_to
     browser.wait_for_condition = functools.partial(_wait_for_condition, browser)
     if hasattr(browser, 'driver'):
         browser.visit_condition = visit_condition
