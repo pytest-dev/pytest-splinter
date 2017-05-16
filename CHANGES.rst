@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.8.4
+1.8.5
 -----
 
 - Fixed issue with xdist `#94 <https://github.com/pytest-dev/pytest-splinter/issues/94>`_ (bubenkoff)
