@@ -347,6 +347,7 @@ def _take_screenshot(
         request,
         browser_instance,
         fixture_name,
+        session_tmpdir,
         splinter_screenshot_dir,
         splinter_screenshot_getter_html,
         splinter_screenshot_getter_png
@@ -406,6 +407,7 @@ def _take_screenshot(
 @pytest.yield_fixture(autouse=True)
 def _browser_screenshot_session(
         request,
+        session_tmpdir,
         splinter_session_scoped_browser,
         splinter_screenshot_dir,
         splinter_make_screenshot_on_failure,
@@ -437,6 +439,7 @@ def _browser_screenshot_session(
             _take_screenshot(
                 request=request,
                 fixture_name=name,
+                session_tmpdir=session_tmpdir,
                 browser_instance=value,
                 splinter_screenshot_dir=splinter_screenshot_dir,
                 splinter_screenshot_getter_html=splinter_screenshot_getter_html,
