@@ -519,6 +519,7 @@ def browser_instance_getter(
                     _take_screenshot(
                         request=request,
                         fixture_name=parent.__name__,
+                        session_tmpdir=session_tmpdir,
                         browser_instance=browser,
                         splinter_screenshot_dir=splinter_screenshot_dir,
                         splinter_screenshot_getter_html=splinter_screenshot_getter_html,
