@@ -501,9 +501,9 @@ def browser_instance_getter(
                 raise
 
     def prepare_browser(request, parent, retry_count=3):
-        splinter_webdriver = request.getfuncargvalue('splinter_webdriver')
-        splinter_session_scoped_browser = request.getfuncargvalue('splinter_session_scoped_browser')
-        splinter_close_browser = request.getfuncargvalue('splinter_close_browser')
+        splinter_webdriver = request.getfixturevalue('splinter_webdriver')
+        splinter_session_scoped_browser = request.getfixturevalue('splinter_session_scoped_browser')
+        splinter_close_browser = request.getfixturevalue('splinter_close_browser')
         browser_key = id(parent)
         browser = browser_pool.get(browser_key)
         if not splinter_session_scoped_browser:

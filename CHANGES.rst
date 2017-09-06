@@ -1,6 +1,11 @@
 Changelog
 =========
 
+NEXT
+-----
+- Use getfixturevalue instead of getfuncargvalue `#97
+  <https://github.com/pytest-dev/pytest-splinter/issues/97>`_ (pelme)
+
 1.8.5
 -----
 
