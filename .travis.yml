@@ -5,6 +5,7 @@ addons:
   firefox: "56.0.1"
 before_install:
   - "export DISPLAY=:99.0"
+  - "./geckodriver-install.sh"
   - "sh -e /etc/init.d/xvfb start"
   - "npm install -g selenium-standalone"
   - "selenium-standalone install"
