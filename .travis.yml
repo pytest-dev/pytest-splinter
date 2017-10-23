@@ -1,12 +1,12 @@
 sudo: false
 language: python
-python: "3.4"
+python: "3.6"
 addons:
-  firefox: "37.0.1"
+  firefox: "56.0.1"
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  - "npm install -g selenium-standalone@4.5.3"
+  - "npm install -g selenium-standalone"
   - "selenium-standalone install"
   - "selenium-standalone start &"
 env:
@@ -15,7 +15,7 @@ env:
     - TESTENV=py27
     - TESTENV=py27-xdist
     - TESTENV=py27-pytest-latest
-    - TESTENV=py34
+    - TESTENV=py36
     - TESTENV=coveralls
 install:
   - pip install tox
