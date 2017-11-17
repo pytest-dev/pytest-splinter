@@ -429,23 +429,28 @@ def _browser_screenshot_session(
     )
 
     for name, value in fixture_values.items():
-        should_take_screenshot = (
-            hasattr(value, '__splinter_browser__') and
-            splinter_make_screenshot_on_failure and
-            getattr(request.node, 'splinter_failure', True)
-        )
+        try:
+            is_splinter_item = hasattr(value, '__splinter_browser__')
+        except Exception:
+            is_splinter_item = False
 
-        if should_take_screenshot:
-            _take_screenshot(
-                request=request,
-                fixture_name=name,
-                session_tmpdir=session_tmpdir,
-                browser_instance=value,
-                splinter_screenshot_dir=splinter_screenshot_dir,
-                splinter_screenshot_getter_html=splinter_screenshot_getter_html,
-                splinter_screenshot_getter_png=splinter_screenshot_getter_png,
+        if is_splinter_item:
+            should_take_screenshot = (
+                is_splinter_item and
+                splinter_make_screenshot_on_failure and
+                getattr(request.node, 'splinter_failure', True)
             )
 
+            if should_take_screenshot:
+                _take_screenshot(
+                    request=request,
+                    fixture_name=name,
+                    session_tmpdir=session_tmpdir,
+                    browser_instance=value,
+                    splinter_screenshot_dir=splinter_screenshot_dir,
+                    splinter_screenshot_getter_html=splinter_screenshot_getter_html,
+                    splinter_screenshot_getter_png=splinter_screenshot_getter_png,
+                )
 
 @pytest.fixture(scope='session')
 def browser_instance_getter(
