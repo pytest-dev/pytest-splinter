@@ -350,7 +350,8 @@ def _take_screenshot(
         session_tmpdir,
         splinter_screenshot_dir,
         splinter_screenshot_getter_html,
-        splinter_screenshot_getter_png
+        splinter_screenshot_getter_png,
+        splinter_screenshot_encoding,
 ):
     """Capture a screenshot as .png and .html.
 
@@ -397,7 +398,7 @@ def _take_screenshot(
                             {
                                 'file_name': screenshot_html_file_name,
                                 'content': html_fd.read(),
-                                'encoding': splinter_screenshot_encoding
+                                'encoding': splinter_screenshot_encoding,
                             }]
                     })
     except Exception as e:  # NOQA
@@ -412,7 +413,8 @@ def _browser_screenshot_session(
         splinter_screenshot_dir,
         splinter_make_screenshot_on_failure,
         splinter_screenshot_getter_html,
-        splinter_screenshot_getter_png
+        splinter_screenshot_getter_png,
+        splinter_screenshot_encoding,
 ):
     """Make browser screenshot on test failure."""
     yield
@@ -444,6 +446,7 @@ def _browser_screenshot_session(
                 splinter_screenshot_dir=splinter_screenshot_dir,
                 splinter_screenshot_getter_html=splinter_screenshot_getter_html,
                 splinter_screenshot_getter_png=splinter_screenshot_getter_png,
+                splinter_screenshot_encoding=splinter_screenshot_encoding,
             )
 
 
@@ -524,6 +527,7 @@ def browser_instance_getter(
                         splinter_screenshot_dir=splinter_screenshot_dir,
                         splinter_screenshot_getter_html=splinter_screenshot_getter_html,
                         splinter_screenshot_getter_png=splinter_screenshot_getter_png,
+                        splinter_screenshot_encoding=splinter_screenshot_encoding,
                     )
             request.addfinalizer(_take_screenshot_on_failure)
 
