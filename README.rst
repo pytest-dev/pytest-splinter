@@ -175,6 +175,10 @@ Fixtures
     If so, you can override this fixture and put those urls there, and pytest-splinter will visit each of them and will
     clean the cookies for each domain.
 
+* splinter_headless
+    Run Chrome in headless mode. As the writing of this (2017-07), available only in unreleased Splinter master version.
+    Defaults to false.
+
 Command-line options
 --------------------
 
