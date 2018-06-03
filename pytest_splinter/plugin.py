@@ -99,7 +99,7 @@ def splinter_remote_url(request):
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_selenium_socket_timeout(request):
-    """Internal Selenium socket timeout (communication between webdriver and the browser).
+    """Return internal Selenium socket timeout (communication between webdriver and the browser).
 
     :return: Seconds.
     """
@@ -108,7 +108,7 @@ def splinter_selenium_socket_timeout(request):
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_selenium_implicit_wait(request):
-    """Selenium implicit wait timeout.
+    """Return Selenium implicit wait timeout.
 
     :return: Seconds.
     """
@@ -135,7 +135,7 @@ def splinter_selenium_speed(request):
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_browser_load_condition():
-    """The condition that has to be `True` to assume that the page is fully loaded.
+    """Return the condition that has to be `True` to assume that the page is fully loaded.
 
     One example is to wait for jQuery, then the condition could be::
 
@@ -152,7 +152,7 @@ def splinter_browser_load_condition():
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_browser_load_timeout():
-    """The timeout in seconds in which the page is expected to be fully loaded."""
+    """Return the timeout in seconds in which the page is expected to be fully loaded."""
     return 10
 
 
