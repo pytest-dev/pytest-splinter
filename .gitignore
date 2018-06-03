@@ -49,3 +49,4 @@ tests.*
 /include
 /src
 /.env
+/.pytest_cache
