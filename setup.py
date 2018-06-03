@@ -28,7 +28,7 @@ setup(
         'setuptools',
         'splinter>=0.7.3',
         'selenium>=2.47.1',
-        'pytest',
+        'pytest>=3.0.0',
     ],
     classifiers=[
         'Development Status :: 6 - Mature',
