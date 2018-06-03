@@ -1,11 +1,13 @@
 Changelog
 =========
 
-NEXT
+1.9.0
 -----
 
 - Use getfixturevalue instead of getfuncargvalue `#97
   <https://github.com/pytest-dev/pytest-splinter/issues/97>`_ (pelme)
+
+- Added Chrome headless support (miohtama)
 
 
 1.8.6
