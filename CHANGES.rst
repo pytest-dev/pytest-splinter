@@ -1,10 +1,26 @@
 Changelog
 =========
 
+1.9.0
+-----
+
+- Use getfixturevalue instead of getfuncargvalue `#97
+  <https://github.com/pytest-dev/pytest-splinter/issues/97>`_ (pelme)
+
+- Added Chrome headless support (miohtama)
+
+
+1.8.6
+-----
+
+- Fix screenshots not being taken when used with xdist (youtux)
+
+
 1.8.5
 -----
 
 - Fixed issue with xdist `#94 <https://github.com/pytest-dev/pytest-splinter/issues/94>`_ (bubenkoff)
+
 
 1.8.3
 -----
@@ -12,11 +28,13 @@ Changelog
 - Profile does not work with geckodriver+remote webdriver
   `#90 <https://github.com/pytest-dev/pytest-splinter/issues/90>`_) (pelme)
 
+
 1.8.2
 -----
 
-- Fixed missing `switch_to` method (some selenium `expected_conditions` are broken without 
+- Fixed missing `switch_to` method (some selenium `expected_conditions` are broken without
   it, see `#93 <https://github.com/pytest-dev/pytest-splinter/pull/93>`_)
+
 
 1.8.1
 -----

@@ -10,7 +10,7 @@ before_install:
   - tar -xzf geckodriver-v0.19.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
   - "sh -e /etc/init.d/xvfb start"
-  - "npm install -g selenium-standalone"
+  - "npm install -g selenium-standalone@6.15.0"
   - "selenium-standalone install"
   - "selenium-standalone start &"
 env:

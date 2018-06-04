@@ -28,7 +28,7 @@ setup(
         'setuptools',
         'splinter>=0.7.3',
         'selenium>=2.47.1',
-        'pytest',
+        'pytest>=3.0.0',
     ],
     classifiers=[
         'Development Status :: 6 - Mature',
@@ -42,7 +42,7 @@ setup(
         'Topic :: Utilities',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
-    ] + [('Programming Language :: Python :: %s' % x) for x in '2.7 3.0 3.1 3.2 3.3 3.4 3.5'.split()],
+    ] + [('Programming Language :: Python :: %s' % x) for x in '2.7 3.4 3.5 3.6'.split()],
     tests_require=['tox'],
     entry_points={'pytest11': [
         'pytest-splinter=pytest_splinter.plugin',

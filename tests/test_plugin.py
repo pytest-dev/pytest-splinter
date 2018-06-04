@@ -11,7 +11,7 @@ from pytest_splinter.plugin import get_args
 
 @pytest.fixture
 def simple_page_content():
-    """Simple page content."""
+    """Return simple page content."""
     return """<html xmlns="http://www.w3.org/1999/xhtml"><head></head>
     <body>
         <div id="content">
@@ -26,7 +26,7 @@ def simple_page_content():
 
 @pytest.fixture
 def simple_page(httpserver, browser, simple_page_content):
-    """Simple served html page."""
+    """Serve simple html page."""
     httpserver.serve_content(
         simple_page_content, code=200, headers={'Content-Type': 'text/html'})
     browser.visit(httpserver.url)

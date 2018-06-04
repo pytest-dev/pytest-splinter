@@ -99,7 +99,7 @@ def splinter_remote_url(request):
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_selenium_socket_timeout(request):
-    """Internal Selenium socket timeout (communication between webdriver and the browser).
+    """Return internal Selenium socket timeout (communication between webdriver and the browser).
 
     :return: Seconds.
     """
@@ -108,7 +108,7 @@ def splinter_selenium_socket_timeout(request):
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_selenium_implicit_wait(request):
-    """Selenium implicit wait timeout.
+    """Return Selenium implicit wait timeout.
 
     :return: Seconds.
     """
@@ -135,7 +135,7 @@ def splinter_selenium_speed(request):
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_browser_load_condition():
-    """The condition that has to be `True` to assume that the page is fully loaded.
+    """Return the condition that has to be `True` to assume that the page is fully loaded.
 
     One example is to wait for jQuery, then the condition could be::
 
@@ -152,7 +152,7 @@ def splinter_browser_load_condition():
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_browser_load_timeout():
-    """The timeout in seconds in which the page is expected to be fully loaded."""
+    """Return the timeout in seconds in which the page is expected to be fully loaded."""
     return 10
 
 
@@ -224,6 +224,15 @@ def splinter_screenshot_dir(request):
     return os.path.abspath(request.config.option.splinter_screenshot_dir)
 
 
+@pytest.fixture(scope='session')
+def splinter_headless(request):
+    """Flag to start Chrome in headless mode.
+
+    http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
+    """
+    return request.config.option.splinter_headless == 'true'
+
+
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_screenshot_encoding(request):
     """Browser screenshot html encoding."""
@@ -282,6 +291,7 @@ def get_args(driver=None,
              firefox_prof_dir=None,
              remote_url=None,
              executable=None,
+             headless=False,
              driver_kwargs=None):
     """Construct arguments to be passed to webdriver on initialization."""
     kwargs = {}
@@ -315,6 +325,10 @@ def get_args(driver=None,
     elif driver in ('phantomjs', 'chrome'):
         if executable:
             kwargs['executable_path'] = executable
+
+        if headless:
+            kwargs["headless"] = headless
+
     if driver_kwargs:
         kwargs.update(driver_kwargs)
     return kwargs
@@ -350,7 +364,8 @@ def _take_screenshot(
         session_tmpdir,
         splinter_screenshot_dir,
         splinter_screenshot_getter_html,
-        splinter_screenshot_getter_png
+        splinter_screenshot_getter_png,
+        splinter_screenshot_encoding,
 ):
     """Capture a screenshot as .png and .html.
 
@@ -397,7 +412,7 @@ def _take_screenshot(
                             {
                                 'file_name': screenshot_html_file_name,
                                 'content': html_fd.read(),
-                                'encoding': splinter_screenshot_encoding
+                                'encoding': splinter_screenshot_encoding,
                             }]
                     })
     except Exception as e:  # NOQA
@@ -412,7 +427,8 @@ def _browser_screenshot_session(
         splinter_screenshot_dir,
         splinter_make_screenshot_on_failure,
         splinter_screenshot_getter_html,
-        splinter_screenshot_getter_png
+        splinter_screenshot_getter_png,
+        splinter_screenshot_encoding,
 ):
     """Make browser screenshot on test failure."""
     yield
@@ -444,6 +460,7 @@ def _browser_screenshot_session(
                 splinter_screenshot_dir=splinter_screenshot_dir,
                 splinter_screenshot_getter_html=splinter_screenshot_getter_html,
                 splinter_screenshot_getter_png=splinter_screenshot_getter_png,
+                splinter_screenshot_encoding=splinter_screenshot_encoding,
             )
 
 
@@ -472,6 +489,7 @@ def browser_instance_getter(
         splinter_screenshot_getter_html,
         splinter_screenshot_getter_png,
         splinter_screenshot_encoding,
+        splinter_headless,
         session_tmpdir,
         browser_pool,
 ):
@@ -487,6 +505,7 @@ def browser_instance_getter(
                           firefox_prof_dir=splinter_firefox_profile_directory,
                           remote_url=splinter_remote_url,
                           executable=splinter_webdriver_executable,
+                          headless=splinter_headless,
                           driver_kwargs=splinter_driver_kwargs)
         try:
             return splinter_browser_class(
@@ -501,9 +520,9 @@ def browser_instance_getter(
                 raise
 
     def prepare_browser(request, parent, retry_count=3):
-        splinter_webdriver = request.getfuncargvalue('splinter_webdriver')
-        splinter_session_scoped_browser = request.getfuncargvalue('splinter_session_scoped_browser')
-        splinter_close_browser = request.getfuncargvalue('splinter_close_browser')
+        splinter_webdriver = request.getfixturevalue('splinter_webdriver')
+        splinter_session_scoped_browser = request.getfixturevalue('splinter_session_scoped_browser')
+        splinter_close_browser = request.getfixturevalue('splinter_close_browser')
         browser_key = id(parent)
         browser = browser_pool.get(browser_key)
         if not splinter_session_scoped_browser:
@@ -524,6 +543,7 @@ def browser_instance_getter(
                         splinter_screenshot_dir=splinter_screenshot_dir,
                         splinter_screenshot_getter_html=splinter_screenshot_getter_html,
                         splinter_screenshot_getter_png=splinter_screenshot_getter_png,
+                        splinter_screenshot_encoding=splinter_screenshot_encoding,
                     )
             request.addfinalizer(_take_screenshot_on_failure)
 
@@ -535,7 +555,9 @@ def browser_instance_getter(
                 browser.driver.set_speed(splinter_selenium_speed)
                 browser.driver.command_executor.set_timeout(splinter_selenium_socket_timeout)
                 browser.driver.command_executor._conn.timeout = splinter_selenium_socket_timeout
-                if splinter_window_size:
+                if splinter_window_size and splinter_webdriver != "chrome":
+                    # Chrome cannot resize the window
+                    # https://github.com/SeleniumHQ/selenium/issues/3508
                     browser.driver.set_window_size(*splinter_window_size)
             try:
                 browser.cookies.delete()
@@ -657,3 +679,8 @@ def pytest_addoption(parser):  # pragma: no cover
         help="pytest-splinter webdrive executable path. Defaults to unspecified in which case it is taken from PATH",
         action="store",
         dest='splinter_webdriver_executable', metavar="DIR", default='')
+    group.addoption(
+        "--splinter-headless",
+        help="Run the browser in headless mode. Defaults to false. Only applies to Chrome.", action="store",
+        dest='splinter_headless', metavar="false|true", type="choice", choices=['false', 'true'],
+        default='false')
