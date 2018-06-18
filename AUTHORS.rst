@@ -13,6 +13,7 @@ These people have contributed to `pytest-splinter`, in alphabetical order:
 * `Daniel Hahler <github@thequod.de>`_
 * `Hugo <hugovk@github.com>`_
 * `Ionel Cristian Mărieș <contact@ionelmc.ro>`_
+* `Joshua Fehler <jsfehler@github.com>`_
 * `Laurence Rowe <l@lrowe.co.uk>`_
 * `Marco Buccini <markon@github.com>`_
 * `Mikko Ohtamaa <mikko@opensourcehacker.com>`_
