@@ -401,7 +401,7 @@ def _take_screenshot(
             reprtraceback.extraline = _screenshot_extraline(screenshot_png_path, screenshot_html_path)
         if slaveoutput is not None:
             with codecs.open(screenshot_html_path, encoding=splinter_screenshot_encoding) as html_fd:
-                with open(screenshot_png_path) as fd:
+                with open(screenshot_png_path, 'rb') as fd:
                     slaveoutput.setdefault('screenshots', []).append({
                         'class_name': classname,
                         'files': [
@@ -623,7 +623,7 @@ class SplinterXdistPlugin(object):
                 os.makedirs(screenshot_dir)
             for fil in screenshot['files']:
                 encoding = fil.get('encoding')
-                with codecs.open(os.path.join(screenshot_dir, fil['file_name']), 'w',
+                with codecs.open(os.path.join(screenshot_dir, fil['file_name']), 'wb',
                                  **dict(encoding=encoding) if encoding else {}) as fd:
                     fd.write(fil['content'])
 

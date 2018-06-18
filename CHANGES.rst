@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.9.1
+-----
+
+- Fix utf-8 decode warnings when taking screenshots with pytest-xdist active `#108 <https://github.com/pytest-dev/pytest-splinter/issues/108>`_ (jsfehler) 
+
+
 1.9.0
 -----
 
