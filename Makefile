@@ -6,7 +6,7 @@ PATH := .env/bin:$(PATH)
 
 # install all needed for development
 develop: .env
-	pip install -e . -r requirements-testing.txt tox coveralls
+	pip install -e . -U -r requirements-testing.txt tox coveralls
 	npm install selenium-standalone@6.15.0
 	node_modules/.bin/selenium-standalone install
 
