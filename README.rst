@@ -90,7 +90,7 @@ Fixtures
     @pytest.fixture(scope='session')
     def splinter_webdriver():
         """Override splinter webdriver name."""
-        return 'phantomjs'
+        return 'chrome'
 
 * splinter_remote_url
     Splinter's webdriver remote url to use (optional). Fixture gets the value from the command-line option
@@ -198,7 +198,6 @@ Command-line options
     *  firefox
     *  remote
     *  chrome
-    *  phantomjs
 
     For more details refer to the documentation for splinter and selenium.
 
@@ -220,7 +219,7 @@ Command-line options
     directory.
 
 * `--splinter-webdriver-executable`
-    Filesystem path of the webdriver executable. Used by phantomjs and chrome drivers.
+    Filesystem path of the webdriver executable. Used by chrome driver.
     Defaults to the None in which case the shell PATH variable setting determines the location of the executable.
 
 

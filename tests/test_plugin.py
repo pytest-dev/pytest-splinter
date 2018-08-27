@@ -61,7 +61,7 @@ def test_status_code(browser, simple_page, splinter_webdriver):
 )
 def test_download_file(httpserver, browser, splinter_file_download_dir, file_extension, mime_type, splinter_webdriver):
     """Test file downloading and accessing it afterwise."""
-    if splinter_webdriver in ["zope.testbrowser", "phantomjs"]:
+    if splinter_webdriver in ["zope.testbrowser"]:
         pytest.skip("{0} doesn't support file downloading".format(splinter_webdriver))
     file_name = 'some.{0}'.format(file_extension)
     httpserver.serve_content(
@@ -74,7 +74,7 @@ def test_download_file(httpserver, browser, splinter_file_download_dir, file_ext
 
 
 @pytest.mark.parametrize('cookie_name', ['name1', 'name2'])
-@pytest.mark.parametrize('splinter_webdriver', ['firefox', 'phantomjs'])
+@pytest.mark.parametrize('splinter_webdriver', ['firefox'])
 def test_clean_cookies(httpserver, browser, cookie_name, splinter_webdriver, splinter_session_scoped_browser):
     """Test that browser has always clean state (no cookies set)."""
     if splinter_webdriver == "zope.testbrowser":
@@ -94,7 +94,7 @@ def test_clean_cookies(httpserver, browser, cookie_name, splinter_webdriver, spl
 
 
 @pytest.mark.skipif('sys.version_info[0] > 2')
-# @pytest.mark.parametrize('splinter_webdriver', ['firefox', 'phantomjs'])
+# @pytest.mark.parametrize('splinter_webdriver', ['firefox'])
 def test_get_text(simple_page, browser, splinter_webdriver):
     """Test that webelement correctly gets text."""
     if splinter_webdriver == "zope.testbrowser":
@@ -148,10 +148,8 @@ def test_current_window_is_main(browser, splinter_webdriver):
 
 def test_executable():
     """Test argument construction for webdrivers."""
-    arg1 = get_args(driver='phantomjs', executable='/tmp')
-    arg2 = get_args(driver='chrome', executable='/tmp')
+    arg1 = get_args(driver='chrome', executable='/tmp')
     assert arg1['executable_path'] == '/tmp'
-    assert arg2['executable_path'] == '/tmp'
 
 
 def assert_valid_html_screenshot_content(content):

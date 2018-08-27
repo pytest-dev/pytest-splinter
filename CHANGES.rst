@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.9.2
+-----
+
+- Bump minimum splinter version to 0.9.0
+- Remove phantomjs support.
+
 1.9.1
 -----
 
