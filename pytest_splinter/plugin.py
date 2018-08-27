@@ -322,7 +322,7 @@ def get_args(driver=None,
         # https://github.com/mozilla/geckodriver#firefox-capabilities
         kwargs['moz:firefoxOptions'] = driver_kwargs.get('moz:firefoxOptions', {})
         kwargs['moz:firefoxOptions']['profile'] = profile.encoded
-    elif driver in ('chrome'):
+    elif driver in ('chrome',):
         if executable:
             kwargs['executable_path'] = executable
 

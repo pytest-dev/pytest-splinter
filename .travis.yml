@@ -2,11 +2,15 @@ sudo: false
 language: python
 python: "3.6"
 addons:
-  firefox: "37.0.1"
+  firefox: "60.0.2"
 before_install:
   - "export DISPLAY=:99.0"
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
+  - mkdir geckodriver
+  - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
+  - export PATH=$PATH:$PWD/geckodriver
   - "sh -e /etc/init.d/xvfb start"
-  - "npm install -g selenium-standalone@6.15.0"
+  - "npm install -g selenium-standalone@6.15.2"
   - "selenium-standalone install"
   - "selenium-standalone start &"
 env:
