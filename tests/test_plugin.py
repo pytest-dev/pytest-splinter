@@ -44,9 +44,23 @@ def test_session_browser(session_browser):
 
 def test_status_code(browser, simple_page, splinter_webdriver):
     """Check the browser fixture."""
-    if splinter_webdriver == "zope.testbrowser":
-        pytest.skip("zope testbrowser doesn't support status code")
+    if splinter_webdriver in ("firefox", "zope.testbrowser",):
+        skip_msg = "{} doesn't support status code".format(splinter_webdriver)
+        pytest.skip(skip_msg)
     assert browser.status_code == 200
+
+
+def test_status_code_not_implemented(browser, simple_page, splinter_webdriver):
+    """Ensure the browsers which should not have status_code still don't."""
+    if splinter_webdriver in ("firefox", "zope.testbrowser",):
+        not_implemented = False
+        try:
+            browser.status_code == 200
+        except NotImplementedError:
+            not_implemented = True
+        assert not_implemented
+    else:
+        pytest.skip('{} supports status code'.format(splinter_webdriver))
 
 
 @pytest.mark.parametrize(
