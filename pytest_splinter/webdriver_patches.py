@@ -8,9 +8,12 @@ http://code.google.com/p/selenium/issues/detail?id=5176.
 import time  # pragma: no cover
 import socket  # pragma: no cover
 try:
-    from httplib import HTTPConnection, HTTPException
+    from httplib import HTTPException
 except ImportError:
-    from http.client import HTTPConnection, HTTPException
+    from http.client import HTTPException
+
+import urllib3
+from urllib3.exceptions import MaxRetryError
 
 from selenium.webdriver.remote import remote_connection  # pragma: no cover
 from selenium.webdriver.firefox import webdriver  # pragma: no cover
@@ -39,12 +42,12 @@ def patch_webdriver():
         for _ in range(3):
             try:
                 return old_request(self, *args, **kwargs)
-            except (socket.error, HTTPException, IOError, OSError) as exc:
+            except (socket.error, HTTPException, IOError, OSError, MaxRetryError) as exc:
                 exception = exc
-                self._conn = HTTPConnection(self._conn.host, self._conn.port, timeout=self._timeout)
+                self._conn = urllib3.PoolManager(timeout=self._timeout)
         raise exception
 
-    # Apply the monkey patche for RemoteConnection
+    # Apply the monkey patch for RemoteConnection
     remote_connection.RemoteConnection._request = _request
 
     # Apply the monkey patch to Firefox webdriver to disable native events
