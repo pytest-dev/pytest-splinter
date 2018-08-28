@@ -77,14 +77,20 @@ def test_download_file(httpserver, browser, splinter_file_download_dir, file_ext
     """Test file downloading and accessing it afterwise."""
     if splinter_webdriver in ["zope.testbrowser"]:
         pytest.skip("{0} doesn't support file downloading".format(splinter_webdriver))
+    if splinter_webdriver in ["firefox"]:
+        pytest.skip("Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1366035")
     file_name = 'some.{0}'.format(file_extension)
     httpserver.serve_content(
         'Some text file', code=200, headers={
             'Content-Disposition': 'attachment; filename={0}'.format(file_name),
             'Content-Type': mime_type})
+
     browser.visit(httpserver.url)
     time.sleep(1)
-    assert open(os.path.join(splinter_file_download_dir, file_name)).read() == 'Some text file'
+
+    file_path = os.path.join(splinter_file_download_dir, file_name)
+    with open(file_path, 'r') as f:
+        assert f.read() == 'Some text file'
 
 
 @pytest.mark.parametrize('cookie_name', ['name1', 'name2'])
