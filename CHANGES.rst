@@ -1,10 +1,16 @@
 Changelog
 =========
 
+1.9.2
+-----
+
+- Bump minimum splinter version to 0.9.0 (jsfehler)
+- Remove phantomjs support. (jsfehler)
+
 1.9.1
 -----
 
-- Fix utf-8 decode warnings when taking screenshots with pytest-xdist active `#108 <https://github.com/pytest-dev/pytest-splinter/issues/108>`_ (jsfehler) 
+- Fix utf-8 decode warnings when taking screenshots with pytest-xdist active `#108 <https://github.com/pytest-dev/pytest-splinter/issues/108>`_ (jsfehler)
 
 
 1.9.0

@@ -18,6 +18,8 @@ import pytest  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
 
+from urllib3.exceptions import MaxRetryError
+
 from selenium.webdriver.support import wait
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.common.exceptions import WebDriverException
@@ -322,7 +324,7 @@ def get_args(driver=None,
         # https://github.com/mozilla/geckodriver#firefox-capabilities
         kwargs['moz:firefoxOptions'] = driver_kwargs.get('moz:firefoxOptions', {})
         kwargs['moz:firefoxOptions']['profile'] = profile.encoded
-    elif driver in ('phantomjs', 'chrome'):
+    elif driver in ('chrome',):
         if executable:
             kwargs['executable_path'] = executable
 
@@ -570,7 +572,7 @@ def browser_instance_getter(
                 browser.visit_condition = splinter_browser_load_condition
                 browser.visit_condition_timeout = splinter_browser_load_timeout
                 browser.visit('about:blank')
-        except (IOError, HTTPException, WebDriverException):
+        except (IOError, HTTPException, WebDriverException, MaxRetryError):
             # we lost browser, try to restore the justice
             try:
                 browser.quit()
