@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.9.2
+2.0.0
 -----
 
 - Bump minimum splinter version to 0.9.0 (jsfehler)
