@@ -6,7 +6,7 @@ import socket
 import pytest
 
 from splinter.driver import DriverAPI
-from pytest_splinter.plugin import get_args
+from pytest_splinter.plugin import get_args, _get_option_value
 
 
 @pytest.fixture
@@ -253,3 +253,42 @@ def test_browser_screenshot_escaped(testdir, simple_page_content):
         'test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.html').read()
     assert_valid_html_screenshot_content(content)
     assert testdir.tmpdir.join('test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.png')
+
+
+def test_get_option_value_default_option_no_ini(testdir, request):
+    """Tests using an option without an ini file.
+
+    If no ini is available, and no option is provided, the default value
+    should be used.
+    """
+    option = _get_option_value(request.config, 'splinter_screenshot_dir')
+
+    assert option == '.'
+
+
+def test_get_option_value_ini(testdir, request):
+    """Tests using the ini file when no option is available.
+
+    If an ini configuration is available, and no option is provided,
+    the ini config value should be used.
+    """
+    testdir.makeini("""
+        [pytest]
+        splinter_screenshot_dir = custom_dir_name
+    """)
+
+    testdir.makepyfile("""
+        from pytest_splinter.plugin import _get_option_value
+
+        def test_get_option_value_ini(browser, request):
+            option = _get_option_value(
+                request.config,
+                'splinter_screenshot_dir',
+                default='.'
+            )
+
+            assert option == 'custom_dir_name'
+    """)
+
+    result = testdir.runpytest('-v')
+    assert result.ret == 0

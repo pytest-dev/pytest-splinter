@@ -34,6 +34,30 @@ LOGGER = logging.getLogger(__name__)
 NAME_RE = re.compile(r'[\W]')
 
 
+def _get_option_value(config, option, default=None):
+    """Retrieve stringified option from parameters or ini config.
+
+    Preference is given to the command line parameters if it's not the default
+    value.
+
+    :param config: The pytest config object
+    :param option: The name of the parameter to get a value for.
+    :param default: The default value for the param.
+
+    :return: The correct value for the desired parameter.
+    """
+    option_value = config.getoption(option)
+    ini_value = config.getini(option)
+
+    if option_value != default:
+        return option_value
+
+    if ini_value not in [None, '']:
+        return ini_value
+
+    return option_value
+
+
 def _visit(self, old_visit, url):
     """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
     old_visit(url)
@@ -87,7 +111,12 @@ def splinter_close_browser():
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_webdriver(request):
     """Webdriver fixture."""
-    return request.config.option.splinter_webdriver or 'firefox'
+    option_value = _get_option_value(
+        request.config,
+        'splinter_webdriver'
+    )
+
+    return option_value or "firefox"
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -96,7 +125,11 @@ def splinter_remote_url(request):
 
     :return: URL of remote webdriver.
     """
-    return request.config.option.splinter_remote_url
+    return _get_option_value(
+        request.config,
+        'splinter_remote_url',
+        default=None
+    )
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -105,7 +138,10 @@ def splinter_selenium_socket_timeout(request):
 
     :return: Seconds.
     """
-    return request.config.option.splinter_webdriver_socket_timeout
+    return int(_get_option_value(
+        request.config,
+        'splinter_webdriver_socket_timeout',
+        default="120"))
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -114,7 +150,10 @@ def splinter_selenium_implicit_wait(request):
 
     :return: Seconds.
     """
-    return request.config.option.splinter_webdriver_implicit_wait
+    return int(_get_option_value(
+        request.config,
+        'splinter_webdriver_implicit_wait'
+    ))
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -123,7 +162,17 @@ def splinter_wait_time(request):
 
     :return: Seconds.
     """
-    return request.config.option.splinter_wait_time or 5
+    option = _get_option_value(
+        request.config,
+        'splinter_wait_time'
+    )
+
+    try:
+        option = int(option)
+    except (ValueError, TypeError):
+        option = None
+
+    return option or 5
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -132,7 +181,10 @@ def splinter_selenium_speed(request):
 
     :return: Seconds.
     """
-    return request.config.option.splinter_webdriver_speed
+    return _get_option_value(
+        request.config,
+        'splinter_webdriver_speed',
+    )
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -211,19 +263,33 @@ def splinter_window_size():
 @pytest.fixture(scope='session')
 def splinter_session_scoped_browser(request):
     """Flag to keep single browser per test session."""
-    return request.config.option.splinter_session_scoped_browser == 'true'
+    return _get_option_value(
+        request.config,
+        'splinter_session_scoped_browser',
+        default='true'
+    )
 
 
 @pytest.fixture(scope='session')
 def splinter_make_screenshot_on_failure(request):
     """Flag to make browser screenshot on test failure."""
-    return request.config.option.splinter_make_screenshot_on_failure == 'true'
+    return _get_option_value(
+        request.config,
+        'splinter_make_screenshot_on_failure',
+        default='true'
+    )
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_screenshot_dir(request):
     """Browser screenshot directory."""
-    return os.path.abspath(request.config.option.splinter_screenshot_dir)
+    screenshot_dir = _get_option_value(
+        request.config,
+        'splinter_screenshot_dir',
+        default='.'
+    )
+
+    return os.path.abspath(screenshot_dir)
 
 
 @pytest.fixture(scope='session')
@@ -232,7 +298,11 @@ def splinter_headless(request):
 
     http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
     """
-    return request.config.option.splinter_headless == 'true'
+    return _get_option_value(
+        request.config,
+        'splinter_headless',
+        default='true'
+    )
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -244,7 +314,12 @@ def splinter_screenshot_encoding(request):
 @pytest.fixture(scope='session')
 def splinter_webdriver_executable(request):
     """Webdriver executable directory."""
-    executable = request.config.option.splinter_webdriver_executable
+    executable = _get_option_value(
+        request.config,
+        'splinter_webdriver_executable',
+        default=''
+    )
+
     return os.path.abspath(executable) if executable else None
 
 
@@ -639,50 +714,112 @@ def pytest_configure(config):
 def pytest_addoption(parser):  # pragma: no cover
     """Pytest hook to add custom command line option(s)."""
     group = parser.getgroup("splinter", "splinter integration for browser testing")
+
+    webdriver_help_msg = "pytest-splinter webdriver"
     group.addoption(
         "--splinter-webdriver",
-        help="pytest-splinter webdriver", type="choice", choices=list(splinter.browser._DRIVERS.keys()),
+        help=webdriver_help_msg, type="choice", choices=list(splinter.browser._DRIVERS.keys()),
         dest='splinter_webdriver', metavar="DRIVER", default=None)
+    parser.addini(
+        'splinter_webdriver',
+        webdriver_help_msg)
+
+    remote_url_help_msg = "pytest-splinter remote webdriver url "
     group.addoption(
         "--splinter-remote-url",
-        help="pytest-splinter remote webdriver url ", metavar="URL", dest='splinter_remote_url', default=None)
+        help=remote_url_help_msg, metavar="URL", dest='splinter_remote_url', default=None)
+    parser.addini(
+        'splinter_remote_url',
+        remote_url_help_msg)
+
+    wait_time_help_msg = "splinter explicit wait, seconds"
     group.addoption(
         "--splinter-wait-time",
-        help="splinter explicit wait, seconds", type="int",
+        help=wait_time_help_msg, type="int",
         dest='splinter_wait_time', metavar="SECONDS", default=None)
+    parser.addini(
+        'splinter_wait_time',
+        wait_time_help_msg)
+
+    implicity_wait_help_msg = "pytest-splinter selenium implicit wait, seconds"
     group.addoption(
         "--splinter-implicit-wait",
-        help="pytest-splinter selenium implicit wait, seconds", type="int",
+        help=implicity_wait_help_msg, type="int",
         dest='splinter_webdriver_implicit_wait', metavar="SECONDS", default=5)
+    parser.addini(
+        'splinter_webdriver_implicit_wait',
+        implicity_wait_help_msg)
+
+    webdriver_speed_help_msg = "pytest-splinter selenium speed, seconds"
     group.addoption(
         "--splinter-speed",
-        help="pytest-splinter selenium speed, seconds", type="int",
+        help=webdriver_speed_help_msg, type="int",
         dest='splinter_webdriver_speed', metavar="SECONDS", default=0)
+    parser.addini(
+        'splinter_webdriver_speed',
+        webdriver_speed_help_msg)
+
+    webdriver_socket_timeout_help_msg = (
+        "pytest-splinter socket timeout, seconds")
     group.addoption(
         "--splinter-socket-timeout",
-        help="pytest-splinter socket timeout, seconds", type="int",
+        help=webdriver_socket_timeout_help_msg, type="int",
         dest='splinter_webdriver_socket_timeout', metavar="SECONDS", default=120)
+    parser.addini(
+        'splinter_webdriver_socket_timeout',
+        webdriver_socket_timeout_help_msg)
+
+    session_scoped_browser_help_msg = (
+        "pytest-splinter should use a single browser instance per test"
+        "session. Defaults to true.")
     group.addoption(
         "--splinter-session-scoped-browser",
-        help="pytest-splinter should use a single browser instance per test session. Defaults to true.", action="store",
-        dest='splinter_session_scoped_browser', metavar="false|true", type="choice", choices=['false', 'true'],
+        help=session_scoped_browser_help_msg, action="store",
+        dest='splinter_session_scoped_browser', metavar="false|true",
+        type="choice", choices=['false', 'true'],
         default='true')
+    parser.addini(
+        'splinter_session_scoped_browser',
+        session_scoped_browser_help_msg)
+
+    make_screenshot_on_failure_help_msg = (
+        "pytest-splinter should take browser screenshots on test failure. "
+        "Defaults to true.")
     group.addoption(
         "--splinter-make-screenshot-on-failure",
-        help="pytest-splinter should take browser screenshots on test failure. Defaults to true.", action="store",
-        dest='splinter_make_screenshot_on_failure', metavar="false|true", type="choice", choices=['false', 'true'],
+        help=make_screenshot_on_failure_help_msg, action="store",
+        dest='splinter_make_screenshot_on_failure', metavar="false|true",
+        type="choice", choices=['false', 'true'],
         default='true')
+    parser.addini(
+        'splinter_make_screenshot_on_failure',
+        make_screenshot_on_failure_help_msg)
+
+    screenshot_dir_help_msg = "pytest-splinter browser screenshot directory. Defaults to the current directory."
     group.addoption(
         "--splinter-screenshot-dir",
-        help="pytest-splinter browser screenshot directory. Defaults to the current directory.", action="store",
+        help=screenshot_dir_help_msg, action="store",
         dest='splinter_screenshot_dir', metavar="DIR", default='.')
+    parser.addini(
+        'splinter_screenshot_dir',
+        screenshot_dir_help_msg)
+
+    webdriver_executable_help_msg = (
+        "pytest-splinter webdriver executable path."
+        "Defaults to unspecified in which case it is taken from PATH")
     group.addoption(
         "--splinter-webdriver-executable",
-        help="pytest-splinter webdrive executable path. Defaults to unspecified in which case it is taken from PATH",
-        action="store",
+        help=webdriver_executable_help_msg, action="store",
         dest='splinter_webdriver_executable', metavar="DIR", default='')
+    parser.addini(
+        'splinter_webdriver_executable',
+        webdriver_executable_help_msg)
+
+    headless_help_msg = "Run the browser in headless mode. Defaults to false. Only applies to Chrome."
     group.addoption(
         "--splinter-headless",
-        help="Run the browser in headless mode. Defaults to false. Only applies to Chrome.", action="store",
-        dest='splinter_headless', metavar="false|true", type="choice", choices=['false', 'true'],
-        default='false')
+        help=headless_help_msg, action="store",
+        dest='splinter_headless', metavar="false|true", type="choice", choices=['false', 'true'], default='false')
+    parser.addini(
+        'splinter_headless',
+        headless_help_msg)
