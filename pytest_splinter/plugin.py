@@ -274,10 +274,9 @@ def browser_patches():
 
 
 @pytest.fixture(scope='session')
-def session_tmpdir(request, tmpdir_factory):
+def session_tmpdir(tmpdir_factory):
     """pytest tmpdir which is session-scoped."""
-    from _pytest.tmpdir import tmpdir
-    return tmpdir(request, tmpdir_factory)
+    return tmpdir_factory.mktemp('pytest-splinter')
 
 
 @pytest.fixture(scope='session')
