@@ -158,8 +158,8 @@ Fixtures
     Function to get browser image (png) screenshot. By default, it calls `browser.save_sceenshot`
     with given path.
 
-* splinter_driver_executable
-    Filesystem path of the webdriver executable.
+* splinter_webdriver_executable
+    Filesystem path of the webdriver executable directory.
     This fixture gets the value from the command-line option
     `splinter-webdriver-executable` (see below).
 
@@ -219,7 +219,7 @@ Command-line options
     directory.
 
 * `--splinter-webdriver-executable`
-    Filesystem path of the webdriver executable. Used by chrome driver.
+    Filesystem path of the webdriver executable directory. Used by chrome driver.
     Defaults to the None in which case the shell PATH variable setting determines the location of the executable.
 
 
