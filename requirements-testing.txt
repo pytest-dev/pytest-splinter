@@ -2,7 +2,7 @@ mock
 pytest-cov
 pytest-localserver
 pylama~=7.4.3
-pylama_pylint
+pylama_pylint==3.0.1
 pylint==1.9.3
 astroid>=1.4.5
 selenium
