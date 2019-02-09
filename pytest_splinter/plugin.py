@@ -5,6 +5,8 @@ which is an object of splinter Browser class.
 """
 import codecs
 import functools  # pragma: no cover
+import warnings
+
 try:
     from httplib import HTTPException
 except ImportError:
@@ -417,7 +419,7 @@ def _take_screenshot(
                             }]
                     })
     except Exception as e:  # NOQA
-        request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
+        warnings.warn(pytest.PytestWarning("Could not save screenshot: {0}".format(e)))
 
 
 @pytest.yield_fixture(autouse=True)
