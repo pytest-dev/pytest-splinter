@@ -618,6 +618,7 @@ class SplinterXdistPlugin(object):
     """Plugin class to defer pytest-xdist hook handler."""
 
     def __init__(self, screenshot_dir):
+        """Initialize the SplinterXdistPlugin with the required configuration."""
         self.screenshot_dir = screenshot_dir
 
     def pytest_testnodedown(self, node, error):
