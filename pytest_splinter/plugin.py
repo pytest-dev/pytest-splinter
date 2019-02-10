@@ -617,11 +617,13 @@ class SplinterXdistPlugin(object):
 
     """Plugin class to defer pytest-xdist hook handler."""
 
+    def __init__(self, screenshot_dir):
+        self.screenshot_dir = screenshot_dir
+
     def pytest_testnodedown(self, node, error):
         """Copy screenshots back from remote nodes to have them on the master."""
-        config_screenshot_dir = splinter_screenshot_dir(node)
         for screenshot in getattr(node, 'slaveoutput', {}).get('screenshots', []):
-            screenshot_dir = os.path.join(config_screenshot_dir, screenshot['class_name'])
+            screenshot_dir = os.path.join(self.screenshot_dir, screenshot['class_name'])
             if not os.path.exists(screenshot_dir):
                 os.makedirs(screenshot_dir)
             for fil in screenshot['files']:
@@ -634,7 +636,8 @@ class SplinterXdistPlugin(object):
 def pytest_configure(config):
     """Register pytest-splinter's deferred plugin."""
     if config.pluginmanager.getplugin('xdist'):
-        config.pluginmanager.register(SplinterXdistPlugin())
+        screenshot_dir = os.path.abspath(config.option.splinter_screenshot_dir)
+        config.pluginmanager.register(SplinterXdistPlugin(screenshot_dir=screenshot_dir))
 
 
 def pytest_addoption(parser):  # pragma: no cover
