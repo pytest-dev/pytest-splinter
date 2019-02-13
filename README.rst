@@ -317,7 +317,7 @@ test_your_test.py:
         button = browser.find_by_name('btnK')
         # Interact with elements
         button.click()
-        assert browser.is_text_present('splinter.cobrateam.info'), 'splinter.cobrateam.info wasn't found... We need to'
+        assert browser.is_text_present('splinter.cobrateam.info'), "splinter.cobrateam.info wasn't found... We need to"
         ' improve our SEO techniques'
 
 
