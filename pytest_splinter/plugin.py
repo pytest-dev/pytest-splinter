@@ -5,6 +5,8 @@ which is an object of splinter Browser class.
 """
 import codecs
 import functools  # pragma: no cover
+import warnings
+
 try:
     from httplib import HTTPException
 except ImportError:
@@ -274,10 +276,9 @@ def browser_patches():
 
 
 @pytest.fixture(scope='session')
-def session_tmpdir(request, tmpdir_factory):
+def session_tmpdir(tmpdir_factory):
     """pytest tmpdir which is session-scoped."""
-    from _pytest.tmpdir import tmpdir
-    return tmpdir(request, tmpdir_factory)
+    return tmpdir_factory.mktemp('pytest-splinter')
 
 
 @pytest.fixture(scope='session')
@@ -418,7 +419,7 @@ def _take_screenshot(
                             }]
                     })
     except Exception as e:  # NOQA
-        request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
+        warnings.warn(pytest.PytestWarning("Could not save screenshot: {0}".format(e)))
 
 
 @pytest.yield_fixture(autouse=True)
@@ -616,11 +617,14 @@ class SplinterXdistPlugin(object):
 
     """Plugin class to defer pytest-xdist hook handler."""
 
+    def __init__(self, screenshot_dir):
+        """Initialize the SplinterXdistPlugin with the required configuration."""
+        self.screenshot_dir = screenshot_dir
+
     def pytest_testnodedown(self, node, error):
         """Copy screenshots back from remote nodes to have them on the master."""
-        config_screenshot_dir = splinter_screenshot_dir(node)
         for screenshot in getattr(node, 'slaveoutput', {}).get('screenshots', []):
-            screenshot_dir = os.path.join(config_screenshot_dir, screenshot['class_name'])
+            screenshot_dir = os.path.join(self.screenshot_dir, screenshot['class_name'])
             if not os.path.exists(screenshot_dir):
                 os.makedirs(screenshot_dir)
             for fil in screenshot['files']:
@@ -633,7 +637,8 @@ class SplinterXdistPlugin(object):
 def pytest_configure(config):
     """Register pytest-splinter's deferred plugin."""
     if config.pluginmanager.getplugin('xdist'):
-        config.pluginmanager.register(SplinterXdistPlugin())
+        screenshot_dir = os.path.abspath(config.option.splinter_screenshot_dir)
+        config.pluginmanager.register(SplinterXdistPlugin(screenshot_dir=screenshot_dir))
 
 
 def pytest_addoption(parser):  # pragma: no cover
