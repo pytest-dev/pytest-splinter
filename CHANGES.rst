@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.0.1
+-----
+
+- Address compatibility with pytest >= 4
+
 2.0.0
 -----
 
