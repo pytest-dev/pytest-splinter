@@ -8,20 +8,7 @@ import pytest
 from splinter.driver import DriverAPI
 from pytest_splinter.plugin import get_args
 
-
-@pytest.fixture
-def simple_page_content():
-    """Return simple page content."""
-    return """<html xmlns="http://www.w3.org/1999/xhtml"><head></head>
-    <body>
-        <div id="content">
-            <p>
-                Some <strong>text</strong>
-            </p>
-        </div>
-        <textarea id="textarea">area text</textarea>
-    </body>
-</html>"""
+from .utils import assert_valid_html_screenshot_content
 
 
 @pytest.fixture
@@ -170,14 +157,6 @@ def test_executable():
     """Test argument construction for webdrivers."""
     arg1 = get_args(driver='chrome', executable='/tmp')
     assert arg1['executable_path'] == '/tmp'
-
-
-def assert_valid_html_screenshot_content(content):
-    """Make sure content fetched from html screenshoting looks correct."""
-    assert content.startswith('<html xmlns="http://www.w3.org/1999/xhtml">')
-    assert '<div id="content">' in content
-    assert '<strong>text</strong>' in content
-    assert content.endswith('</html>')
 
 
 def test_browser_screenshot_normal(testdir, simple_page_content):
