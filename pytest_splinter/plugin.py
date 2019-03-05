@@ -43,7 +43,7 @@ def pytest_addhooks(pluginmanager):
 
 
 def pytest_splinter_screenshot_dir(config):
-    """Browser screenshot directory."""
+    """Return the name of the directory to store test screenshots in."""
     return os.path.abspath(config.option.splinter_screenshot_dir)
 
 
@@ -236,7 +236,7 @@ def splinter_make_screenshot_on_failure(request):
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_screenshot_dir(request):
     """Browser screenshot directory."""
-    return request.config.hook.pytest_splinter_screenshot_dir(config=request.config)[0]
+    return request.config.hook.pytest_splinter_screenshot_dir(config=request.config)
 
 
 @pytest.fixture(scope='session')
@@ -630,7 +630,7 @@ class SplinterXdistPlugin(object):
 
     def pytest_testnodedown(self, node, error):
         """Copy screenshots back from remote nodes to have them on the master."""
-        screenshot_dir = node.config.hook.pytest_splinter_screenshot_dir(config=node.config)[0]
+        screenshot_dir = node.config.hook.pytest_splinter_screenshot_dir(config=node.config)
 
         for screenshot in getattr(node, 'slaveoutput', {}).get('screenshots', []):
             screenshot_dir = os.path.join(screenshot_dir, screenshot['class_name'])
