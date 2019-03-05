@@ -38,7 +38,7 @@ def test_screenshot(simple_page, browser):
         'test_hooks_screenshot_dir',
         'test_screenshot-browser.png'
     )
-    assert os.path.exists(screenshot_path)
+    assert os.path.exists(str(screenshot_path))
 
     content = testdir.tmpdir.join(
         'tester_root_screenshot_dir',
