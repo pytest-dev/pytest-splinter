@@ -1,7 +1,7 @@
+"""Configuration for pytest runner."""
 import pytest
 
 
-"""Configuration for pytest runner."""
 pytest_plugins = 'pytester'
 
 
