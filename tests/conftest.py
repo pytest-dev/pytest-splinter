@@ -18,3 +18,11 @@ def simple_page_content():
         <textarea id="textarea">area text</textarea>
     </body>
 </html>"""
+
+
+@pytest.fixture
+def simple_page(httpserver, browser, simple_page_content):
+    """Serve simple html page."""
+    httpserver.serve_content(
+        simple_page_content, code=200, headers={'Content-Type': 'text/html'})
+    browser.visit(httpserver.url)

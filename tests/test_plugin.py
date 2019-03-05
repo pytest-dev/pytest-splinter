@@ -1,4 +1,5 @@
 """Tests for pytest-splinter plugin."""
+import os
 import os.path
 import time
 import socket
@@ -8,15 +9,13 @@ import pytest
 from splinter.driver import DriverAPI
 from pytest_splinter.plugin import get_args
 
-from .utils import assert_valid_html_screenshot_content
 
-
-@pytest.fixture
-def simple_page(httpserver, browser, simple_page_content):
-    """Serve simple html page."""
-    httpserver.serve_content(
-        simple_page_content, code=200, headers={'Content-Type': 'text/html'})
-    browser.visit(httpserver.url)
+def assert_valid_html_screenshot_content(content):
+    """Make sure content fetched from html screenshoting looks correct."""
+    assert content.startswith('<html xmlns="http://www.w3.org/1999/xhtml">')
+    assert '<div id="content">' in content
+    assert '<strong>text</strong>' in content
+    assert content.endswith('</html>')
 
 
 def test_browser(browser):
@@ -235,3 +234,44 @@ def test_screenshot(simple_page, browser, param):
         'test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.html').read()
     assert_valid_html_screenshot_content(content)
     assert testdir.tmpdir.join('test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.png')
+
+
+def test_hooks_screenshot_dir(testdir, simple_page_content):
+    """Test the pytest_splinter_screenshor_dir hook.
+
+    Overriding this hook should change where test screenshots are saved.
+    """
+    testdir.makeconftest(
+        """
+import pytest
+
+
+def pytest_splinter_screenshot_dir(config):
+    return "tester_root_screenshot_dir"
+
+    """
+    )
+
+    testdir.inline_runsource(
+        """
+def test_screenshot(httpserver, browser):
+    httpserver.serve_content(
+        '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
+    browser.visit(httpserver.url)
+    assert False
+
+    """.format(simple_page_content), "-vl", "-r w"
+    )
+
+    screenshot_path = testdir.tmpdir.join(
+        'tester_root_screenshot_dir',
+        'test_hooks_screenshot_dir',
+        'test_screenshot-browser.png'
+    )
+    assert os.path.exists(str(screenshot_path))
+
+    content = testdir.tmpdir.join(
+        'tester_root_screenshot_dir',
+        'test_hooks_screenshot_dir',
+        'test_screenshot-browser.html').read()
+    assert_valid_html_screenshot_content(content)
