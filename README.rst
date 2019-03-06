@@ -142,6 +142,10 @@ Fixtures
     This fixture gets the value from the command-line option
     `splinter-screenshot-dir` (see below).
 
+    If overriding this fixture and using the pytest-xdist plugin, the `pytest_splinter_screenshot_dir`
+    hook should be used instead.
+
+
 * splinter_make_screenshot_on_failure
     Should pytest-splinter take browser screenshots on test failure?
     This fixture gets the value from the command-line option
@@ -178,6 +182,15 @@ Fixtures
 * splinter_headless
     Run Chrome in headless mode. As the writing of this (2017-07), available only in unreleased Splinter master version.
     Defaults to false.
+
+Hooks
+-----
+
+* pytest_splinter_screenshot_dir
+    This hook intercepts the value from the command-line option
+    `splinter-screenshot-dir` (see below).
+
+    It must return a string value, pointing to the desired browser screenshot directory.
 
 Command-line options
 --------------------
