@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.1.0
+-----
+
+- Added Firefox headless support (andrewshkovskii)
+
 2.0.1
 -----
 

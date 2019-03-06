@@ -176,7 +176,7 @@ Fixtures
     clean the cookies for each domain.
 
 * splinter_headless
-    Run Chrome in headless mode. As the writing of this (2017-07), available only in unreleased Splinter master version.
+    Run Chrome or Firefox in headless mode.
     Defaults to false.
 
 Command-line options
