@@ -285,16 +285,18 @@ def splinter_browser_class(request):
     return Browser
 
 
-def get_args(driver=None,
-             download_dir=None,
-             download_ftypes=None,
-             firefox_pref=None,
-             firefox_prof_dir=None,
-             remote_url=None,
-             executable=None,
-             headless=False,
-             driver_kwargs=None):
+def get_args(request):
     """Construct arguments to be passed to webdriver on initialization."""
+    driver = request.getfixturevalue('splinter_webdriver')
+    download_dir = request.getfixturevalue('splinter_file_download_dir')
+    download_ftypes = request.getfixturevalue('splinter_download_file_types')
+    firefox_pref = request.getfixturevalue('splinter_firefox_profile_preferences')
+    firefox_prof_dir = request.getfixturevalue('splinter_firefox_profile_directory')
+    remote_url = request.getfixturevalue('splinter_remote_url')
+    executable = request.getfixturevalue('splinter_webdriver_executable')
+    headless = request.getfixturevalue('splinter_headless')
+    driver_kwargs = request.getfixturevalue('splinter_driver_kwargs') or {}
+
     kwargs = {}
 
     firefox_profile_preferences = dict({
@@ -465,57 +467,29 @@ def _browser_screenshot_session(
 @pytest.fixture(scope='session')
 def browser_instance_getter(
         browser_patches,
-        splinter_session_scoped_browser,
-        splinter_browser_load_condition,
-        splinter_browser_load_timeout,
-        splinter_download_file_types,
-        splinter_driver_kwargs,
-        splinter_file_download_dir,
-        splinter_firefox_profile_preferences,
-        splinter_firefox_profile_directory,
-        splinter_make_screenshot_on_failure,
-        splinter_remote_url,
-        splinter_screenshot_dir,
-        splinter_selenium_implicit_wait,
-        splinter_wait_time,
-        splinter_selenium_socket_timeout,
-        splinter_selenium_speed,
-        splinter_webdriver_executable,
-        splinter_window_size,
-        splinter_browser_class,
-        splinter_clean_cookies_urls,
-        splinter_screenshot_getter_html,
-        splinter_screenshot_getter_png,
-        splinter_screenshot_encoding,
-        splinter_headless,
-        session_tmpdir,
         browser_pool,
+        splinter_browser_class,
 ):
     """Splinter browser instance getter. To be used for getting of plugin.Browser's instances.
 
     :return: function(parent). Each time this function will return new instance of plugin.Browser class.
     """
-    def get_browser(splinter_webdriver, retry_count=3):
-        kwargs = get_args(driver=splinter_webdriver,
-                          download_dir=splinter_file_download_dir,
-                          download_ftypes=splinter_download_file_types,
-                          firefox_pref=splinter_firefox_profile_preferences,
-                          firefox_prof_dir=splinter_firefox_profile_directory,
-                          remote_url=splinter_remote_url,
-                          executable=splinter_webdriver_executable,
-                          headless=splinter_headless,
-                          driver_kwargs=splinter_driver_kwargs)
+    def get_browser(request, retry_count=3):
+        kwargs = get_args(request)
         try:
             return splinter_browser_class(
-                splinter_webdriver, visit_condition=splinter_browser_load_condition,
-                visit_condition_timeout=splinter_browser_load_timeout,
-                wait_time=splinter_wait_time, **kwargs
+                request.getfixturevalue('splinter_webdriver'),
+                visit_condition=request.getfixturevalue('splinter_browser_load_condition'),
+                visit_condition_timeout=request.getfixturevalue('splinter_browser_load_timeout'),
+                wait_time=request.getfixturevalue('splinter_wait_time'),
+                **kwargs
             )
         except Exception:  # NOQA
             if retry_count > 1:
-                return get_browser(splinter_webdriver, retry_count - 1)
+                return get_browser(request, retry_count - 1)
             else:
                 raise
+
 
     def prepare_browser(request, parent, retry_count=3):
         splinter_webdriver = request.getfixturevalue('splinter_webdriver')
@@ -524,24 +498,24 @@ def browser_instance_getter(
         browser_key = id(parent)
         browser = browser_pool.get(browser_key)
         if not splinter_session_scoped_browser:
-            browser = get_browser(splinter_webdriver)
+            browser = get_browser(request)
             if splinter_close_browser:
                 request.addfinalizer(browser.quit)
         elif not browser:
-            browser = browser_pool[browser_key] = get_browser(splinter_webdriver)
+            browser = browser_pool[browser_key] = get_browser(request)
 
         if request.scope == 'function':
             def _take_screenshot_on_failure():
-                if splinter_make_screenshot_on_failure and getattr(request.node, 'splinter_failure', True):
+                if request.getfixturevalue('splinter_make_screenshot_on_failure') and getattr(request.node, 'splinter_failure', True):
                     _take_screenshot(
                         request=request,
                         fixture_name=parent.__name__,
-                        session_tmpdir=session_tmpdir,
+                        session_tmpdir=request.getfixturevalue('session_tmpdir'),
                         browser_instance=browser,
-                        splinter_screenshot_dir=splinter_screenshot_dir,
-                        splinter_screenshot_getter_html=splinter_screenshot_getter_html,
-                        splinter_screenshot_getter_png=splinter_screenshot_getter_png,
-                        splinter_screenshot_encoding=splinter_screenshot_encoding,
+                        splinter_screenshot_dir=request.getfixturevalue('splinter_screenshot_dir'),
+                        splinter_screenshot_getter_html=request.getfixturevalue('splinter_screenshot_getter_html'),
+                        splinter_screenshot_getter_png=request.getfixturevalue('splinter_screenshot_getter_png'),
+                        splinter_screenshot_encoding=request.getfixturevalue('splinter_screenshot_encoding'),
                     )
             request.addfinalizer(_take_screenshot_on_failure)
 
@@ -549,24 +523,27 @@ def browser_instance_getter(
             if splinter_webdriver not in browser.driver_name.lower():
                 raise IOError('webdriver does not match')
             if hasattr(browser, 'driver'):
-                browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
-                browser.driver.set_speed(splinter_selenium_speed)
-                browser.driver.command_executor.set_timeout(splinter_selenium_socket_timeout)
-                browser.driver.command_executor._conn.timeout = splinter_selenium_socket_timeout
-                if splinter_window_size and splinter_webdriver != "chrome":
+                browser.driver.implicitly_wait(request.getfixturevalue('splinter_selenium_implicit_wait'))
+                browser.driver.set_speed(request.getfixturevalue('splinter_selenium_speed'))
+                socket_timeout = request.getfixturevalue('splinter_selenium_socket_timeout')
+                browser.driver.command_executor.set_timeout(socket_timeout)
+                browser.driver.command_executor._conn.timeout = socket_timeout
+
+                window_size = request.getfixturevalue('splinter_window_size')
+                if window_size and splinter_webdriver != "chrome":
                     # Chrome cannot resize the window
                     # https://github.com/SeleniumHQ/selenium/issues/3508
-                    browser.driver.set_window_size(*splinter_window_size)
+                    browser.driver.set_window_size(*window_size)
             try:
                 browser.cookies.delete()
             except (IOError, HTTPException, WebDriverException):
                 LOGGER.warning('Error cleaning browser cookies', exc_info=True)
-            for url in splinter_clean_cookies_urls:
+            for url in request.getfixturevalue('splinter_clean_cookies_urls'):
                 browser.visit(url)
                 browser.cookies.delete()
             if hasattr(browser, 'driver'):
-                browser.visit_condition = splinter_browser_load_condition
-                browser.visit_condition_timeout = splinter_browser_load_timeout
+                browser.visit_condition = request.getfixturevalue('splinter_browser_load_condition')
+                browser.visit_condition_timeout = request.getfixturevalue('splinter_browser_load_timeout')
                 browser.visit('about:blank')
         except (IOError, HTTPException, WebDriverException, MaxRetryError):
             # we lost browser, try to restore the justice
@@ -578,7 +555,7 @@ def browser_instance_getter(
             if retry_count < 1:
                 raise
             else:
-                browser = browser_pool[browser_key] = get_browser(splinter_webdriver)
+                browser = browser_pool[browser_key] = get_browser(request)
                 prepare_browser(request, parent, retry_count - 1)
         return browser
 
