@@ -490,7 +490,6 @@ def browser_instance_getter(
             else:
                 raise
 
-
     def prepare_browser(request, parent, retry_count=3):
         splinter_webdriver = request.getfixturevalue('splinter_webdriver')
         splinter_session_scoped_browser = request.getfixturevalue('splinter_session_scoped_browser')
@@ -506,7 +505,8 @@ def browser_instance_getter(
 
         if request.scope == 'function':
             def _take_screenshot_on_failure():
-                if request.getfixturevalue('splinter_make_screenshot_on_failure') and getattr(request.node, 'splinter_failure', True):
+                screenshot_on_failure = request.getfixturevalue('splinter_make_screenshot_on_failure')
+                if screenshot_on_failure and getattr(request.node, 'splinter_failure', True):
                     _take_screenshot(
                         request=request,
                         fixture_name=parent.__name__,

@@ -6,7 +6,6 @@ import socket
 import pytest
 
 from splinter.driver import DriverAPI
-from pytest_splinter.plugin import get_args
 
 
 @pytest.fixture
@@ -166,10 +165,33 @@ def test_current_window_is_main(browser, splinter_webdriver):
     assert browser.driver.current_window_is_main()
 
 
-def test_executable():
+def test_executable(testdir, request):
     """Test argument construction for webdrivers."""
-    arg1 = get_args(driver='chrome', executable='/tmp')
-    assert arg1['executable_path'] == '/tmp'
+    testdir.makeconftest("""
+        import pytest
+
+
+        @pytest.fixture(scope='session')
+        def splinter_webdriver(request):
+            return 'chrome'
+
+
+        @pytest.fixture(scope='session')
+        def splinter_webdriver_executable(request):
+            return '/tmp'
+        """)
+
+    testdir.makepyfile("""
+        from pytest_splinter.plugin import get_args
+
+
+        def test_executable(request):
+            arg1 = get_args(request)
+            assert arg1['executable_path'] == '/tmp'
+    """)
+
+    result = testdir.runpytest('-v')
+    assert result.ret == 0
 
 
 def assert_valid_html_screenshot_content(content):
