@@ -774,11 +774,8 @@ def pytest_addoption(parser):  # pragma: no cover
     )
     group.addoption(
         "--splinter-headless",
-        help="Run the browser in headless mode. Defaults to false. Only applies to Chrome.",
-        action="store",
+        help="Run the browser in headless mode. Only applies to Chrome.",
+        action="store_true",
         dest="splinter_headless",
-        metavar="false|true",
-        type=str,
-        choices=["false", "true"],
         default="false",
     )
