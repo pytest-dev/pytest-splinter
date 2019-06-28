@@ -341,7 +341,7 @@ def get_args(driver=None,
 def splinter_screenshot_getter_png():
     """Screenshot getter function: png."""
     def getter(browser, path):
-        browser.driver.save_screenshot(path)
+        browser.screenshot(path)
     return getter
 
 
@@ -349,8 +349,7 @@ def splinter_screenshot_getter_png():
 def splinter_screenshot_getter_html(splinter_screenshot_encoding):
     """Screenshot getter function: html."""
     def getter(browser, path):
-        with codecs.open(path, 'w', encoding=splinter_screenshot_encoding) as fd:
-            fd.write(browser.html)
+        browser.html_snapshot(name=path, encoding=splinter_screenshot_encoding)
     return getter
 
 
