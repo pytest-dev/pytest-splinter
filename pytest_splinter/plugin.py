@@ -375,11 +375,8 @@ def _take_screenshot(
     Invoked from session and function browser fixtures.
     """
     slaveoutput = getattr(request.config, 'slaveoutput', None)
-    try:
-        names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
-    except AttributeError:
-        # pytest>=2.9.0
-        names = junitxml.mangle_test_address(request.node.nodeid)
+
+    names = junitxml.mangle_test_address(request.node.nodeid)
 
     classname = '.'.join(names[:-1])
     screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
