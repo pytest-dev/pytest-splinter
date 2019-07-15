@@ -1,4 +1,5 @@
 """Tests for pytest-splinter plugin."""
+import os
 import os.path
 import time
 import socket
@@ -199,8 +200,11 @@ def test_screenshot(simple_page, browser):
     assert False
     """.format(simple_page_content), "-vl", "-r w")
 
-    assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')
-    content = testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.html').read()
+    dir_content = os.listdir('test_browser_screenshot_normal')
+    matches = [i for i in dir_content if i.startswith('test_screenshot-browser') and i.endswith('.html')]
+    assert 1 == len(matches)
+
+    content = testdir.tmpdir.join('test_browser_screenshot_normal', matches[0]).read()
     assert_valid_html_screenshot_content(content)
 
 
@@ -223,10 +227,11 @@ def test_screenshot(simple_page, browser):
     assert False
     """.format(simple_page_content), "-vl", "-r w", '--splinter-session-scoped-browser=false')
 
-    content = testdir.tmpdir.join(
-        'test_browser_screenshot_function_scoped_browser',
-        'test_screenshot-browser.html'
-    ).read()
+    dir_content = os.listdir('test_browser_screenshot_function_scoped_browser')
+    matches = [i for i in dir_content if i.startswith('test_screenshot-browser') and i.endswith('.html')]
+    assert 1 == len(matches)
+
+    content = testdir.tmpdir.join('test_browser_screenshot_function_scoped_browser', matches[0]).read()
 
     assert_valid_html_screenshot_content(content)
     assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')
@@ -252,8 +257,12 @@ def test_screenshot(simple_page, browser, param):
     assert False
     """.format(simple_page_content), "-vl", "-r w")
 
-    content = testdir.tmpdir.join(
-        'test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.html').read()
+    dir_content = os.listdir('test_browser_screenshot_escaped')
+    matches = [i for i in dir_content if i.startswith('test_screenshot[escaped-param]-browser') and i.endswith('.html')]
+    assert 1 == len(matches)
+
+    content = testdir.tmpdir.join('test_browser_screenshot_escaped', matches[0]).read()
+
     assert_valid_html_screenshot_content(content)
     assert testdir.tmpdir.join('test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.png')
 

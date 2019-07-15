@@ -1,4 +1,6 @@
 """Browser screenshot tests."""
+import os
+
 import pytest
 
 import mock
@@ -14,13 +16,13 @@ def test_browser_screenshot_normal(mocked_browser, testdir):
             assert False
     """, "-vls", "--splinter-session-scoped-browser=false")
 
-    assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png').isfile()
+    assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser-.png').isfile()
 
 
 @mock.patch('pytest_splinter.plugin.splinter.Browser')
 def test_browser_screenshot_error(mocked_browser, testdir):
     """Test warning with error during taking screenshots on test failure."""
-    mocked_browser.return_value.driver.save_screenshot.side_effect = Exception('Failed')
+    mocked_browser.return_value.screenshot.side_effect = Exception('Failed')
     mocked_browser.return_value.driver_name = 'firefox'
     mocked_browser.return_value.html = u'<html>'
 
@@ -43,5 +45,9 @@ def test_browser_screenshot_xdist(testdir):
             assert False
     """, "-vl", "-n1")
 
-    assert testdir.tmpdir.join('test_browser_screenshot_xdist', 'test_screenshot-browser.png').isfile()
-    assert testdir.tmpdir.join('test_browser_screenshot_xdist', 'test_screenshot-browser.html').isfile()
+    dir_content = os.listdir('test_browser_screenshot_xdist')
+    matches = [i for i in dir_content if i.startswith('test_screenshot-browser')]
+    assert 2 == len(matches)
+
+    assert testdir.tmpdir.join('test_browser_screenshot_xdist', matches[0]).isfile()
+    assert testdir.tmpdir.join('test_browser_screenshot_xdist', matches[1]).isfile()
