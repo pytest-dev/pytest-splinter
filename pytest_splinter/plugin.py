@@ -643,36 +643,36 @@ def pytest_addoption(parser):  # pragma: no cover
     group = parser.getgroup("splinter", "splinter integration for browser testing")
     group.addoption(
         "--splinter-webdriver",
-        help="pytest-splinter webdriver", type="choice", choices=list(splinter.browser._DRIVERS.keys()),
+        help="pytest-splinter webdriver", type=str, choices=list(splinter.browser._DRIVERS.keys()),
         dest='splinter_webdriver', metavar="DRIVER", default=None)
     group.addoption(
         "--splinter-remote-url",
         help="pytest-splinter remote webdriver url ", metavar="URL", dest='splinter_remote_url', default=None)
     group.addoption(
         "--splinter-wait-time",
-        help="splinter explicit wait, seconds", type="int",
+        help="splinter explicit wait, seconds", type=int,
         dest='splinter_wait_time', metavar="SECONDS", default=None)
     group.addoption(
         "--splinter-implicit-wait",
-        help="pytest-splinter selenium implicit wait, seconds", type="int",
+        help="pytest-splinter selenium implicit wait, seconds", type=int,
         dest='splinter_webdriver_implicit_wait', metavar="SECONDS", default=5)
     group.addoption(
         "--splinter-speed",
-        help="pytest-splinter selenium speed, seconds", type="int",
+        help="pytest-splinter selenium speed, seconds", type=int,
         dest='splinter_webdriver_speed', metavar="SECONDS", default=0)
     group.addoption(
         "--splinter-socket-timeout",
-        help="pytest-splinter socket timeout, seconds", type="int",
+        help="pytest-splinter socket timeout, seconds", type=int,
         dest='splinter_webdriver_socket_timeout', metavar="SECONDS", default=120)
     group.addoption(
         "--splinter-session-scoped-browser",
         help="pytest-splinter should use a single browser instance per test session. Defaults to true.", action="store",
-        dest='splinter_session_scoped_browser', metavar="false|true", type="choice", choices=['false', 'true'],
+        dest='splinter_session_scoped_browser', metavar="false|true", type=str, choices=['false', 'true'],
         default='true')
     group.addoption(
         "--splinter-make-screenshot-on-failure",
         help="pytest-splinter should take browser screenshots on test failure. Defaults to true.", action="store",
-        dest='splinter_make_screenshot_on_failure', metavar="false|true", type="choice", choices=['false', 'true'],
+        dest='splinter_make_screenshot_on_failure', metavar="false|true", type=str, choices=['false', 'true'],
         default='true')
     group.addoption(
         "--splinter-screenshot-dir",
@@ -686,5 +686,5 @@ def pytest_addoption(parser):  # pragma: no cover
     group.addoption(
         "--splinter-headless",
         help="Run the browser in headless mode. Defaults to false. Only applies to Chrome.", action="store",
-        dest='splinter_headless', metavar="false|true", type="choice", choices=['false', 'true'],
+        dest='splinter_headless', metavar="false|true", type=str, choices=['false', 'true'],
         default='false')
