@@ -231,8 +231,6 @@ def splinter_screenshot_dir(request):
 @pytest.fixture(scope='session')
 def splinter_headless(request):
     """Flag to start Chrome in headless mode.
-
-    http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
     """
     return request.config.option.splinter_headless == 'true'
 

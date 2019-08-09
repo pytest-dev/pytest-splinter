@@ -14,31 +14,24 @@ before_install:
   - "npm install -g selenium-standalone@6.15.2"
   - "selenium-standalone install"
   - "selenium-standalone start &"
+dist: xenial
 matrix:
   include:
     - python: 3.7
-      dist: xenial
       env: TESTENV=linters
     - python: 3.7
-      dist: xenial
       env: TESTENV=coveralls
     - python: 2.7
-      dist: xenial
       env: TESTENV=py27
     - python: 2.7
-      dist: xenial
       env: TESTENV=py27-xdist
     - python: 3.7
-      dist: xenial
       env: TESTENV=py37-pytest-latest
     - python: 3.6
-      dist: xenial
       env: TESTENV=py36
     - python: 3.7
-      dist: xenial
       env: TESTENV=py37
     - python: 3.8-dev
-      dist: xenial
       env: TESTENV=py38
 install:
   - pip install tox
