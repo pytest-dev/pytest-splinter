@@ -176,7 +176,9 @@ Fixtures
     clean the cookies for each domain.
 
 * splinter_headless
-    Run Chrome in headless mode. Defaults to false. http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
+    Run Chrome or Firefox in headless mode. Defaults to false.
+    https://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
+    https://splinter.readthedocs.io/en/latest/drivers/firefox.html#using-headless-option-for-firefox
 
 Command-line options
 --------------------
@@ -222,7 +224,9 @@ Command-line options
     Defaults to the None in which case the shell PATH variable setting determines the location of the executable.
 
 * `--splinter-headless`
-    Run Chrome in headless mode. Defaults to false. http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
+    Run Chrome or Firefox in headless mode. Defaults to false.
+    https://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
+    https://splinter.readthedocs.io/en/latest/drivers/firefox.html#using-headless-option-for-firefox
 
 Browser fixture
 ---------------
