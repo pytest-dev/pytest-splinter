@@ -46,7 +46,7 @@ setup(
     ]
     + [
         ('Programming Language :: Python :: %s' % x)
-        for x in '2.7 3.4 3.5 3.6 3.7 3.8'.split()
+        for x in '2.7 3.5 3.6 3.7 3.8'.split()
     ],
     tests_require=['tox'],
     entry_points={'pytest11': [
