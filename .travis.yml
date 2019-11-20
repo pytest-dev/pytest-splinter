@@ -25,13 +25,13 @@ matrix:
       env: TESTENV=py27
     - python: 2.7
       env: TESTENV=py27-xdist
-    - python: 3.7
-      env: TESTENV=py37-pytest-latest
+    - python: 3.8
+      env: TESTENV=py38-pytest-latest
     - python: 3.6
       env: TESTENV=py36
     - python: 3.7
       env: TESTENV=py37
-    - python: 3.8-dev
+    - python: 3.8
       env: TESTENV=py38
 install:
   - pip install tox
