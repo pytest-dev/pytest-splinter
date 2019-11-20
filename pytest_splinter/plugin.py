@@ -235,6 +235,12 @@ def splinter_headless(request):
     return request.config.option.splinter_headless == 'true'
 
 
+@pytest.fixture(scope='session')
+def splinter_browser(request):
+    """The browser for the remote grid."""
+    return request.config.option.splinter_browser
+
+
 @pytest.fixture(scope='session')  # pragma: no cover
 def splinter_screenshot_encoding(request):
     """Browser screenshot html encoding."""
@@ -488,6 +494,7 @@ def browser_instance_getter(
         splinter_screenshot_getter_png,
         splinter_screenshot_encoding,
         splinter_headless,
+        splinter_browser,
         session_tmpdir,
         browser_pool,
 ):
@@ -509,7 +516,7 @@ def browser_instance_getter(
             return splinter_browser_class(
                 splinter_webdriver, visit_condition=splinter_browser_load_condition,
                 visit_condition_timeout=splinter_browser_load_timeout,
-                wait_time=splinter_wait_time, **kwargs
+                wait_time=splinter_wait_time, browser=splinter_browser, **kwargs
             )
         except Exception:  # NOQA
             if retry_count > 1:
@@ -686,3 +693,8 @@ def pytest_addoption(parser):  # pragma: no cover
         help="Run the browser in headless mode. Defaults to false. Only applies to Chrome.", action="store",
         dest='splinter_headless', metavar="false|true", type="choice", choices=['false', 'true'],
         default='false')
+    group.addoption(
+        "--splinter-browser",
+        help="Choose the browser for the remote.", action="store",
+        dest='splinter_browser', metavar="chrome|firefox", type="choice", choices=['chrome', 'firefox'],
+        default='firefox')
