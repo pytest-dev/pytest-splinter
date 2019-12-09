@@ -256,3 +256,11 @@ def test_screenshot(simple_page, browser, param):
         'test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.html').read()
     assert_valid_html_screenshot_content(content)
     assert testdir.tmpdir.join('test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.png')
+
+
+def test_keep_alive(simple_page, browser, splinter_webdriver):
+    """Test that Remote WebDriver keep_alive is True."""
+    if splinter_webdriver != "remote":
+        pytest.skip('Only Remote WebDriver uses keep_alive argument')
+
+    assert browser.driver.keep_alive

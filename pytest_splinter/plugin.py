@@ -311,18 +311,19 @@ def get_args(driver=None,
         kwargs['profile'] = firefox_prof_dir
     elif driver == 'remote':
         if remote_url:
-            kwargs['url'] = remote_url
+            kwargs['command_executor'] = remote_url
         kwargs['keep_alive'] = True
         profile = FirefoxProfile(firefox_prof_dir)
         for key, value in firefox_profile_preferences.items():
             profile.set_preference(key, value)
-        kwargs['firefox_profile'] = profile.encoded
+        kwargs['desired_capabilities'] = driver_kwargs.get('desired_capabilities', {})
+        kwargs['desired_capabilities']['firefox_profile'] = profile.encoded
 
         # remote geckodriver does not support the firefox_profile desired
         # capatibility. Instead `moz:firefoxOptions` should be used:
         # https://github.com/mozilla/geckodriver#firefox-capabilities
-        kwargs['moz:firefoxOptions'] = driver_kwargs.get('moz:firefoxOptions', {})
-        kwargs['moz:firefoxOptions']['profile'] = profile.encoded
+        kwargs['desired_capabilities']['moz:firefoxOptions'] = driver_kwargs.get('moz:firefoxOptions', {})
+        kwargs['desired_capabilities']['moz:firefoxOptions']['profile'] = profile.encoded
     elif driver in ('chrome',):
         if executable:
             kwargs['executable_path'] = executable
