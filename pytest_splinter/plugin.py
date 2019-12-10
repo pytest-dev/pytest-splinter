@@ -393,14 +393,14 @@ def _take_screenshot(
     LOGGER.info('Saving screenshot to {}'.format(screenshot_dir))
 
     try:
-        html_snapshot_path = splinter_screenshot_getter_html(browser_instance, screenshot_path)
+        screenshot_html_path = splinter_screenshot_getter_html(browser_instance, screenshot_path)
         screenshot_png_path = splinter_screenshot_getter_png(browser_instance, screenshot_path)
 
         if request.node.splinter_failure.longrepr:
             reprtraceback = request.node.splinter_failure.longrepr.reprtraceback
-            reprtraceback.extraline = _screenshot_extraline(screenshot_png_path, html_snapshot_path)
+            reprtraceback.extraline = _screenshot_extraline(screenshot_png_path, screenshot_html_path)
         if slaveoutput is not None:
-            with codecs.open(html_snapshot_path, encoding=splinter_screenshot_encoding) as html_fd:
+            with codecs.open(screenshot_html_path, encoding=splinter_screenshot_encoding) as html_fd:
                 with open(screenshot_png_path, 'rb') as fd:
                     slaveoutput.setdefault('screenshots', []).append({
                         'class_name': classname,
@@ -410,7 +410,7 @@ def _take_screenshot(
                                 'content': fd.read(),
                             },
                             {
-                                'file_name': html_snapshot_path,
+                                'file_name': screenshot_html_path,
                                 'content': html_fd.read(),
                                 'encoding': splinter_screenshot_encoding,
                             }]
