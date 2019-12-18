@@ -2,7 +2,6 @@
 from functools import partial
 
 from splinter.driver.webdriver import firefox
-from splinter.driver.webdriver import remote
 
 from selenium.webdriver.common.action_chains import ActionChains  # pragma: no cover
 
@@ -19,6 +18,3 @@ def patch_webdriverelement():  # pragma: no cover
 
     # Apply the monkey patch for Firefox WebDriverElement
     firefox.WebDriverElement.mouse_over = mouse_over
-
-    # Enable keep_alive for remove driver
-    remote.Remote = partial(remote.Remote, keep_alive=True)
