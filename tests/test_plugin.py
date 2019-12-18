@@ -76,13 +76,13 @@ def test_status_code_not_implemented(browser, simple_page, splinter_webdriver):
 def test_download_file(httpserver, browser, splinter_file_download_dir, file_extension, mime_type, splinter_webdriver):
     """Test file downloading and accessing it afterwise."""
     if splinter_webdriver in ["zope.testbrowser"]:
-        pytest.skip("{0} doesn't support file downloading".format(splinter_webdriver))
+        pytest.skip("{} doesn't support file downloading".format(splinter_webdriver))
     if splinter_webdriver in ["firefox"]:
         pytest.skip("Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1366035")
-    file_name = 'some.{0}'.format(file_extension)
+    file_name = 'some.{}'.format(file_extension)
     httpserver.serve_content(
         'Some text file', code=200, headers={
-            'Content-Disposition': 'attachment; filename={0}'.format(file_name),
+            'Content-Disposition': 'attachment; filename={}'.format(file_name),
             'Content-Type': mime_type})
 
     browser.visit(httpserver.url)

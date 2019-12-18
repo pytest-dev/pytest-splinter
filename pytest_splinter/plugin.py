@@ -380,7 +380,7 @@ def _take_screenshot(
     classname = '.'.join(names[:-1])
     screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
     screenshot_file_name_format = '{0}.{{format}}'.format(
-        '{0}-{1}'.format(names[-1][:128 - len(fixture_name) - 5], fixture_name).replace(os.path.sep, '-')
+        '{}-{}'.format(names[-1][:128 - len(fixture_name) - 5], fixture_name).replace(os.path.sep, '-')
     )
     screenshot_file_name = screenshot_file_name_format.format(format='png')
     screenshot_html_file_name = screenshot_file_name_format.format(format='html')
@@ -415,7 +415,7 @@ def _take_screenshot(
                             }]
                     })
     except Exception as e:  # NOQA
-        warnings.warn(pytest.PytestWarning("Could not save screenshot: {0}".format(e)))
+        warnings.warn(pytest.PytestWarning("Could not save screenshot: {}".format(e)))
 
 
 @pytest.yield_fixture(autouse=True)
