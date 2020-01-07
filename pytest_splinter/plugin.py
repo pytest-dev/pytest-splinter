@@ -5,6 +5,8 @@ which is an object of splinter Browser class.
 """
 import codecs
 import functools  # pragma: no cover
+import warnings
+
 try:
     from httplib import HTTPException
 except ImportError:
@@ -229,8 +231,6 @@ def splinter_screenshot_dir(request):
 @pytest.fixture(scope='session')
 def splinter_headless(request):
     """Flag to start Chrome in headless mode.
-
-    http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
     """
     return request.config.option.splinter_headless == 'true'
 
@@ -274,10 +274,9 @@ def browser_patches():
 
 
 @pytest.fixture(scope='session')
-def session_tmpdir(request, tmpdir_factory):
+def session_tmpdir(tmpdir_factory):
     """pytest tmpdir which is session-scoped."""
-    from _pytest.tmpdir import tmpdir
-    return tmpdir(request, tmpdir_factory)
+    return tmpdir_factory.mktemp('pytest-splinter')
 
 
 @pytest.fixture(scope='session')
@@ -312,18 +311,19 @@ def get_args(driver=None,
         kwargs['profile'] = firefox_prof_dir
     elif driver == 'remote':
         if remote_url:
-            kwargs['url'] = remote_url
+            kwargs['command_executor'] = remote_url
         kwargs['keep_alive'] = True
         profile = FirefoxProfile(firefox_prof_dir)
         for key, value in firefox_profile_preferences.items():
             profile.set_preference(key, value)
-        kwargs['firefox_profile'] = profile.encoded
+        kwargs['desired_capabilities'] = driver_kwargs.get('desired_capabilities', {})
+        kwargs['desired_capabilities']['firefox_profile'] = profile.encoded
 
         # remote geckodriver does not support the firefox_profile desired
         # capatibility. Instead `moz:firefoxOptions` should be used:
         # https://github.com/mozilla/geckodriver#firefox-capabilities
-        kwargs['moz:firefoxOptions'] = driver_kwargs.get('moz:firefoxOptions', {})
-        kwargs['moz:firefoxOptions']['profile'] = profile.encoded
+        kwargs['desired_capabilities']['moz:firefoxOptions'] = driver_kwargs.get('moz:firefoxOptions', {})
+        kwargs['desired_capabilities']['moz:firefoxOptions']['profile'] = profile.encoded
     elif driver in ('chrome',):
         if executable:
             kwargs['executable_path'] = executable
@@ -374,16 +374,13 @@ def _take_screenshot(
     Invoked from session and function browser fixtures.
     """
     slaveoutput = getattr(request.config, 'slaveoutput', None)
-    try:
-        names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
-    except AttributeError:
-        # pytest>=2.9.0
-        names = junitxml.mangle_test_address(request.node.nodeid)
+
+    names = junitxml.mangle_test_address(request.node.nodeid)
 
     classname = '.'.join(names[:-1])
     screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
     screenshot_file_name_format = '{0}.{{format}}'.format(
-        '{0}-{1}'.format(names[-1][:128 - len(fixture_name) - 5], fixture_name).replace(os.path.sep, '-')
+        '{}-{}'.format(names[-1][:128 - len(fixture_name) - 5], fixture_name).replace(os.path.sep, '-')
     )
     screenshot_file_name = screenshot_file_name_format.format(format='png')
     screenshot_html_file_name = screenshot_file_name_format.format(format='html')
@@ -418,7 +415,7 @@ def _take_screenshot(
                             }]
                     })
     except Exception as e:  # NOQA
-        request.config.warn('SPL504', "Could not save screenshot: {0}".format(e))
+        warnings.warn(pytest.PytestWarning("Could not save screenshot: {}".format(e)))
 
 
 @pytest.yield_fixture(autouse=True)
@@ -616,11 +613,14 @@ class SplinterXdistPlugin(object):
 
     """Plugin class to defer pytest-xdist hook handler."""
 
+    def __init__(self, screenshot_dir):
+        """Initialize the SplinterXdistPlugin with the required configuration."""
+        self.screenshot_dir = screenshot_dir
+
     def pytest_testnodedown(self, node, error):
         """Copy screenshots back from remote nodes to have them on the master."""
-        config_screenshot_dir = splinter_screenshot_dir(node)
         for screenshot in getattr(node, 'slaveoutput', {}).get('screenshots', []):
-            screenshot_dir = os.path.join(config_screenshot_dir, screenshot['class_name'])
+            screenshot_dir = os.path.join(self.screenshot_dir, screenshot['class_name'])
             if not os.path.exists(screenshot_dir):
                 os.makedirs(screenshot_dir)
             for fil in screenshot['files']:
@@ -633,7 +633,8 @@ class SplinterXdistPlugin(object):
 def pytest_configure(config):
     """Register pytest-splinter's deferred plugin."""
     if config.pluginmanager.getplugin('xdist'):
-        config.pluginmanager.register(SplinterXdistPlugin())
+        screenshot_dir = os.path.abspath(config.option.splinter_screenshot_dir)
+        config.pluginmanager.register(SplinterXdistPlugin(screenshot_dir=screenshot_dir))
 
 
 def pytest_addoption(parser):  # pragma: no cover
@@ -641,36 +642,36 @@ def pytest_addoption(parser):  # pragma: no cover
     group = parser.getgroup("splinter", "splinter integration for browser testing")
     group.addoption(
         "--splinter-webdriver",
-        help="pytest-splinter webdriver", type="choice", choices=list(splinter.browser._DRIVERS.keys()),
+        help="pytest-splinter webdriver", type=str, choices=list(splinter.browser._DRIVERS.keys()),
         dest='splinter_webdriver', metavar="DRIVER", default=None)
     group.addoption(
         "--splinter-remote-url",
         help="pytest-splinter remote webdriver url ", metavar="URL", dest='splinter_remote_url', default=None)
     group.addoption(
         "--splinter-wait-time",
-        help="splinter explicit wait, seconds", type="int",
+        help="splinter explicit wait, seconds", type=int,
         dest='splinter_wait_time', metavar="SECONDS", default=None)
     group.addoption(
         "--splinter-implicit-wait",
-        help="pytest-splinter selenium implicit wait, seconds", type="int",
+        help="pytest-splinter selenium implicit wait, seconds", type=int,
         dest='splinter_webdriver_implicit_wait', metavar="SECONDS", default=5)
     group.addoption(
         "--splinter-speed",
-        help="pytest-splinter selenium speed, seconds", type="int",
+        help="pytest-splinter selenium speed, seconds", type=int,
         dest='splinter_webdriver_speed', metavar="SECONDS", default=0)
     group.addoption(
         "--splinter-socket-timeout",
-        help="pytest-splinter socket timeout, seconds", type="int",
+        help="pytest-splinter socket timeout, seconds", type=int,
         dest='splinter_webdriver_socket_timeout', metavar="SECONDS", default=120)
     group.addoption(
         "--splinter-session-scoped-browser",
         help="pytest-splinter should use a single browser instance per test session. Defaults to true.", action="store",
-        dest='splinter_session_scoped_browser', metavar="false|true", type="choice", choices=['false', 'true'],
+        dest='splinter_session_scoped_browser', metavar="false|true", type=str, choices=['false', 'true'],
         default='true')
     group.addoption(
         "--splinter-make-screenshot-on-failure",
         help="pytest-splinter should take browser screenshots on test failure. Defaults to true.", action="store",
-        dest='splinter_make_screenshot_on_failure', metavar="false|true", type="choice", choices=['false', 'true'],
+        dest='splinter_make_screenshot_on_failure', metavar="false|true", type=str, choices=['false', 'true'],
         default='true')
     group.addoption(
         "--splinter-screenshot-dir",
@@ -684,5 +685,5 @@ def pytest_addoption(parser):  # pragma: no cover
     group.addoption(
         "--splinter-headless",
         help="Run the browser in headless mode. Defaults to false. Only applies to Chrome.", action="store",
-        dest='splinter_headless', metavar="false|true", type="choice", choices=['false', 'true'],
+        dest='splinter_headless', metavar="false|true", type=str, choices=['false', 'true'],
         default='false')

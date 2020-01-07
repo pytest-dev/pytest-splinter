@@ -3,24 +3,36 @@ language: python
 python: "3.6"
 addons:
   firefox: "60.0.2"
+services:
+  - xvfb
 before_install:
   - "export DISPLAY=:99.0"
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
   - mkdir geckodriver
   - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
-  - "sh -e /etc/init.d/xvfb start"
   - "npm install -g selenium-standalone@6.15.2"
   - "selenium-standalone install"
   - "selenium-standalone start &"
-env:
-  matrix:
-    - TESTENV=linters
-    - TESTENV=py27
-    - TESTENV=py27-xdist
-    - TESTENV=py27-pytest-latest
-    - TESTENV=py36
-    - TESTENV=coveralls
+dist: xenial
+matrix:
+  include:
+    - python: 3.7
+      env: TESTENV=linters
+    - python: 3.7
+      env: TESTENV=coveralls
+    - python: 2.7
+      env: TESTENV=py27
+    - python: 2.7
+      env: TESTENV=py27-xdist
+    - python: 3.8
+      env: TESTENV=py38-pytest-latest
+    - python: 3.6
+      env: TESTENV=py36
+    - python: 3.7
+      env: TESTENV=py37
+    - python: 3.8
+      env: TESTENV=py38
 install:
   - pip install tox
 script: tox -e $TESTENV

@@ -66,7 +66,7 @@ Fixtures
     Fixture gets the value from the command-line option splinter-implicit-wait (see below)
 
 * splinter_wait_time
-    Explicit wait timeout (for waiting for expicit condition via `wait_for_condition`).
+    Explicit wait timeout (for waiting for explicit condition via `wait_for_condition`).
     Fixture gets the value from the command-line option splinter-wait-time (see below)
 
 * splinter_selenium_speed
@@ -176,8 +176,7 @@ Fixtures
     clean the cookies for each domain.
 
 * splinter_headless
-    Run Chrome in headless mode. As the writing of this (2017-07), available only in unreleased Splinter master version.
-    Defaults to false.
+    Run Chrome in headless mode. Defaults to false. http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
 
 Command-line options
 --------------------
@@ -222,6 +221,8 @@ Command-line options
     Filesystem path of the webdriver executable directory. Used by chrome driver.
     Defaults to the None in which case the shell PATH variable setting determines the location of the executable.
 
+* `--splinter-headless`
+    Run Chrome in headless mode. Defaults to false. http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
 
 Browser fixture
 ---------------
@@ -236,30 +237,11 @@ As mentioned above, browser is a fixture made by creating splinter's Browser obj
     so there you can do whatever you want, and not only execute javascript via browser.evaluate_script.
 
 
-Several browsers for your test
-------------------------------
-
-You can have several browsers in one test.
-
-.. code-block:: python
-
-    import pytest
-
-    @pytest.fixture
-    def admin_browser(browser_instance_getter):
-        return browser_instance_getter(admin_browser)
-
-    def test_with_several_browsers(browser, admin_browser):
-        browser.visit('http://example.com')
-        admin_browser.visit('about:blank')
-        assert browser.url == 'http://example.com'
-
-
 Automatic screenshots on test failure
 -------------------------------------
 
 When your functional test fails, it's important to know the reason.
-This becomes hard when tests are being run on the continuos integration server,
+This becomes hard when tests are being run on the continuous integration server,
 where you cannot debug (using --pdb).
 To simplify things, a special behaviour of the browser fixture is available,
 which takes a screenshot on test failure and puts it in a folder with the a
@@ -317,7 +299,7 @@ test_your_test.py:
         button = browser.find_by_name('btnK')
         # Interact with elements
         button.click()
-        assert browser.is_text_present('splinter.cobrateam.info'), 'splinter.cobrateam.info wasn't found... We need to'
+        assert browser.is_text_present('splinter.cobrateam.info'), "splinter.cobrateam.info wasn't found... We need to"
         ' improve our SEO techniques'
 
 

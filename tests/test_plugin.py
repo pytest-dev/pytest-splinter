@@ -76,13 +76,13 @@ def test_status_code_not_implemented(browser, simple_page, splinter_webdriver):
 def test_download_file(httpserver, browser, splinter_file_download_dir, file_extension, mime_type, splinter_webdriver):
     """Test file downloading and accessing it afterwise."""
     if splinter_webdriver in ["zope.testbrowser"]:
-        pytest.skip("{0} doesn't support file downloading".format(splinter_webdriver))
+        pytest.skip("{} doesn't support file downloading".format(splinter_webdriver))
     if splinter_webdriver in ["firefox"]:
         pytest.skip("Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1366035")
-    file_name = 'some.{0}'.format(file_extension)
+    file_name = 'some.{}'.format(file_extension)
     httpserver.serve_content(
         'Some text file', code=200, headers={
-            'Content-Disposition': 'attachment; filename={0}'.format(file_name),
+            'Content-Disposition': 'attachment; filename={}'.format(file_name),
             'Content-Type': mime_type})
 
     browser.visit(httpserver.url)
@@ -185,17 +185,18 @@ def test_browser_screenshot_normal(testdir, simple_page_content):
 
     Normal test run.
     """
-    testdir.inline_runsource("""
-        import pytest
+    testdir.inline_runsource(
+        """
+import pytest
 
-        @pytest.fixture
-        def simple_page(httpserver, browser):
-            httpserver.serve_content(
-                '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
-            browser.visit(httpserver.url)
+@pytest.fixture
+def simple_page(httpserver, browser):
+    httpserver.serve_content(
+        '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
+    browser.visit(httpserver.url)
 
-        def test_screenshot(simple_page, browser):
-            assert False
+def test_screenshot(simple_page, browser):
+    assert False
     """.format(simple_page_content), "-vl", "-r w")
 
     assert testdir.tmpdir.join('test_browser_screenshot_normal', 'test_screenshot-browser.png')
@@ -208,17 +209,18 @@ def test_browser_screenshot_function_scoped_browser(testdir, simple_page_content
 
     Normal test run.
     """
-    testdir.inline_runsource("""
-        import pytest
+    testdir.inline_runsource(
+        """
+import pytest
 
-        @pytest.fixture
-        def simple_page(httpserver, browser):
-            httpserver.serve_content(
-                '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
-            browser.visit(httpserver.url)
+@pytest.fixture
+def simple_page(httpserver, browser):
+    httpserver.serve_content(
+        '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
+    browser.visit(httpserver.url)
 
-        def test_screenshot(simple_page, browser):
-            assert False
+def test_screenshot(simple_page, browser):
+    assert False
     """.format(simple_page_content), "-vl", "-r w", '--splinter-session-scoped-browser=false')
 
     content = testdir.tmpdir.join(
@@ -235,21 +237,30 @@ def test_browser_screenshot_escaped(testdir, simple_page_content):
 
     Normal test run.
     """
-    testdir.inline_runsource("""
-        import pytest
+    testdir.inline_runsource(
+        """
+import pytest
 
-        @pytest.fixture
-        def simple_page(httpserver, browser):
-            httpserver.serve_content(
-                '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
-            browser.visit(httpserver.url)
+@pytest.fixture
+def simple_page(httpserver, browser):
+    httpserver.serve_content(
+        '''{0}''', code=200, headers={{'Content-Type': 'text/html'}})
+    browser.visit(httpserver.url)
 
-        @pytest.mark.parametrize('param', ['escaped/param'])
-        def test_screenshot(simple_page, browser, param):
-            assert False
+@pytest.mark.parametrize('param', ['escaped/param'])
+def test_screenshot(simple_page, browser, param):
+    assert False
     """.format(simple_page_content), "-vl", "-r w")
 
     content = testdir.tmpdir.join(
         'test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.html').read()
     assert_valid_html_screenshot_content(content)
     assert testdir.tmpdir.join('test_browser_screenshot_escaped', 'test_screenshot[escaped-param]-browser.png')
+
+
+def test_keep_alive(simple_page, browser, splinter_webdriver):
+    """Test that Remote WebDriver keep_alive is True."""
+    if splinter_webdriver != "remote":
+        pytest.skip('Only Remote WebDriver uses keep_alive argument')
+
+    assert browser.driver.keep_alive
