@@ -6,6 +6,7 @@ Changelog
 
 - Passing `--splinter-headless` without arguments defaults to 'true'
   `#123 <https://github.com/pytest-dev/pytest-splinter/pull/123>`_ (tony)
+- `--splinter-headless` now works with Firefox `#144 <https://github.com/pytest-dev/pytest-splinter/pull/144>`_ (mpasternak)
 
 3.1.0
 -----

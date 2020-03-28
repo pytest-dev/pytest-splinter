@@ -236,8 +236,9 @@ def splinter_screenshot_dir(request):
 
 @pytest.fixture(scope="session")
 def splinter_headless(request):
-    """Flag to start Chrome in headless mode."""
-    return request.config.option.splinter_headless == "true"
+    """Flag to start Chrome or Firefox in headless mode.
+    """
+    return request.config.option.splinter_headless == 'true'
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
@@ -304,22 +305,21 @@ def get_args(
     """Construct arguments to be passed to webdriver on initialization."""
     kwargs = {}
 
-    firefox_profile_preferences = dict(
-        {
-            "browser.download.folderList": 2,
-            "browser.download.manager.showWhenStarting": False,
-            "browser.download.dir": download_dir,
-            "browser.helperApps.neverAsk.saveToDisk": download_ftypes,
-            "browser.helperApps.alwaysAsk.force": False,
-            "pdfjs.disabled": True,  # disable internal ff pdf viewer to allow auto pdf download
-        },
-        **firefox_pref or {}
-    )
+    firefox_profile_preferences = dict({
+        'browser.download.folderList': 2,
+        'browser.download.manager.showWhenStarting': False,
+        'browser.download.dir': download_dir,
+        'browser.helperApps.neverAsk.saveToDisk': download_ftypes,
+        'browser.helperApps.alwaysAsk.force': False,
+        'pdfjs.disabled': True,  # disable internal ff pdf viewer to allow auto pdf download
+    }, **firefox_pref or {})
 
-    if driver == "firefox":
-        kwargs["profile_preferences"] = firefox_profile_preferences
-        kwargs["profile"] = firefox_prof_dir
-    elif driver == "remote":
+    if driver == 'firefox':
+        kwargs['profile_preferences'] = firefox_profile_preferences
+        kwargs['profile'] = firefox_prof_dir
+        if headless:
+            kwargs["headless"] = headless
+    elif driver == 'remote':
         if remote_url:
             kwargs["command_executor"] = remote_url
         kwargs["keep_alive"] = True
