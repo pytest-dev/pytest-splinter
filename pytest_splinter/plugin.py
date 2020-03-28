@@ -230,7 +230,7 @@ def splinter_screenshot_dir(request):
 
 @pytest.fixture(scope='session')
 def splinter_headless(request):
-    """Flag to start Chrome in headless mode.
+    """Flag to start Chrome or Firefox in headless mode.
     """
     return request.config.option.splinter_headless == 'true'
 
@@ -309,6 +309,8 @@ def get_args(driver=None,
     if driver == 'firefox':
         kwargs['profile_preferences'] = firefox_profile_preferences
         kwargs['profile'] = firefox_prof_dir
+        if headless:
+            kwargs["headless"] = headless
     elif driver == 'remote':
         if remote_url:
             kwargs['command_executor'] = remote_url
