@@ -26,7 +26,7 @@ setup(
     url='https://github.com/pytest-dev/pytest-splinter',
     install_requires=[
         'setuptools',
-        'splinter>=0.9.0',
+        'splinter>=0.12.0',
         'selenium',
         'pytest>=3.0.0',
         'urllib3',
@@ -43,7 +43,11 @@ setup(
         'Topic :: Utilities',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
-    ] + [('Programming Language :: Python :: %s' % x) for x in '2.7 3.4 3.5 3.6'.split()],
+    ]
+    + [
+        ('Programming Language :: Python :: %s' % x)
+        for x in '2.7 3.5 3.6 3.7 3.8'.split()
+    ],
     tests_require=['tox'],
     entry_points={'pytest11': [
         'pytest-splinter=pytest_splinter.plugin',

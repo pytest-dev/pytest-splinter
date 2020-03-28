@@ -11,7 +11,7 @@ These people have contributed to `pytest-splinter`, in alphabetical order:
 * `Andrey Makhnach <andrey.makhnach@gmail.com>`_
 * `Aymeric Augustin <https://myks.org/>`_
 * `Daniel Hahler <github@thequod.de>`_
-* `Hugo <hugovk@github.com>`_
+* `Hugo van Kemenade <https://github.com/hugovk/>`_
 * `Ionel Cristian Mărieș <contact@ionelmc.ro>`_
 * `Joshua Fehler <jsfehler@github.com>`_
 * `Laurence Rowe <l@lrowe.co.uk>`_

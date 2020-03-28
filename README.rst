@@ -237,25 +237,6 @@ As mentioned above, browser is a fixture made by creating splinter's Browser obj
     so there you can do whatever you want, and not only execute javascript via browser.evaluate_script.
 
 
-Several browsers for your test
-------------------------------
-
-You can have several browsers in one test.
-
-.. code-block:: python
-
-    import pytest
-
-    @pytest.fixture
-    def admin_browser(browser_instance_getter):
-        return browser_instance_getter(admin_browser)
-
-    def test_with_several_browsers(browser, admin_browser):
-        browser.visit('http://example.com')
-        admin_browser.visit('about:blank')
-        assert browser.url == 'http://example.com'
-
-
 Automatic screenshots on test failure
 -------------------------------------
 
