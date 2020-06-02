@@ -1,7 +1,10 @@
 """django_sample_project URL Configuration."""
 from django.contrib import admin
-from django.urls import path
+try:
+    from django.urls import re_path as url
+except ImportError:
+    from django.conf.urls import url
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    url('^admin/', admin.site.urls),
 ]
