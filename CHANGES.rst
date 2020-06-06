@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0.2
------
+Unreleased
+----------
 
 - Add support for Django and Flask Splinter browsers, that don't have a driver
   attribute `#146 <https://github.com/pytest-dev/pytest-splinter/issues/146>`_
