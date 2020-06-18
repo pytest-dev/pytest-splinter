@@ -251,7 +251,7 @@ The html content of the browser page is also stored, this can be useful for debu
 
 Creating screenshots is fully compatible with `pytest-xdist plugin
 <https://pypi.python.org/pypi/pytest-xdist>`_ and will transfer the screenshots
-from the slave nodes through the communication channel automatically.
+from the worker nodes through the communication channel automatically.
 
 If a test (using the browser fixture) fails, you should get a screenshot files
 in the following path:
