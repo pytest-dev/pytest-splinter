@@ -7,6 +7,7 @@ http://code.google.com/p/selenium/issues/detail?id=5176.
 
 import time  # pragma: no cover
 import socket  # pragma: no cover
+
 try:
     from httplib import HTTPException
 except ImportError:
@@ -17,7 +18,9 @@ from urllib3.exceptions import MaxRetryError
 
 from selenium.webdriver.remote import remote_connection  # pragma: no cover
 from selenium.webdriver.firefox import webdriver  # pragma: no cover
-from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver  # pragma: no cover
+from selenium.webdriver.remote.webdriver import (
+    WebDriver as RemoteWebDriver,
+)  # pragma: no cover
 
 
 # Get the original _request and store for future use in the monkey patched version as 'super'
@@ -28,13 +31,20 @@ RemoteWebDriver._base_execute = RemoteWebDriver.execute  # pragma: no cover
 
 def patch_webdriver():
     """Patch selenium webdriver to add functionality/fix issues."""
+
     def _request(self, *args, **kwargs):
         """Override _request to set socket timeout to some appropriate value."""
-        exception = HTTPException('Unable to get response')
+        exception = HTTPException("Unable to get response")
         for _ in range(3):
             try:
                 return old_request(self, *args, **kwargs)
-            except (socket.error, HTTPException, IOError, OSError, MaxRetryError) as exc:
+            except (
+                socket.error,
+                HTTPException,
+                IOError,
+                OSError,
+                MaxRetryError,
+            ) as exc:
                 exception = exc
                 self._conn = urllib3.PoolManager(timeout=self._timeout)
         raise exception
@@ -55,10 +65,10 @@ def patch_webdriver():
         return result
 
     def get_current_window_info(self):
-        atts = self.execute_script("return [ window.id, window.name, document.title, document.url ];")
-        atts = [
-            att if att is not None and att else 'undefined'
-            for att in atts]
+        atts = self.execute_script(
+            "return [ window.id, window.name, document.title, document.url ];"
+        )
+        atts = [att if att is not None and att else "undefined" for att in atts]
         return (self.current_window_handle, atts[0], atts[1], atts[2], atts[3])
 
     def current_window_is_main(self):
@@ -68,7 +78,7 @@ def patch_webdriver():
         self._speed = seconds
 
     def get_speed(self):
-        if not hasattr(self, '_speed'):
+        if not hasattr(self, "_speed"):
             self._speed = float(0)
         return self._speed
 

@@ -4,7 +4,7 @@ import mock
 import pytest
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def splinter_session_scoped_browser():
     """Make it test scoped."""
     return False
@@ -23,15 +23,15 @@ def mocked_browser(browser_pool, request):
         mocked_browser.driver = mock.MagicMock()
         mocked_browser.driver.profile = mock.MagicMock()
         mocked_browser.driver_name = driver_name
-        mocked_browser.html = u'<html></html>'
+        mocked_browser.html = u"<html></html>"
 
         def save_screenshot(path):
-            with open(path, 'w'):
+            with open(path, "w"):
                 pass
 
         mocked_browser.driver.save_screenshot = save_screenshot
         return mocked_browser
 
-    patcher = mock.patch('pytest_splinter.plugin.splinter.Browser', mocked_browser)
+    patcher = mock.patch("pytest_splinter.plugin.splinter.Browser", mocked_browser)
     yield patcher.start()
     patcher.stop()

@@ -1,6 +1,6 @@
 sudo: false
 language: python
-python: "3.6"
+python: "3.8"
 addons:
   firefox: "60.0.2"
 services:
@@ -17,20 +17,12 @@ before_install:
 dist: xenial
 matrix:
   include:
-    - python: 3.7
+    - python: 3.8
       env: TESTENV=linters
-    - python: 3.7
+    - python: 3.8
       env: TESTENV=coveralls
-    - python: 2.7
-      env: TESTENV=py27
-    - python: 2.7
-      env: TESTENV=py27-xdist
     - python: 3.8
       env: TESTENV=py38-pytest-latest
-    - python: 3.6
-      env: TESTENV=py36
-    - python: 3.7
-      env: TESTENV=py37
     - python: 3.8
       env: TESTENV=py38
 install:

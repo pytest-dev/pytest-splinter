@@ -8,6 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains  # pragma: no c
 
 def patch_webdriverelement():  # pragma: no cover
     """Patch the WebDriverElement to allow firefox to use mouse_over."""
+
     def mouse_over(self):
         """Perform a mouse over the element which works."""
         (
