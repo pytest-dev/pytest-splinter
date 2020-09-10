@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.0.0
+-----
+
+- Removed python2 support (bubenkoff)
+
+
 2.1.0
 -----
 
