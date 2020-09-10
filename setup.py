@@ -41,12 +41,11 @@ setup(
         'Topic :: Software Development :: Testing',
         'Topic :: Software Development :: Libraries',
         'Topic :: Utilities',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
     ]
     + [
         ('Programming Language :: Python :: %s' % x)
-        for x in '2.7 3.5 3.6 3.7 3.8'.split()
+        for x in '3.6 3.7 3.8'.split()
     ],
     tests_require=['tox'],
     entry_points={'pytest11': [
