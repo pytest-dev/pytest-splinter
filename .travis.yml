@@ -25,6 +25,8 @@ matrix:
       env: TESTENV=py38-pytest-latest
     - python: 3.8
       env: TESTENV=py38
+    - python: 3.8
+      env: TESTENV=py38-xdist
 install:
   - pip install tox
 script: tox -e $TESTENV
