@@ -1,6 +1,17 @@
 Changelog
 =========
 
+
+3.1.0
+-----
+
+- Remove unnecessary webdriver patch for retries, this behaviour is now part of splinter. (jsfehler)
+
+3.0.0
+-----
+
+- Bump minimum splinter version to 0.13.0 (jsfehler)
+
 2.1.0
 -----
 
