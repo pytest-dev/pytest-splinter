@@ -31,6 +31,9 @@ setup(
         'pytest>=3.0.0',
         'urllib3',
     ],
+    extras_require={
+        'xdist': ['pytest-xdist>=2.1.0'],
+    },
     classifiers=[
         'Development Status :: 6 - Mature',
         'Intended Audience :: Developers',

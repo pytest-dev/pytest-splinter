@@ -391,7 +391,7 @@ def _take_screenshot(
 
     Invoked from session and function browser fixtures.
     """
-    slaveoutput = getattr(request.config, "slaveoutput", None)
+    slaveoutput = getattr(request.config, "workeroutput", None)
 
     names = junitxml.mangle_test_address(request.node.nodeid)
 
@@ -662,7 +662,7 @@ class SplinterXdistPlugin(object):
 
     def pytest_testnodedown(self, node, error):
         """Copy screenshots back from remote nodes to have them on the master."""
-        for screenshot in getattr(node, "slaveoutput", {}).get("screenshots", []):
+        for screenshot in getattr(node, "workeroutput", {}).get("screenshots", []):
             screenshot_dir = os.path.join(self.screenshot_dir, screenshot["class_name"])
             if not os.path.exists(screenshot_dir):
                 os.makedirs(screenshot_dir)
