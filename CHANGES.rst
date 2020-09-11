@@ -1,11 +1,16 @@
 Changelog
 =========
 
+3.1.0
+-----
+
+- Remove unnecessary webdriver patch for retries, this behaviour is now part of splinter. (jsfehler)
+- Bump minimum splinter version to 0.13.0 (jsfehler)
+
 3.0.0
 -----
 
 - Removed python2 support (bubenkoff)
-
 
 2.1.0
 -----
