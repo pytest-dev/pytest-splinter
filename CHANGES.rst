@@ -1,6 +1,9 @@
 Changelog
 =========
 
+3.2.0
+-----
+
 - Passing `--splinter-headless` without arguments defaults to 'true'
   `#123 <https://github.com/pytest-dev/pytest-splinter/pull/123>`_ (tony)
 
