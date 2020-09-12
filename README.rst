@@ -222,7 +222,8 @@ Command-line options
     Defaults to the None in which case the shell PATH variable setting determines the location of the executable.
 
 * `--splinter-headless`
-    Run Chrome in headless mode. Defaults to false. http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
+    Override `splinter_headless` fixture. Choices are 'true' or 'false', default: 'true'.
+    http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
 
 Browser fixture
 ---------------
