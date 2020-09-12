@@ -22,3 +22,4 @@ These people have contributed to `pytest-splinter`, in alphabetical order:
 * `Peter Lauri <peterlauri@gmail.com>`_
 * `Suresh V <sureshvv@github.com>`_
 * `Tomáš Ehrlich <tomas.ehrlich@gmail.com>`_
+* `Tony Narlock <tony@git-pull.com>`_
