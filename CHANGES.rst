@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.3.0
+-----
+
+- Update minimum pytest-xdist version to 2.1.0
+
 3.2.0
 -----
 
