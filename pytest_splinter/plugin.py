@@ -236,7 +236,7 @@ def splinter_screenshot_dir(request):
 
 @pytest.fixture(scope="session")
 def splinter_headless(request):
-    """Flag to start Chrome in headless mode."""
+    """Flag to start the browser in headless mode."""
     return request.config.option.splinter_headless == "true"
 
 
@@ -319,6 +319,10 @@ def get_args(
     if driver == "firefox":
         kwargs["profile_preferences"] = firefox_profile_preferences
         kwargs["profile"] = firefox_prof_dir
+
+        if headless:
+            kwargs["headless"] = headless
+
     elif driver == "remote":
         if remote_url:
             kwargs["command_executor"] = remote_url
@@ -774,7 +778,7 @@ def pytest_addoption(parser):  # pragma: no cover
     )
     group.addoption(
         "--splinter-headless",
-        help="Run the browser in headless mode. Only applies to Chrome.",
+        help="Run the browser in headless mode.",
         action="store_true",
         dest="splinter_headless",
         default="false",

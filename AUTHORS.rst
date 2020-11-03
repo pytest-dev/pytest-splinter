@@ -16,6 +16,7 @@ These people have contributed to `pytest-splinter`, in alphabetical order:
 * `Joshua Fehler <jsfehler@github.com>`_
 * `Laurence Rowe <l@lrowe.co.uk>`_
 * `Marco Buccini <markon@github.com>`_
+* `Michał Pasternak <michal.dtz@gmail.com>`_
 * `Michel Sabchuk <michel@sabchuk.com.br>`_
 * `Mikko Ohtamaa <mikko@opensourcehacker.com>`_
 * `Oleg Pidsadnyi <oleg.pidsadnyi@gmail.com>`_
