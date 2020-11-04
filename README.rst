@@ -224,6 +224,7 @@ Command-line options
 * `--splinter-headless`
     Override `splinter_headless` fixture. Choices are 'true' or 'false', default: 'true'.
     http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
+    https://splinter.readthedocs.io/en/latest/drivers/firefox.html#using-headless-option-for-firefox
 
 Browser fixture
 ---------------
