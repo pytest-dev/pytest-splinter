@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.3.0
+-----
+
+- Support headless firefox (mpasternak)
+
 3.2.0
 -----
 
