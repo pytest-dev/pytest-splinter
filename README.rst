@@ -139,6 +139,7 @@ Fixtures
     import pytest
     from pathlib import Path
     
+    @pytest.fixture
     def splinter_driver_kwargs():
         """
         Webdriver kwargs for Firefox.
