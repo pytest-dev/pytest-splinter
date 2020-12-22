@@ -133,6 +133,19 @@ Fixtures
 * splinter_driver_kwargs
     Webdriver keyword arguments, a dictionary which is passed to selenium
     webdriver's constructor (after applying firefox preferences)
+    
+.. code-block:: python
+
+    import pytest
+    from pathlib import Path
+    
+    @pytest.fixture
+    def splinter_driver_kwargs():
+        """
+        Webdriver kwargs for Firefox.
+        https://selenium-python.readthedocs.io/api.html#module-selenium.webdriver.firefox.webdriver
+        """
+        return {"service_log_path": Path("/log/directory/geckodriver.log")}
 
 * splinter_window_size
     Size of the browser window on browser initialization. Tuple in form (<width>, <height>). Default is (1366, 768)
