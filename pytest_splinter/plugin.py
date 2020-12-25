@@ -237,10 +237,7 @@ def splinter_screenshot_dir(request):
 @pytest.fixture(scope="session")
 def splinter_headless(request):
     """Flag to start the browser in headless mode."""
-    return (
-        request.config.option.splinter_headless == "true"
-        or request.config.option.splinter_headless == True
-    )
+    return request.config.option.splinter_headless == True
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
