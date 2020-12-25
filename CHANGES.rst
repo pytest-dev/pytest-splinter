@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.3.1
+-----
+
+- Fix handling of command-line option ``splinter_headless`` (mpasternak)
+
 3.3.0
 -----
 
