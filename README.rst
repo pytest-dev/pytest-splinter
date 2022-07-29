@@ -11,8 +11,8 @@ Splinter plugin for the pytest runner
   :target: https://pypi.python.org/pypi/pytest-splinter
 .. image:: https://img.shields.io/coveralls/pytest-dev/pytest-splinter/master.svg
    :target: https://coveralls.io/r/pytest-dev/pytest-splinter
-.. image:: https://travis-ci.org/pytest-dev/pytest-splinter.svg?branch=master
-    :target: https://travis-ci.org/pytest-dev/pytest-splinter
+.. image:: https://github.com/pytest-dev/pytest-splinter/actions/workflows/tests.yml/badge.svg
+        :target: https://github.com/pytest-dev/pytest-splinter/actions
 .. image:: https://readthedocs.org/projects/pytest-splinter/badge/?version=latest
     :target: https://readthedocs.org/projects/pytest-splinter/?badge=latest
     :alt: Documentation Status
