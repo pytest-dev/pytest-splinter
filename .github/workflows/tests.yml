@@ -34,7 +34,7 @@ jobs:
 
     - name: Install selenium server
       run: |
-        wget https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.3.0/selenium-server-4.3.0.jar -O selenium-server.jar
+        wget -q https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.3.0/selenium-server-4.3.0.jar -O selenium-server.jar
 
     - name: Run tests
       run: |
