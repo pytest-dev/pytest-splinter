@@ -592,7 +592,7 @@ def browser_instance_getter(
         try:
             if splinter_webdriver not in browser.driver_name.lower():
                 raise IOError(f"webdriver does not match ({splinter_webdriver} "
-                              f"not in {browser.driver_name.lower()}")
+                              f"not in {browser.driver_name.lower()})")
             if hasattr(browser, "driver"):
                 browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
                 browser.driver.set_speed(splinter_selenium_speed)
