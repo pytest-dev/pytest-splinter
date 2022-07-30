@@ -4,4 +4,4 @@ mock
 pytest-black
 pytest-localserver
 selenium
-splinter>=0.9.0
+splinter[selenium4,django,flask]
