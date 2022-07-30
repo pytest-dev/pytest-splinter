@@ -24,6 +24,12 @@ setup(
     version=pytest_splinter.__version__,
     include_package_data=True,
     url='https://github.com/pytest-dev/pytest-splinter',
+    project_urls={
+        "Bug Tracker": "https://github.com/pytest-dev/pytest-splinter/issues",
+        "Changes": "https://github.com/pytest-dev/pytest-splinter/blob/master/CHANGES.rst",
+        "Documentation": "https://github.com/pytest-dev/pytest-splinter/blob/master/README.rst",
+        "Source Code": "https://github.com/pytest-dev/pytest-splinter",
+    },
     install_requires=[
         'setuptools',
         'splinter>=0.13.0',
