@@ -1,7 +1,7 @@
 """Patches for splinter."""
 from functools import partial
 
-from splinter.driver.webdriver import firefox
+from splinter.driver import webdriver
 
 from selenium.webdriver.common.action_chains import ActionChains  # pragma: no cover
 
@@ -18,4 +18,12 @@ def patch_webdriverelement():  # pragma: no cover
         )
 
     # Apply the monkey patch for Firefox WebDriverElement
-    firefox.WebDriverElement.mouse_over = mouse_over
+    try:
+        webdriver.firefox.WebDriverElement.mouse_over = mouse_over
+    except AttributeError:
+        # With splinter 0.18.1 it could be made easier, as the web_element_class
+        # is in the initializer, but ATM it is not, so we should patch it
+        # globally. Will it hurt in the long run? The function is pretty similar
+        # to the one in splinter... as long as the element we try to mouse_over
+        # is at least 2 pixels wide...
+        webdriver.WebDriverElement.mouse_over = mouse_over
