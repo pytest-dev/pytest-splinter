@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.3.2
+------
+
+- Fix mouse_over patch for Firefox, so it works with recent splinter (0.18.1) (mpasternak),
+
+
 3.3.1
 -----
 
