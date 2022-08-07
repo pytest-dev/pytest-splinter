@@ -25,16 +25,16 @@ jobs:
         pip install -e .
         pip install -r requirements-testing.txt
 
+    - name: Run tests, excluding remote tests
+      run: |
+         xvfb-run -- pytest --junitxml=test-results/junit.xml --ignore=tests/test_plugin_remote.py
+
     - name: Set env
       run: echo "DISPLAY=:99.0" >> $GITHUB_ENV
 
     - name: Install selenium server
       run: |
         wget -q https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.3.0/selenium-server-4.3.0.jar -O selenium-server.jar
-
-    - name: Run tests
-      run: |
-         xvfb-run -- pytest --junitxml=test-results/junit.xml --splinter-driver=firefox
 
     - name: Run remote tests
       run: |
@@ -44,4 +44,10 @@ jobs:
          echo "Selenium server is ready, running tests"
          echo $DISPLAY
          cat selenium-server.log
-         pytest --junitxml=test-results/junit.xml tests/test_plugin.py -k test_restore_browser --splinter-driver=remote
+         pytest --junitxml=test-results/junit.xml tests/test_plugin_remote.py
+         
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: '**/build/test-results/test/TEST-*.xml'

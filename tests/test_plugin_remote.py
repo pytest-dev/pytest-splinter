@@ -9,148 +9,9 @@ from splinter.driver import DriverAPI
 from pytest_splinter.plugin import get_args
 
 
-@pytest.fixture
-def simple_page_content():
-    """Return simple page content."""
-    return """<html xmlns="http://www.w3.org/1999/xhtml"><head></head>
-    <body>
-        <div id="content">
-            <p>
-                Some <strong>text</strong>
-            </p>
-        </div>
-        <textarea id="textarea">area text</textarea>
-    </body>
-</html>"""
-
-
-@pytest.fixture
-def simple_page(httpserver, browser, simple_page_content):
-    """Serve simple html page."""
-    httpserver.serve_content(
-        simple_page_content, code=200, headers={"Content-Type": "text/html"}
-    )
-    browser.visit(httpserver.url)
-
-
-def test_browser(browser):
-    """Check the browser fixture."""
-    assert isinstance(browser, DriverAPI)
-
-
-def test_session_browser(session_browser):
-    """Check the browser fixture."""
-    assert isinstance(session_browser, DriverAPI)
-
-
-def test_status_code(browser, simple_page, splinter_webdriver):
-    """Check the browser fixture."""
-    if splinter_webdriver in (
-        "firefox",
-        "zope.testbrowser",
-    ):
-        skip_msg = "{} doesn't support status code".format(splinter_webdriver)
-        pytest.skip(skip_msg)
-    assert browser.status_code == 200
-
-
-def test_status_code_not_implemented(browser, simple_page, splinter_webdriver):
-    """Ensure the browsers which should not have status_code still don't."""
-    if splinter_webdriver in (
-        "firefox",
-        "zope.testbrowser",
-    ):
-        not_implemented = False
-        try:
-            browser.status_code == 200
-        except NotImplementedError:
-            not_implemented = True
-        assert not_implemented
-    else:
-        pytest.skip("{} supports status code".format(splinter_webdriver))
-
-
-@pytest.mark.parametrize(
-    ("file_extension", "mime_type"),
-    (
-        ["txt", "text/plain"],
-        ["pdf", "application/pdf"],
-    ),
-)
-def test_download_file(
-    httpserver,
-    browser,
-    splinter_file_download_dir,
-    file_extension,
-    mime_type,
-    splinter_webdriver,
-):
-    """Test file downloading and accessing it afterwise."""
-    if splinter_webdriver in ["zope.testbrowser"]:
-        pytest.skip("{} doesn't support file downloading".format(splinter_webdriver))
-    if splinter_webdriver in ["firefox"]:
-        pytest.skip("Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1366035")
-    file_name = "some.{}".format(file_extension)
-    httpserver.serve_content(
-        "Some text file",
-        code=200,
-        headers={
-            "Content-Disposition": "attachment; filename={}".format(file_name),
-            "Content-Type": mime_type,
-        },
-    )
-
-    browser.visit(httpserver.url)
-    time.sleep(1)
-
-    file_path = os.path.join(splinter_file_download_dir, file_name)
-    with open(file_path, "r") as f:
-        assert f.read() == "Some text file"
-
-
-@pytest.mark.parametrize("cookie_name", ["name1", "name2"])
-@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
-def test_clean_cookies(
-    httpserver,
-    browser,
-    cookie_name,
-    splinter_webdriver,
-    splinter_session_scoped_browser,
-):
-    """Test that browser has always clean state (no cookies set)."""
-    if splinter_webdriver == "zope.testbrowser":
-        pytest.skip("zope testbrowser doesn't execute js")
-    assert not browser.cookies.all()
-    httpserver.serve_content(
-        """
-        <html>
-            <body>
-                <script>
-                    document.cookie = '{name}=value'
-                </script>
-            </body>
-        </html>""".format(
-            name=cookie_name
-        ),
-        code=200,
-        headers={"Content-Type": "text/html"},
-    )
-    browser.visit(httpserver.url)
-    assert browser.cookies.all() == {cookie_name: "value"}
-
-
-@pytest.mark.skipif("sys.version_info[0] > 2")
-# @pytest.mark.parametrize('splinter_webdriver', ['firefox'])
-def test_get_text(simple_page, browser, splinter_webdriver):
-    """Test that webelement correctly gets text."""
-    if splinter_webdriver == "zope.testbrowser":
-        pytest.skip("zope testbrowser doesn't need special text element processing")
-    assert browser.find_by_id("content").text == "Some text"
-    assert browser.find_by_id("textarea").text == "area text"
-
 
 @pytest.mark.parametrize("check", [1, 2])
-@pytest.mark.parametrize("splinter_webdriver", ["firefox", ])
+@pytest.mark.parametrize("splinter_webdriver", ["remote"])
 def test_restore_browser(browser, simple_page, check, splinter_webdriver):
     """Test that browser is restored after failure automatically."""
     if splinter_webdriver == "zope.testbrowser":
@@ -158,7 +19,7 @@ def test_restore_browser(browser, simple_page, check, splinter_webdriver):
     browser.quit()
 
 
-@pytest.mark.parametrize("splinter_webdriver", ["firefox", ])
+@pytest.mark.parametrize("splinter_webdriver", ["remote"])
 def test_restore_browser_connection(
     browser, httpserver, simple_page, splinter_webdriver
 ):
@@ -311,3 +172,11 @@ def test_screenshot(simple_page, browser, param):
         "test_browser_screenshot_escaped", "test_screenshot[escaped-param]-browser.png"
     )
 
+
+@pytest.mark.parametrize("splinter_webdriver", ["remote"])
+def test_keep_alive(simple_page, browser, splinter_webdriver):
+    """Test that Remote WebDriver keep_alive is True."""
+    if splinter_webdriver != "remote":
+        pytest.skip("Only Remote WebDriver uses keep_alive argument")
+
+    assert browser.driver.keep_alive
