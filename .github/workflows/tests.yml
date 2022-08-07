@@ -34,7 +34,7 @@ jobs:
 
     - name: Run tests
       run: |
-         xvfb-run pytest --junitxml=test-results/junit.xml --splinter-driver=firefox
+         xvfb-run -- pytest --junitxml=test-results/junit.xml --splinter-driver=firefox
 
     - name: Run remote tests
       run: |
