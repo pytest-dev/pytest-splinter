@@ -10,12 +10,10 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.8'] # 2.7', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.8', '3.9', '3.10',]
 
     steps:
     - uses: actions/checkout@v2
-    - run: firefox --version
-    - run: geckodriver --version
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -25,6 +23,9 @@ jobs:
         pip install -e .
         pip install -r requirements-testing.txt
 
+    - run: firefox --version
+    - run: geckodriver --version
+      
     - name: Run tests, excluding remote tests
       run: |
          xvfb-run -- pytest --junitxml=test-results/junit.xml --ignore=tests/test_plugin_remote.py
