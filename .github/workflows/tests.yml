@@ -39,4 +39,5 @@ jobs:
          timeout 60 bash -c 'while ! wget -O /dev/null -T 1 http://localhost:4444/readyz; do echo waiting for selenium server; sleep 1; done' || (cat selenium-server.log && exit 2)
          echo "Selenium server is ready, running tests"
          echo $DISPLAY
-         pytest
+         cat selenium-server.log
+         pytest  --junitxml=test-results/junit.xml
