@@ -52,5 +52,4 @@ def test_keep_alive(simple_page, browser, splinter_webdriver):
     """Test that Remote WebDriver keep_alive is True."""
     if splinter_webdriver != "remote":
         pytest.skip("Only Remote WebDriver uses keep_alive argument")
-    import pytest; pytest.set_trace()
     assert browser.driver.keep_alive
