@@ -24,4 +24,16 @@ jobs:
       run: |
         pip install -e .
         pip install -r requirements-testing.txt
-    - run: xvfb-run pytest
+
+    - name: Install selenium server
+      run: |
+        wget -q https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.3.0/selenium-server-4.3.0.jar -O selenium-server.jar
+
+    - name: Run tests
+      run: |
+         echo "Start Selenium Server"
+         xvfb-run java -jar selenium-server.jar standalone > selenium-server.log 2>&1 &
+         timeout 60 bash -c 'while ! wget -O /dev/null -T 1 http://localhost:4444/readyz; do echo waiting for selenium server; sleep 1; done' || (cat selenium-server.log && exit 2)
+         echo "Selenium server is ready, running tests"
+         xvfb-run pytest
+
