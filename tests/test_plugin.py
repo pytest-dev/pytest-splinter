@@ -9,15 +9,6 @@ from splinter.driver import DriverAPI
 from pytest_splinter.plugin import get_args
 
 
-@pytest.fixture
-def simple_page(httpserver, browser, simple_page_content):
-    """Serve simple html page."""
-    httpserver.serve_content(
-        simple_page_content, code=200, headers={"Content-Type": "text/html"}
-    )
-    browser.visit(httpserver.url)
-
-
 def test_browser(browser):
     """Check the browser fixture."""
     assert isinstance(browser, DriverAPI)
