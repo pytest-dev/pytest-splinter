@@ -1,4 +1,7 @@
 """Configuration for pytest runner."""
+
+import pytest
+
 pytest_plugins = "pytester"
 
 @pytest.fixture
