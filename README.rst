@@ -147,6 +147,24 @@ Fixtures
         """
         return {"service_log_path": Path("/log/directory/geckodriver.log")}
 
+.. code-block:: python
+
+    import pytest
+    from selenium import webdriver
+
+    @pytest.fixture(scope='session')
+    def splinter_driver_kwargs():
+        """Override Chrome WebDriver options"""
+        chrome_options = webdriver.ChromeOptions()
+
+        # List of Chromium Command Line Switches
+        # https://peter.sh/experiments/chromium-command-line-switches/
+        chrome_options.add_argument("--window-size=1440,1200")
+        chrome_options.add_argument("--ignore-ssl-errors=yes")
+        chrome_options.add_argument("--ignore-certificate-errors")
+
+        return {"options": chrome_options}
+
 * splinter_window_size
     Size of the browser window on browser initialization. Tuple in form (<width>, <height>). Default is (1366, 768)
 
