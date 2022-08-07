@@ -34,10 +34,14 @@ jobs:
 
     - name: Run tests
       run: |
+         xvfb-run pytest --junitxml=test-results/junit.xml --splinter-driver=firefox
+
+    - name: Run remote tests
+      run: |
          echo "Start Selenium Server"
          xvfb-run java -jar selenium-server.jar standalone > selenium-server.log &
          timeout 60 bash -c 'while ! wget -O /dev/null -T 1 http://localhost:4444/readyz; do echo waiting for selenium server; sleep 1; done' || (cat selenium-server.log && exit 2)
          echo "Selenium server is ready, running tests"
          echo $DISPLAY
          cat selenium-server.log
-         pytest  --junitxml=test-results/junit.xml
+         pytest --junitxml=test-results/junit.xml tests/test_plugin.py -k test_restore_browser --splinter-driver=remote
