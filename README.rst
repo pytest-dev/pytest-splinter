@@ -147,6 +147,8 @@ Fixtures
         """
         return {"service_log_path": Path("/log/directory/geckodriver.log")}
 
+The snippet below configures Chrome to ignore certificate errors and sets a specific window size
+
 .. code-block:: python
 
     import pytest
