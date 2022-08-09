@@ -1,0 +1,57 @@
+repos:
+    - repo: local
+      hooks:
+        - id: no_debug
+          name: Make sure code does not contain commands likely to run interactive debugger
+          types: [python]
+          args: [--multiline]
+          entry: 'breakpoint\(\)|set_trace'
+          language: pygrep
+
+    - repo: https://github.com/myint/autoflake
+      rev: 'v1.4'
+      hooks:
+        - id: autoflake
+          args: ['--in-place', '--remove-all-unused-imports',]
+
+    - repo: https://github.com/pre-commit/mirrors-autopep8
+      rev: 'v1.6.0'
+      hooks:
+        - id: autopep8
+          args: ['--in-place', '-aaa',]
+
+    - repo: https://github.com/hadialqattan/pycln
+      rev: 'v1.1.0'
+      hooks:
+        - id: pycln
+
+    - repo: https://github.com/pre-commit/mirrors-isort
+      rev: 'v5.10.1'  # Use the revision sha / tag you want to point at
+      hooks:
+        - id: isort
+          args: ["--profile", "black"]
+
+    - repo: https://github.com/psf/black
+      rev: '22.3.0'
+      hooks:
+        -   id: black
+
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: 'v4.1.0'
+      hooks:
+        -   id: check-yaml
+        -   id: check-toml
+        -   id: end-of-file-fixer
+        -   id: trailing-whitespace
+        -   id: mixed-line-ending
+
+    - repo: https://gitlab.com/pycqa/flake8
+      rev: '3.9.2'
+      hooks:
+        -   id: flake8
+
+    - repo: https://github.com/asottile/pyupgrade
+      rev: v2.31.0
+      hooks:
+        - id: pyupgrade
+          args: ["--py37-plus"]
