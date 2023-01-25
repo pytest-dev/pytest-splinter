@@ -23,6 +23,7 @@ MANIFEST
 *.tar.gz
 /node_modules
 /package-lock.json
+/package.json
 
 # Installer logs
 pip-log.txt
