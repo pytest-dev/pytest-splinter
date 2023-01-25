@@ -20,6 +20,6 @@ test: develop
 coveralls: coverage
 	coveralls
 
-# clean the development envrironment
+# clean the development environment
 clean:
 	-rm -rf .env
