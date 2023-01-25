@@ -636,7 +636,7 @@ def browser_instance_getter(
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Assign the report to the item for futher usage."""
+    """Assign the report to the item for further usage."""
     outcome = yield
     rep = outcome.get_result()
     if rep.outcome == "failed":
