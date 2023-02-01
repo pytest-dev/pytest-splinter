@@ -1,5 +1,5 @@
 """Configuration for pytest runner."""
-import mock
+from unittest import mock
 
 import pytest
 
@@ -23,7 +23,7 @@ def mocked_browser(browser_pool, request):
         mocked_browser.driver = mock.MagicMock()
         mocked_browser.driver.profile = mock.MagicMock()
         mocked_browser.driver_name = driver_name
-        mocked_browser.html = u"<html></html>"
+        mocked_browser.html = "<html></html>"
 
         def save_screenshot(path):
             with open(path, "w"):

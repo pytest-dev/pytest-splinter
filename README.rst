@@ -133,12 +133,12 @@ Fixtures
 * splinter_driver_kwargs
     Webdriver keyword arguments, a dictionary which is passed to selenium
     webdriver's constructor (after applying firefox preferences)
-    
+
 .. code-block:: python
 
     import pytest
     from pathlib import Path
-    
+
     @pytest.fixture
     def splinter_driver_kwargs():
         """

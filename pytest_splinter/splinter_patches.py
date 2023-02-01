@@ -1,9 +1,7 @@
 """Patches for splinter."""
-from functools import partial
-
-from splinter.driver import webdriver
 
 from selenium.webdriver.common.action_chains import ActionChains  # pragma: no cover
+from splinter.driver import webdriver
 
 
 def patch_webdriverelement():  # pragma: no cover

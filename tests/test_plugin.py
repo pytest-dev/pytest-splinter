@@ -1,11 +1,10 @@
 """Tests for pytest-splinter plugin."""
 import os.path
 import time
-import socket
 
 import pytest
-
 from splinter.driver import DriverAPI
+
 from pytest_splinter.plugin import get_args
 
 
@@ -25,7 +24,7 @@ def test_status_code(browser, simple_page, splinter_webdriver):
         "firefox",
         "zope.testbrowser",
     ):
-        skip_msg = "{} doesn't support status code".format(splinter_webdriver)
+        skip_msg = f"{splinter_webdriver} doesn't support status code"
         pytest.skip(skip_msg)
     assert browser.status_code == 200
 
@@ -43,7 +42,7 @@ def test_status_code_not_implemented(browser, simple_page, splinter_webdriver):
             not_implemented = True
         assert not_implemented
     else:
-        pytest.skip("{} supports status code".format(splinter_webdriver))
+        pytest.skip(f"{splinter_webdriver} supports status code")
 
 
 @pytest.mark.parametrize(
@@ -63,15 +62,15 @@ def test_download_file(
 ):
     """Test file downloading and accessing it afterwise."""
     if splinter_webdriver in ["zope.testbrowser"]:
-        pytest.skip("{} doesn't support file downloading".format(splinter_webdriver))
+        pytest.skip(f"{splinter_webdriver} doesn't support file downloading")
     if splinter_webdriver in ["firefox"]:
         pytest.skip("Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1366035")
-    file_name = "some.{}".format(file_extension)
+    file_name = f"some.{file_extension}"
     httpserver.serve_content(
         "Some text file",
         code=200,
         headers={
-            "Content-Disposition": "attachment; filename={}".format(file_name),
+            "Content-Disposition": f"attachment; filename={file_name}",
             "Content-Type": mime_type,
         },
     )
@@ -80,7 +79,7 @@ def test_download_file(
     time.sleep(1)
 
     file_path = os.path.join(splinter_file_download_dir, file_name)
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         assert f.read() == "Some text file"
 
 
@@ -126,7 +125,7 @@ def test_get_text(simple_page, browser, splinter_webdriver):
 
 
 @pytest.mark.parametrize("check", [1, 2])
-@pytest.mark.parametrize("splinter_webdriver", ["firefox", ])
+@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
 def test_restore_browser(browser, simple_page, check, splinter_webdriver):
     """Test that browser is restored after failure automatically."""
     if splinter_webdriver == "zope.testbrowser":
@@ -134,7 +133,7 @@ def test_restore_browser(browser, simple_page, check, splinter_webdriver):
     browser.quit()
 
 
-@pytest.mark.parametrize("splinter_webdriver", ["firefox", ])
+@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
 def test_restore_browser_connection(
     browser, httpserver, simple_page, splinter_webdriver
 ):
@@ -143,7 +142,7 @@ def test_restore_browser_connection(
         pytest.skip("zope testbrowser doesn't need restore")
 
     def raises(*args, **kwargs):
-        raise socket.error()
+        raise OSError()
 
     browser.driver.command_executor._conn.request = raises
     browser.reload()
@@ -286,4 +285,3 @@ def test_screenshot(simple_page, browser, param):
     assert testdir.tmpdir.join(
         "test_browser_screenshot_escaped", "test_screenshot[escaped-param]-browser.png"
     )
-

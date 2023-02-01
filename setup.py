@@ -9,9 +9,11 @@ import pytest_splinter
 dirname = os.path.dirname(__file__)
 
 long_description = (
-    codecs.open(os.path.join(dirname, 'README.rst'), encoding='utf-8').read() + '\n' +
-    codecs.open(os.path.join(dirname, 'AUTHORS.rst'), encoding='utf-8').read() + '\n' +
-    codecs.open(os.path.join(dirname, 'CHANGES.rst'), encoding='utf-8').read()
+    codecs.open(os.path.join(dirname, 'README.rst'), encoding='utf-8').read()
+    + '\n'
+    + codecs.open(os.path.join(dirname, 'AUTHORS.rst'), encoding='utf-8').read()
+    + '\n'
+    + codecs.open(os.path.join(dirname, 'CHANGES.rst'), encoding='utf-8').read()
 )
 
 setup(
@@ -49,13 +51,12 @@ setup(
         'Topic :: Utilities',
         'Programming Language :: Python :: 3',
     ]
-    + [
-        ('Programming Language :: Python :: %s' % x)
-        for x in '3.6 3.7 3.8'.split()
-    ],
+    + [('Programming Language :: Python :: %s' % x) for x in '3.6 3.7 3.8'.split()],
     tests_require=['tox'],
-    entry_points={'pytest11': [
-        'pytest-splinter=pytest_splinter.plugin',
-    ]},
+    entry_points={
+        'pytest11': [
+            'pytest-splinter=pytest_splinter.plugin',
+        ]
+    },
     packages=['pytest_splinter'],
 )
