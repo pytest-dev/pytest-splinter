@@ -11,6 +11,7 @@ try:
     from httplib import HTTPException
 except ImportError:
     from http.client import HTTPException
+
 import logging
 import mimetypes  # pragma: no cover
 import os.path
@@ -19,16 +20,13 @@ import re
 import pytest  # pragma: no cover
 import splinter  # pragma: no cover
 from _pytest import junitxml
-
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.support import wait
 from urllib3.exceptions import MaxRetryError
 
-from selenium.webdriver.support import wait
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-from selenium.common.exceptions import WebDriverException
-
-from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
-
+from .webdriver_patches import patch_webdriver  # pragma: no cover
 
 LOGGER = logging.getLogger(__name__)
 
@@ -63,9 +61,9 @@ def _screenshot_extraline(screenshot_png_file_name, screenshot_html_file_name):
 ===========================
 pytest-splinter screenshots
 ===========================
-png:  %s
-html: %s
-""" % (
+png:  {}
+html: {}
+""".format(
         screenshot_png_file_name,
         screenshot_html_file_name,
     )
@@ -313,7 +311,7 @@ def get_args(
             "browser.helperApps.alwaysAsk.force": False,
             "pdfjs.disabled": True,  # disable internal ff pdf viewer to allow auto pdf download
         },
-        **firefox_pref or {}
+        **firefox_pref or {},
     )
 
     if driver == "firefox":
@@ -402,7 +400,7 @@ def _take_screenshot(
     classname = ".".join(names[:-1])
     screenshot_dir = os.path.join(splinter_screenshot_dir, classname)
     screenshot_file_name_format = "{0}.{{format}}".format(
-        "{}-{}".format(names[-1][: 128 - len(fixture_name) - 5], fixture_name).replace(
+        f"{names[-1][: 128 - len(fixture_name) - 5]}-{fixture_name}".replace(
             os.path.sep, "-"
         )
     )
@@ -446,7 +444,7 @@ def _take_screenshot(
                         }
                     )
     except Exception as e:  # NOQA
-        warnings.warn(pytest.PytestWarning("Could not save screenshot: {}".format(e)))
+        warnings.warn(pytest.PytestWarning(f"Could not save screenshot: {e}"))
 
 
 @pytest.yield_fixture(autouse=True)
@@ -470,9 +468,8 @@ def _browser_screenshot_session(
     fixture_values = (
         # pytest 3
         getattr(request, "_fixture_values", {})
-        or
         # pytest 2
-        getattr(request, "_funcargs", {})
+        or getattr(request, "_funcargs", {})
     )
 
     for name, value in fixture_values.items():
@@ -547,7 +544,7 @@ def browser_instance_getter(
                 visit_condition=splinter_browser_load_condition,
                 visit_condition_timeout=splinter_browser_load_timeout,
                 wait_time=splinter_wait_time,
-                **kwargs
+                **kwargs,
             )
         except Exception:  # NOQA
             if retry_count > 1:
@@ -591,8 +588,10 @@ def browser_instance_getter(
 
         try:
             if splinter_webdriver not in browser.driver_name.lower():
-                raise IOError(f"webdriver does not match (requested: {splinter_webdriver} "
-                              f", available: {browser.driver_name.lower()})")
+                raise OSError(
+                    f"webdriver does not match (requested: {splinter_webdriver} "
+                    f", available: {browser.driver_name.lower()})"
+                )
             if hasattr(browser, "driver"):
                 browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
                 browser.driver.set_speed(splinter_selenium_speed)
@@ -608,7 +607,7 @@ def browser_instance_getter(
                     browser.driver.set_window_size(*splinter_window_size)
             try:
                 browser.cookies.delete()
-            except (IOError, HTTPException, WebDriverException):
+            except (OSError, HTTPException, WebDriverException):
                 LOGGER.warning("Error cleaning browser cookies", exc_info=True)
             for url in splinter_clean_cookies_urls:
                 browser.visit(url)
@@ -617,7 +616,7 @@ def browser_instance_getter(
                 browser.visit_condition = splinter_browser_load_condition
                 browser.visit_condition_timeout = splinter_browser_load_timeout
                 browser.visit("about:blank")
-        except (IOError, HTTPException, WebDriverException, MaxRetryError):
+        except (OSError, HTTPException, WebDriverException, MaxRetryError):
             # we lost browser, try to restore the justice
             try:
                 browser.quit()
@@ -657,7 +656,7 @@ def session_browser(request, browser_instance_getter):
     return browser_instance_getter(request, session_browser)
 
 
-class SplinterXdistPlugin(object):
+class SplinterXdistPlugin:
 
     """Plugin class to defer pytest-xdist hook handler."""
 
@@ -676,7 +675,7 @@ class SplinterXdistPlugin(object):
                 with codecs.open(
                     os.path.join(screenshot_dir, fil["file_name"]),
                     "wb",
-                    **dict(encoding=encoding) if encoding else {}
+                    **dict(encoding=encoding) if encoding else {},
                 ) as fd:
                     fd.write(fil["content"])
 

@@ -25,7 +25,7 @@ jobs:
 
     - run: firefox --version
     - run: geckodriver --version
-      
+
     - name: Run tests, excluding remote tests
       run: |
          xvfb-run -- pytest --junitxml=test-results/junit.xml --ignore=tests/test_plugin_remote.py
@@ -44,7 +44,7 @@ jobs:
          timeout 60 bash -c 'while ! wget -O /dev/null -T 1 http://localhost:4444/readyz; do echo waiting for selenium server; sleep 1; done' || (cat selenium-server.log && exit 2)
          echo "Selenium server is ready, running tests"
          pytest --junitxml=test-results/junit.xml tests/test_plugin_remote.py
-         
+
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
       if: always() # always run even if the previous step fails

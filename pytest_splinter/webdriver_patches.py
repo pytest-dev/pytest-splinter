@@ -9,9 +9,8 @@ import time  # pragma: no cover
 
 from selenium.webdriver.firefox import webdriver  # pragma: no cover
 from selenium.webdriver.remote.webdriver import (
-    WebDriver as RemoteWebDriver,
-)  # pragma: no cover
-
+    WebDriver as RemoteWebDriver,  # pragma: no cover
+)
 
 # save the original execute
 RemoteWebDriver._base_execute = RemoteWebDriver.execute  # pragma: no cover

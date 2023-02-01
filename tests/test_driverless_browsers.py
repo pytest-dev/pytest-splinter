@@ -1,6 +1,7 @@
 """Tests for pytest-splinter django driver availability."""
+from unittest import mock
+
 import pytest
-import mock
 
 
 @pytest.fixture(autouse=True)

@@ -1,13 +1,4 @@
 repos:
-    - repo: local
-      hooks:
-        - id: no_debug
-          name: Make sure code does not contain commands likely to run interactive debugger
-          types: [python]
-          args: [--multiline]
-          entry: 'breakpoint\(\)|set_trace'
-          language: pygrep
-
     - repo: https://github.com/myint/autoflake
       rev: 'v1.4'
       hooks:
@@ -34,7 +25,8 @@ repos:
     - repo: https://github.com/psf/black
       rev: '22.3.0'
       hooks:
-        -   id: black
+        - id: black
+          args: ["--skip-string-normalization"]
 
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: 'v4.1.0'
@@ -44,8 +36,9 @@ repos:
         -   id: end-of-file-fixer
         -   id: trailing-whitespace
         -   id: mixed-line-ending
+        -   id: debug-statements
 
-    - repo: https://gitlab.com/pycqa/flake8
+    - repo: https://github.com/pycqa/flake8
       rev: '3.9.2'
       hooks:
         -   id: flake8
@@ -54,4 +47,4 @@ repos:
       rev: v2.31.0
       hooks:
         - id: pyupgrade
-          args: ["--py37-plus"]
+          args: ["--py36-plus"]

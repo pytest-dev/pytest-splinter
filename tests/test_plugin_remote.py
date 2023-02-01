@@ -1,13 +1,8 @@
 """Tests for pytest-splinter plugin."""
-import os.path
-import time
-import socket
 
 import pytest
 
-from splinter.driver import DriverAPI
 from pytest_splinter.plugin import get_args
-
 
 
 @pytest.mark.parametrize("check", [1, 2])
@@ -28,10 +23,11 @@ def test_restore_browser_connection(
         pytest.skip("zope testbrowser doesn't need restore")
 
     def raises(*args, **kwargs):
-        raise socket.error()
+        raise OSError()
 
     browser.driver.command_executor._conn.request = raises
     browser.reload()
+
 
 def test_executable():
     """Test argument construction for webdrivers."""

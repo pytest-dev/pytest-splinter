@@ -4,6 +4,7 @@ import pytest
 
 pytest_plugins = "pytester"
 
+
 @pytest.fixture
 def simple_page_content():
     """Return simple page content."""
@@ -26,5 +27,3 @@ def simple_page(httpserver, browser, simple_page_content):
         simple_page_content, code=200, headers={"Content-Type": "text/html"}
     )
     browser.visit(httpserver.url)
-
-
