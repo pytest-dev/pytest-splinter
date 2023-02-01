@@ -32,7 +32,7 @@ setup(
     },
     install_requires=[
         'setuptools',
-        'splinter>=0.13.0',
+        'splinter>=0.15.0',
         'selenium',
         'pytest>=3.0.0',
         'urllib3',

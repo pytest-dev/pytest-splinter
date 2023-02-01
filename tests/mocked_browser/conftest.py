@@ -10,7 +10,7 @@ def splinter_session_scoped_browser():
     return False
 
 
-@pytest.yield_fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def mocked_browser(browser_pool, request):
     """Mock splinter browser."""
     # to avoid re-using of cached browser from other tests
