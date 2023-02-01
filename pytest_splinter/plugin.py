@@ -449,7 +449,7 @@ def _take_screenshot(
         warnings.warn(pytest.PytestWarning("Could not save screenshot: {}".format(e)))
 
 
-@pytest.yield_fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def _browser_screenshot_session(
     request,
     session_tmpdir,
@@ -607,12 +607,12 @@ def browser_instance_getter(
                     # https://github.com/SeleniumHQ/selenium/issues/3508
                     browser.driver.set_window_size(*splinter_window_size)
             try:
-                browser.cookies.delete()
+                browser.cookies.delete_all()
             except (IOError, HTTPException, WebDriverException):
                 LOGGER.warning("Error cleaning browser cookies", exc_info=True)
             for url in splinter_clean_cookies_urls:
                 browser.visit(url)
-                browser.cookies.delete()
+                browser.cookies.delete_all()
             if hasattr(browser, "driver"):
                 browser.visit_condition = splinter_browser_load_condition
                 browser.visit_condition_timeout = splinter_browser_load_timeout
